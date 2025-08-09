@@ -8,35 +8,61 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Kitchen-inspired color palette */
+    --background: 0 0% 98%;
+    --foreground: 20 14% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 20 14% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 20 14% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Warm copper/bronze tones for primary */
+    --primary: 24 85% 45%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 24 100% 65%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Soft warm grays for secondary */
+    --secondary: 20 8% 92%;
+    --secondary-foreground: 20 14% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 20 8% 94%;
+    --muted-foreground: 20 8% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Warm accent color */
+    --accent: 35 95% 88%;
+    --accent-foreground: 20 14% 25%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 20 8% 88%;
+    --input: 20 8% 90%;
+    --ring: 24 85% 45%;
 
-    --radius: 0.5rem;
+    /* Custom kitchen theme colors */
+    --kitchen-warm: 24 85% 45%;
+    --kitchen-warm-light: 24 95% 92%;
+    --kitchen-copper: 24 90% 35%;
+    --kitchen-gold: 45 100% 70%;
+    --kitchen-steel: 210 8% 55%;
+
+    /* Gradients */
+    --gradient-warm: linear-gradient(135deg, hsl(24 85% 45%) 0%, hsl(35 95% 60%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 98%) 0%, hsl(20 8% 96%) 100%);
+    --gradient-copper: linear-gradient(135deg, hsl(24 90% 35%) 0%, hsl(24 85% 45%) 50%, hsl(24 100% 65%) 100%);
+
+    /* Shadows */
+    --shadow-soft: 0 2px 10px hsl(20 14% 15% / 0.1);
+    --shadow-medium: 0 4px 20px hsl(20 14% 15% / 0.15);
+    --shadow-warm: 0 8px 30px hsl(24 85% 45% / 0.2);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
