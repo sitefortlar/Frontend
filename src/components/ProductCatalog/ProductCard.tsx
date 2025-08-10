@@ -10,9 +10,10 @@ import * as LucideIcons from 'lucide-react';
 interface ProductCardProps {
   product: Product;
   priceType: PriceType;
+  onAddToCart?: (product: Product, size: string, priceType: PriceType) => void;
 }
 
-export const ProductCard = ({ product, priceType }: ProductCardProps) => {
+export const ProductCard = ({ product, priceType, onAddToCart }: ProductCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const price = product.prices[priceType];
@@ -47,33 +48,44 @@ export const ProductCard = ({ product, priceType }: ProductCardProps) => {
         </CardHeader>
 
         <CardContent className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">
-                R$ {price.toFixed(2)}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {priceLabels[priceType]}
-              </div>
-            </div>
-            
+          <div className="space-y-3">
             {product.isKit && (
-              <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
-                <Package className="h-3 w-3 mr-1" />
-                Kit
-              </Badge>
+              <div className="flex justify-center">
+                <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
+                  <Package className="h-3 w-3 mr-1" />
+                  Kit
+                </Badge>
+              </div>
             )}
-          </div>
 
-          <div className="text-sm text-muted-foreground">
-            <span className="font-medium">Tamanho padrão:</span> {product.defaultSize}
-          </div>
-          
-          {product.sizes.length > 1 && (
-            <div className="text-xs text-muted-foreground">
-              +{product.sizes.length - 1} tamanho{product.sizes.length > 2 ? 's' : ''} disponível{product.sizes.length > 2 ? 'is' : ''}
+            {/* Preços */}
+            <div className="space-y-2">
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="p-2 rounded-lg bg-muted/30">
+                  <div className="text-xs text-muted-foreground">À vista</div>
+                  <div className="text-sm font-bold text-primary">
+                    R$ {product.prices.vista.toFixed(2)}
+                  </div>
+                </div>
+                <div className="p-2 rounded-lg bg-muted/30">
+                  <div className="text-xs text-muted-foreground">30 dias</div>
+                  <div className="text-sm font-bold text-primary">
+                    R$ {product.prices.dias30.toFixed(2)}
+                  </div>
+                </div>
+                <div className="p-2 rounded-lg bg-muted/30">
+                  <div className="text-xs text-muted-foreground">90 dias</div>
+                  <div className="text-sm font-bold text-primary">
+                    R$ {product.prices.dias90.toFixed(2)}
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
+
+            <div className="text-sm text-muted-foreground text-center">
+              <span className="font-medium">Tamanho padrão:</span> {product.defaultSize}
+            </div>
+          </div>
         </CardContent>
 
         <CardFooter>
@@ -93,6 +105,7 @@ export const ProductCard = ({ product, priceType }: ProductCardProps) => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         priceType={priceType}
+        onAddToCart={onAddToCart}
       />
     </>
   );

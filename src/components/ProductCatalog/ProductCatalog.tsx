@@ -1,9 +1,14 @@
 import { useState, useMemo } from 'react';
+import { ProductGrid } from './ProductGrid';
 import { CategorySidebar } from './CategorySidebar';
 import { FilterBar } from './FilterBar';
-import { ProductGrid } from './ProductGrid';
+import { CartDrawer } from '@/components/Cart/CartDrawer';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ShoppingCart } from 'lucide-react';
 import { categories, products } from '@/data/products';
-import { FilterState, Product } from '@/types/Product';
+import { FilterState } from '@/types/Product';
+import { useCart } from '@/hooks/useCart';
 
 export const ProductCatalog = () => {
   const [filters, setFilters] = useState<FilterState>({
@@ -14,6 +19,8 @@ export const ProductCatalog = () => {
     sortBy: 'name',
     priceType: 'vista',
   });
+
+  const cart = useCart();
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
@@ -41,20 +48,13 @@ export const ProductCatalog = () => {
       return true;
     });
 
-    // Sort products
-    filtered.sort((a, b) => {
-      switch (filters.sortBy) {
-        case 'price-high':
-          return b.prices[filters.priceType] - a.prices[filters.priceType];
-        case 'price-low':
-          return a.prices[filters.priceType] - b.prices[filters.priceType];
-        case 'name':
-        default:
-          return a.name.localeCompare(b.name);
-      }
-    });
-
-    return filtered;
+    if (filters.sortBy === 'price-high') {
+      return filtered.sort((a, b) => b.prices.vista - a.prices.vista);
+    }
+    if (filters.sortBy === 'price-low') {
+      return filtered.sort((a, b) => a.prices.vista - b.prices.vista);
+    }
+    return filtered.sort((a, b) => a.name.localeCompare(b.name));
   }, [filters]);
 
   // Get available sizes from current filtered products (before size filter is applied)
@@ -81,59 +81,74 @@ export const ProductCatalog = () => {
   }, [filters.selectedCategory, filters.selectedSubcategory, filters.showKitsOnly]);
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
-      {/* Sidebar */}
+    <div className="min-h-screen bg-background">
       <CategorySidebar
         categories={categories}
         selectedCategory={filters.selectedCategory}
         selectedSubcategory={filters.selectedSubcategory}
         onCategorySelect={(categoryId) =>
-          setFilters((prev) => ({ ...prev, selectedCategory: categoryId, selectedSubcategory: null }))
+          setFilters(prev => ({ ...prev, selectedCategory: categoryId }))
         }
         onSubcategorySelect={(subcategoryId) =>
-          setFilters((prev) => ({ ...prev, selectedSubcategory: subcategoryId }))
+          setFilters(prev => ({ ...prev, selectedSubcategory: subcategoryId }))
         }
       />
 
-      {/* Main content */}
+      {/* Cart Button */}
+      <div className="fixed top-4 right-4 z-50">
+        <Button
+          onClick={() => cart.setIsDrawerOpen(true)}
+          className="gap-2 shadow-warm"
+          size="lg"
+        >
+          <ShoppingCart className="h-5 w-5" />
+          Carrinho
+          {cart.getItemCount() > 0 && (
+            <Badge variant="secondary" className="ml-1">
+              {cart.getItemCount()}
+            </Badge>
+          )}
+        </Button>
+      </div>
+
       <div className="lg:ml-80 min-h-screen">
-        <div className="container mx-auto px-4 py-8 lg:py-12">
-          {/* Header */}
-          <div className="mb-8 pt-16 lg:pt-0">
-            <h1 className="text-3xl lg:text-4xl font-bold mb-2">
-              {filters.selectedCategory
-                ? categories.find((c) => c.id === filters.selectedCategory)?.name
-                : 'Todos os Produtos'}
-            </h1>
-            {filters.selectedSubcategory && (
-              <p className="text-lg text-muted-foreground">
-                {categories
-                  .find((c) => c.id === filters.selectedCategory)
-                  ?.subcategories.find((s) => s.id === filters.selectedSubcategory)?.name}
-              </p>
-            )}
-          </div>
+        <div className="p-6 space-y-6">
+          <FilterBar
+            selectedSize={filters.selectedSize}
+            showKitsOnly={filters.showKitsOnly}
+            sortBy={filters.sortBy}
+            availableSizes={availableSizes}
+            onSizeChange={(size) =>
+              setFilters(prev => ({ ...prev, selectedSize: size }))
+            }
+            onKitsToggle={() =>
+              setFilters(prev => ({ ...prev, showKitsOnly: !prev.showKitsOnly }))
+            }
+            onSortChange={(sort) =>
+              setFilters(prev => ({ ...prev, sortBy: sort }))
+            }
+            productCount={filteredProducts.length}
+          />
 
-          {/* Filters */}
-          <div className="mb-8">
-            <FilterBar
-              selectedSize={filters.selectedSize}
-              showKitsOnly={filters.showKitsOnly}
-              sortBy={filters.sortBy}
-              priceType={filters.priceType}
-              availableSizes={availableSizes}
-              onSizeChange={(size) => setFilters((prev) => ({ ...prev, selectedSize: size }))}
-              onKitsToggle={() => setFilters((prev) => ({ ...prev, showKitsOnly: !prev.showKitsOnly }))}
-              onSortChange={(sort) => setFilters((prev) => ({ ...prev, sortBy: sort }))}
-              onPriceTypeChange={(priceType) => setFilters((prev) => ({ ...prev, priceType }))}
-              productCount={filteredProducts.length}
-            />
-          </div>
-
-          {/* Products Grid */}
-          <ProductGrid products={filteredProducts} priceType={filters.priceType} />
+          <ProductGrid
+            products={filteredProducts}
+            priceType={filters.priceType}
+            onAddToCart={cart.addToCart}
+          />
         </div>
       </div>
+
+      <CartDrawer
+        isOpen={cart.isDrawerOpen}
+        onClose={() => cart.setIsDrawerOpen(false)}
+        items={cart.items}
+        onRemoveItem={cart.removeFromCart}
+        onUpdateQuantity={cart.updateQuantity}
+        onUpdatePriceType={cart.updatePriceType}
+        getTotalPrice={cart.getTotalPrice}
+        generateWhatsAppMessage={cart.generateWhatsAppMessage}
+        onClearCart={cart.clearCart}
+      />
     </div>
   );
 };

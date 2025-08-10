@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Package, DollarSign, Ruler } from 'lucide-react';
+import { Package, DollarSign, Ruler, ShoppingCart } from 'lucide-react';
 import { Product, PriceType } from '@/types/Product';
 import * as LucideIcons from 'lucide-react';
 
@@ -13,10 +13,12 @@ interface ProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   priceType: PriceType;
+  onAddToCart?: (product: Product, size: string, priceType: PriceType) => void;
 }
 
-export const ProductModal = ({ product, isOpen, onClose, priceType }: ProductModalProps) => {
+export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart }: ProductModalProps) => {
   const [selectedSize, setSelectedSize] = useState(product.defaultSize);
+  const [selectedPriceType, setSelectedPriceType] = useState<PriceType>(priceType);
 
   const IconComponent = (LucideIcons as any)[product.icon] || LucideIcons.Package;
 
@@ -31,8 +33,12 @@ export const ProductModal = ({ product, isOpen, onClose, priceType }: ProductMod
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto glass border-0">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center shadow-soft flex-shrink-0">
-              <IconComponent className="h-8 w-8 text-primary-foreground" />
+            <div className="w-20 h-20 bg-gradient-glass rounded-full flex items-center justify-center shadow-soft flex-shrink-0 overflow-hidden border border-border/20">
+              <img 
+                src={product.images[0] || `/api/placeholder/80/80`}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="flex-1">
               <DialogTitle className="text-xl font-bold text-left text-primary">
@@ -93,19 +99,13 @@ export const ProductModal = ({ product, isOpen, onClose, priceType }: ProductMod
               {Object.entries(product.prices).map(([type, price]) => (
                 <div
                   key={type}
-                  className={`p-4 rounded-lg border-2 transition-glass ${
-                    type === priceType
-                      ? 'border-primary bg-accent/10'
-                      : 'border-border bg-muted/50'
-                  }`}
+                  className="p-4 rounded-lg border border-border bg-muted/50"
                 >
                   <div className="text-center">
                     <div className="text-sm text-muted-foreground mb-1">
                       {priceLabels[type as PriceType]}
                     </div>
-                    <div className={`text-xl font-bold ${
-                      type === priceType ? 'text-primary' : 'text-foreground'
-                    }`}>
+                    <div className="text-xl font-bold text-primary">
                       R$ {price.toFixed(2)}
                     </div>
                   </div>
@@ -147,13 +147,44 @@ export const ProductModal = ({ product, isOpen, onClose, priceType }: ProductMod
             </div>
           </div>
 
+          {/* Cart Section */}
+          <div className="space-y-4 bg-muted/30 rounded-lg p-4">
+            <div className="flex items-center gap-2">
+              <ShoppingCart className="h-4 w-4 text-primary" />
+              <h3 className="font-semibold">Adicionar ao Carrinho</h3>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Forma de Pagamento</label>
+                <Select value={selectedPriceType} onValueChange={(value: PriceType) => setSelectedPriceType(value)}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="vista">À vista - R$ {product.prices.vista.toFixed(2)}</SelectItem>
+                    <SelectItem value="dias30">30 dias - R$ {product.prices.dias30.toFixed(2)}</SelectItem>
+                    <SelectItem value="dias90">90 dias - R$ {product.prices.dias90.toFixed(2)}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex items-end">
+                <Button 
+                  onClick={() => onAddToCart?.(product, selectedSize, selectedPriceType)}
+                  className="w-full gap-2"
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  Adicionar
+                </Button>
+              </div>
+            </div>
+          </div>
+
           {/* Actions */}
           <div className="flex gap-3 pt-4">
             <Button variant="outline" onClick={onClose} className="flex-1">
               Fechar
-            </Button>
-            <Button variant="default" className="flex-1">
-              Solicitar Orçamento
             </Button>
           </div>
         </div>

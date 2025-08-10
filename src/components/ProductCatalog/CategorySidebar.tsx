@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ChevronDown, ChevronRight, Menu, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, Menu, X, Package, Utensils, ChefHat, Coffee, Soup } from 'lucide-react';
 import { Category } from '@/types/Product';
 import { cn } from '@/lib/utils';
 
@@ -22,6 +22,18 @@ export const CategorySidebar = ({
 }: CategorySidebarProps) => {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  const getCategoryIcon = (categoryId: string) => {
+    switch (categoryId) {
+      case 'panelas-pressao': return ChefHat;
+      case 'panelas-cacarolas': return Soup;
+      case 'caldeiroes': return Package;
+      case 'canecoes-fervedores': return Coffee;
+      case 'frigideiras': return Utensils;
+      case 'formas-assadeiras': return Package;
+      default: return Package;
+    }
+  };
 
   const toggleCategory = (categoryId: string) => {
     const newExpanded = new Set(expandedCategories);
@@ -82,11 +94,20 @@ export const CategorySidebar = ({
           {categories.map((category) => (
             <div key={category.id} className="space-y-1">
               <Button
-                variant={selectedCategory === category.id ? "category" : "ghost"}
-                className="w-full justify-between text-left h-auto p-3"
+                variant={selectedCategory === category.id ? "default" : "ghost"}
+                className={cn(
+                  "w-full justify-between text-left h-auto p-3",
+                  selectedCategory === category.id && "bg-primary text-primary-foreground"
+                )}
                 onClick={() => handleCategorySelect(category.id)}
               >
-                <span className="font-medium">{category.name}</span>
+                <div className="flex items-center gap-2">
+                  {(() => {
+                    const IconComponent = getCategoryIcon(category.id);
+                    return <IconComponent className="h-4 w-4" />;
+                  })()}
+                  <span className="font-medium">{category.name}</span>
+                </div>
                 {expandedCategories.has(category.id) ? (
                   <ChevronDown className="h-4 w-4" />
                 ) : (
@@ -99,9 +120,12 @@ export const CategorySidebar = ({
                   {category.subcategories.map((subcategory) => (
                     <Button
                       key={subcategory.id}
-                      variant={selectedSubcategory === subcategory.id ? "kitchen" : "ghost"}
+                      variant={selectedSubcategory === subcategory.id ? "default" : "ghost"}
                       size="sm"
-                      className="w-full justify-start text-left h-auto p-2 pl-4"
+                      className={cn(
+                        "w-full justify-start text-left h-auto p-2 pl-4",
+                        selectedSubcategory === subcategory.id && "bg-primary/20 text-primary"
+                      )}
                       onClick={() => handleSubcategorySelect(subcategory.id)}
                     >
                       {subcategory.name}

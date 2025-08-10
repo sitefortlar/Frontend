@@ -1,22 +1,18 @@
-import { Product, PriceType } from '@/types/Product';
 import { ProductCard } from './ProductCard';
+import { Product, PriceType } from '@/types/Product';
 
 interface ProductGridProps {
   products: Product[];
   priceType: PriceType;
+  onAddToCart?: (product: Product, size: string, priceType: PriceType) => void;
 }
 
-export const ProductGrid = ({ products, priceType }: ProductGridProps) => {
+export const ProductGrid = ({ products, priceType, onAddToCart }: ProductGridProps) => {
   if (products.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-4">
-          <span className="text-4xl">🔍</span>
-        </div>
-        <h3 className="text-xl font-semibold mb-2">Nenhum produto encontrado</h3>
-        <p className="text-muted-foreground max-w-md">
-          Não encontramos produtos que correspondam aos filtros selecionados. 
-          Tente ajustar os filtros ou navegar por outras categorias.
+      <div className="text-center py-12">
+        <p className="text-lg text-muted-foreground">
+          Nenhum produto encontrado com os filtros selecionados.
         </p>
       </div>
     );
@@ -29,6 +25,7 @@ export const ProductGrid = ({ products, priceType }: ProductGridProps) => {
           key={product.id}
           product={product}
           priceType={priceType}
+          onAddToCart={onAddToCart}
         />
       ))}
     </div>
