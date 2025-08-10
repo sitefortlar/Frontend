@@ -28,8 +28,12 @@ export const ProductCard = ({ product, priceType }: ProductCardProps) => {
     <>
       <Card className="group hover:shadow-glass transition-glass transform hover:-translate-y-1 glass-light border-0">
         <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center shadow-soft">
-            <IconComponent className="h-8 w-8 text-primary-foreground" />
+          <div className="mx-auto w-16 h-16 bg-gradient-glass rounded-full flex items-center justify-center shadow-soft overflow-hidden border border-border/20">
+            <img 
+              src={product.images[0] || `/api/placeholder/64/64`}
+              alt={product.name}
+              className="w-full h-full object-cover"
+            />
           </div>
           
           <div>
