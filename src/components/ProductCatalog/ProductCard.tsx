@@ -26,14 +26,14 @@ export const ProductCard = ({ product, priceType }: ProductCardProps) => {
 
   return (
     <>
-      <Card className="group hover:shadow-warm transition-all duration-300 transform hover:-translate-y-1 bg-gradient-subtle border-kitchen-warm/20">
+      <Card className="group hover:shadow-glass transition-glass transform hover:-translate-y-1 glass-light border-0">
         <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-gradient-warm rounded-full flex items-center justify-center shadow-soft">
+          <div className="mx-auto w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center shadow-soft">
             <IconComponent className="h-8 w-8 text-primary-foreground" />
           </div>
           
           <div>
-            <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-kitchen-copper transition-colors">
+            <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-glass">
               {product.name}
             </h3>
             <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
@@ -45,7 +45,7 @@ export const ProductCard = ({ product, priceType }: ProductCardProps) => {
         <CardContent className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="text-center">
-              <div className="text-2xl font-bold text-kitchen-copper">
+              <div className="text-2xl font-bold text-primary">
                 R$ {price.toFixed(2)}
               </div>
               <div className="text-xs text-muted-foreground">
@@ -54,7 +54,7 @@ export const ProductCard = ({ product, priceType }: ProductCardProps) => {
             </div>
             
             {product.isKit && (
-              <Badge variant="secondary" className="bg-kitchen-gold/20 text-kitchen-copper border-kitchen-gold/30">
+              <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
                 <Package className="h-3 w-3 mr-1" />
                 Kit
               </Badge>
@@ -74,7 +74,7 @@ export const ProductCard = ({ product, priceType }: ProductCardProps) => {
 
         <CardFooter>
           <Button
-            variant="kitchen"
+            variant="default"
             className="w-full gap-2"
             onClick={() => setIsModalOpen(true)}
           >
