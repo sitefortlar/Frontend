@@ -28,7 +28,6 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
   };
 
   const handleAddKit = (kitSize: number, quantity: number) => {
-    // Create a kit version of the product
     const kitProduct = {
       ...product,
       name: `${product.name} - Kit ${kitSize} Unidades`,
@@ -43,19 +42,19 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto glass border-0">
+      <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto glass border-0">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-primary text-center">
             {product.name}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Product Image */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Product Image - Smaller column */}
           <div className="space-y-4">
-            <div className="w-full h-80 bg-gradient-glass rounded-lg overflow-hidden border border-border/20">
+            <div className="w-full aspect-square bg-gradient-glass rounded-lg overflow-hidden border border-border/20">
               <img 
-                src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=320&fit=crop"
+                src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop"
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
@@ -67,79 +66,91 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
                 Kit Completo
               </Badge>
             )}
+
+            {/* Product info */}
+            <div className="bg-muted/30 rounded-lg p-4">
+              <h4 className="font-semibold mb-2">Informações do Produto</h4>
+              <p className="text-sm text-muted-foreground mb-2">
+                Categoria: {product.category.replace('-', ' ')}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Tamanhos disponíveis: {product.sizes.join(', ')}
+              </p>
+            </div>
           </div>
 
-          {/* Product Details */}
-          <div className="space-y-6">
+          {/* Product Details - Larger columns */}
+          <div className="lg:col-span-2 space-y-6">
             {/* Unit Purchase */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">1 Unidade</h3>
+              <h3 className="text-xl font-semibold border-b pb-2">Compra Unitária</h3>
               
               <div className="bg-muted/30 rounded-lg p-4">
                 <div className="grid grid-cols-3 gap-4 mb-4">
-                  <div>
+                  <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
                     <div className="text-sm text-green-600 font-medium">À vista</div>
-                    <div className="text-lg font-bold text-green-600">
+                    <div className="text-xl font-bold text-green-600">
                       R$ {product.prices.vista.toFixed(2)}
                     </div>
                   </div>
-                  <div>
+                  <div className="text-center p-3 bg-gray-50 rounded-lg border">
                     <div className="text-sm text-muted-foreground">30 dias</div>
-                    <div className="text-lg font-semibold">
+                    <div className="text-xl font-semibold">
                       R$ {product.prices.dias30.toFixed(2)}
                     </div>
                   </div>
-                  <div>
+                  <div className="text-center p-3 bg-gray-50 rounded-lg border">
                     <div className="text-sm text-muted-foreground">90 dias</div>
-                    <div className="text-lg font-semibold">
+                    <div className="text-xl font-semibold">
                       R$ {product.prices.dias90.toFixed(2)}
                     </div>
                   </div>
                 </div>
 
-                {/* Size Selection */}
-                <div className="space-y-2 mb-4">
-                  <label className="text-sm font-medium">Litragem:</label>
-                  <Select value={selectedSize} onValueChange={setSelectedSize}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {product.sizes.map((size) => (
-                        <SelectItem key={size} value={size}>
-                          {size}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium block mb-2">Litragem:</label>
+                    <Select value={selectedSize} onValueChange={setSelectedSize}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {product.sizes.map((size) => (
+                          <SelectItem key={size} value={size}>
+                            {size}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                {/* Quantity Controls for Unit */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => setUnitQuantity(Math.max(1, unitQuantity - 1))}
-                    >
-                      <Minus className="h-3 w-3" />
-                    </Button>
-                    <span className="w-8 text-center text-sm font-medium">{unitQuantity}</span>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => setUnitQuantity(unitQuantity + 1)}
-                    >
-                      <Plus className="h-3 w-3" />
-                    </Button>
+                  <div>
+                    <label className="text-sm font-medium block mb-2">Quantidade:</label>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-10 w-10"
+                        onClick={() => setUnitQuantity(Math.max(1, unitQuantity - 1))}
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="w-12 text-center font-medium">{unitQuantity}</span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-10 w-10"
+                        onClick={() => setUnitQuantity(unitQuantity + 1)}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
 
                 <Button 
                   onClick={handleAddUnit}
-                  className="w-full gap-2 bg-primary hover:bg-primary/90"
+                  className="w-full mt-4 gap-2 bg-primary hover:bg-primary/90"
                 >
                   <ShoppingCart className="h-4 w-4" />
                   Adicionar ao Carrinho
@@ -150,35 +161,28 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
             {/* Kits Available */}
             {product.isKit && (
               <div className="space-y-4">
-                <Separator />
-                <h3 className="text-lg font-semibold">Kits Disponíveis</h3>
+                <h3 className="text-xl font-semibold border-b pb-2">Kits Disponíveis</h3>
                 
-                {/* Kit 6 Unidades */}
-                <div className="bg-muted/30 rounded-lg p-4">
-                  <div className="text-sm font-medium mb-3">6 Unidades</div>
-                  <div className="grid grid-cols-3 gap-4 mb-3">
-                    <div>
-                      <div className="text-sm text-green-600 font-medium">À vista</div>
-                      <div className="text-lg font-bold text-green-600">
-                        R$ {(product.prices.vista * 6 * 0.85).toFixed(2)}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Kit 6 Unidades */}
+                  <div className="bg-muted/30 rounded-lg p-4">
+                    <div className="text-center mb-3">
+                      <Badge variant="outline" className="mb-2">6 Unidades</Badge>
+                      <div className="space-y-1">
+                        <div className="text-sm text-green-600 font-medium">À vista</div>
+                        <div className="text-lg font-bold text-green-600">
+                          R$ {(product.prices.vista * 6 * 0.85).toFixed(2)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          30d: R$ {(product.prices.dias30 * 6 * 0.85).toFixed(2)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          90d: R$ {(product.prices.dias90 * 6 * 0.85).toFixed(2)}
+                        </div>
                       </div>
                     </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">30 dias</div>
-                      <div className="text-lg font-semibold">
-                        R$ {(product.prices.dias30 * 6 * 0.85).toFixed(2)}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">90 dias</div>
-                      <div className="text-lg font-semibold">
-                        R$ {(product.prices.dias90 * 6 * 0.85).toFixed(2)}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
+                    
+                    <div className="flex items-center justify-center gap-2 mb-3">
                       <Button
                         variant="outline"
                         size="icon"
@@ -197,46 +201,36 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
                         <Plus className="h-3 w-3" />
                       </Button>
                     </div>
+
+                    <Button 
+                      onClick={() => handleAddKit(6, kit6Quantity)}
+                      className="w-full gap-2 bg-primary hover:bg-primary/90"
+                      size="sm"
+                    >
+                      <ShoppingCart className="h-3 w-3" />
+                      Adicionar
+                    </Button>
                   </div>
 
-                  <Button 
-                    onClick={() => handleAddKit(6, kit6Quantity)}
-                    className="w-full gap-2 bg-primary hover:bg-primary/90"
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                    Adicionar ao Carrinho
-                  </Button>
-                </div>
-
-                {/* Kit 12 Unidades */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Badge className="bg-blue-600 text-white">Mais Vendido</Badge>
-                    <div className="text-sm font-medium">12 Unidades</div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4 mb-3">
-                    <div>
-                      <div className="text-sm text-green-600 font-medium">À vista</div>
-                      <div className="text-lg font-bold text-green-600">
-                        R$ {(product.prices.vista * 12 * 0.85).toFixed(2)}
+                  {/* Kit 12 Unidades */}
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                    <div className="text-center mb-3">
+                      <Badge className="bg-blue-600 text-white mb-2">Mais Vendido - 12 Unidades</Badge>
+                      <div className="space-y-1">
+                        <div className="text-sm text-green-600 font-medium">À vista</div>
+                        <div className="text-lg font-bold text-green-600">
+                          R$ {(product.prices.vista * 12 * 0.85).toFixed(2)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          30d: R$ {(product.prices.dias30 * 12 * 0.85).toFixed(2)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          90d: R$ {(product.prices.dias90 * 12 * 0.85).toFixed(2)}
+                        </div>
                       </div>
                     </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">30 dias</div>
-                      <div className="text-lg font-semibold">
-                        R$ {(product.prices.dias30 * 12 * 0.85).toFixed(2)}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">90 dias</div>
-                      <div className="text-lg font-semibold">
-                        R$ {(product.prices.dias90 * 12 * 0.85).toFixed(2)}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
+                    
+                    <div className="flex items-center justify-center gap-2 mb-3">
                       <Button
                         variant="outline"
                         size="icon"
@@ -255,43 +249,36 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
                         <Plus className="h-3 w-3" />
                       </Button>
                     </div>
+
+                    <Button 
+                      onClick={() => handleAddKit(12, kit12Quantity)}
+                      className="w-full gap-2 bg-primary hover:bg-primary/90"
+                      size="sm"
+                    >
+                      <ShoppingCart className="h-3 w-3" />
+                      Adicionar
+                    </Button>
                   </div>
 
-                  <Button 
-                    onClick={() => handleAddKit(12, kit12Quantity)}
-                    className="w-full gap-2 bg-primary hover:bg-primary/90"
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                    Adicionar ao Carrinho
-                  </Button>
-                </div>
-
-                {/* Kit 20 Unidades */}
-                <div className="bg-muted/30 rounded-lg p-4">
-                  <div className="text-sm font-medium mb-3">20 Unidades</div>
-                  <div className="grid grid-cols-3 gap-4 mb-3">
-                    <div>
-                      <div className="text-sm text-green-600 font-medium">À vista</div>
-                      <div className="text-lg font-bold text-green-600">
-                        R$ {(product.prices.vista * 20 * 0.85).toFixed(2)}
+                  {/* Kit 20 Unidades */}
+                  <div className="bg-muted/30 rounded-lg p-4">
+                    <div className="text-center mb-3">
+                      <Badge variant="outline" className="mb-2">20 Unidades</Badge>
+                      <div className="space-y-1">
+                        <div className="text-sm text-green-600 font-medium">À vista</div>
+                        <div className="text-lg font-bold text-green-600">
+                          R$ {(product.prices.vista * 20 * 0.85).toFixed(2)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          30d: R$ {(product.prices.dias30 * 20 * 0.85).toFixed(2)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          90d: R$ {(product.prices.dias90 * 20 * 0.85).toFixed(2)}
+                        </div>
                       </div>
                     </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">30 dias</div>
-                      <div className="text-lg font-semibold">
-                        R$ {(product.prices.dias30 * 20 * 0.85).toFixed(2)}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">90 dias</div>
-                      <div className="text-lg font-semibold">
-                        R$ {(product.prices.dias90 * 20 * 0.85).toFixed(2)}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
+                    
+                    <div className="flex items-center justify-center gap-2 mb-3">
                       <Button
                         variant="outline"
                         size="icon"
@@ -310,15 +297,16 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
                         <Plus className="h-3 w-3" />
                       </Button>
                     </div>
-                  </div>
 
-                  <Button 
-                    onClick={() => handleAddKit(20, kit20Quantity)}
-                    className="w-full gap-2 bg-primary hover:bg-primary/90"
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                    Adicionar ao Carrinho
-                  </Button>
+                    <Button 
+                      onClick={() => handleAddKit(20, kit20Quantity)}
+                      className="w-full gap-2 bg-primary hover:bg-primary/90"
+                      size="sm"
+                    >
+                      <ShoppingCart className="h-3 w-3" />
+                      Adicionar
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
