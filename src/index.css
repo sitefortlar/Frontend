@@ -1,73 +1,76 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Institutional Design System with Glassmorphism
+/* Institutional Design System with Military Monochromatic Palette
 All colors MUST be HSL.
 Font: Inter
-Primary: #003366 (205 100% 20%)
-Accent: #00B4D8 (194 100% 58%)
+Primary: #003366 (210 100% 20%)
+Secondary: #023B73 (209 96% 22%)
+Accent: #7EB8F2 (210 81% 72%)
+Light: #C4E2FF (209 100% 88%)
 */
 
 @layer base {
   :root {
-    /* Institutional color palette */
+    /* Military monochromatic color palette */
     --background: 0 0% 100%;
-    --foreground: 205 100% 20%;
+    --foreground: 210 100% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 205 100% 20%;
+    --card-foreground: 210 100% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 205 100% 20%;
+    --popover-foreground: 210 100% 20%;
 
-    /* Primary institutional blue */
-    --primary: 205 100% 20%;
+    /* Primary military blue */
+    --primary: 210 100% 20%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 194 100% 58%;
+    --primary-glow: 210 81% 72%;
 
-    /* Clean secondary grays */
-    --secondary: 210 11% 97%;
-    --secondary-foreground: 205 100% 20%;
+    /* Clean secondary grays with military tones */
+    --secondary: 209 100% 88%;
+    --secondary-foreground: 210 100% 20%;
 
-    --muted: 210 11% 97%;
-    --muted-foreground: 205 25% 55%;
+    --muted: 209 100% 88%;
+    --muted-foreground: 209 96% 22%;
 
     /* Bright accent blue */
-    --accent: 194 100% 58%;
+    --accent: 210 81% 72%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 20% 85%;
-    --input: 210 20% 85%;
-    --ring: 194 100% 58%;
+    --border: 209 100% 88%;
+    --input: 209 100% 88%;
+    --ring: 210 81% 72%;
 
-    /* Institutional theme colors */
-    --institutional-primary: 205 100% 20%;
-    --institutional-accent: 194 100% 58%;
-    --institutional-light: 210 11% 97%;
-    --institutional-neutral: 210 20% 85%;
-    --institutional-dark: 205 100% 15%;
+    /* Military theme colors */
+    --institutional-primary: 210 100% 20%;
+    --institutional-accent: 210 81% 72%;
+    --institutional-light: 209 100% 88%;
+    --institutional-neutral: 209 96% 22%;
+    --institutional-dark: 210 100% 15%;
 
-    /* Glass morphism effects */
+    /* Glass morphism effects with military tones */
     --glass-bg: 0 0% 100% / 0.85;
-    --glass-border: 0 0% 100% / 0.2;
-    --glass-shadow: 0 8px 32px 0 hsla(205, 100%, 20%, 0.1);
+    --glass-border: 210 81% 72% / 0.2;
+    --glass-shadow: 0 8px 32px 0 hsla(210, 100%, 20%, 0.1);
 
-    /* Professional gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(205 100% 20%) 0%, hsl(194 100% 58%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 11% 97%) 100%);
-    --gradient-glass: linear-gradient(135deg, hsla(0, 0%, 100%, 0.9) 0%, hsla(210, 11%, 97%, 0.8) 100%);
+    /* Military gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(210 100% 20%) 0%, hsl(210 81% 72%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(209 100% 88%) 100%);
+    --gradient-glass: linear-gradient(135deg, hsla(0, 0%, 100%, 0.9) 0%, hsla(209, 100%, 88%, 0.8) 100%);
 
-    /* Institutional shadows */
-    --shadow-soft: 0 2px 8px -2px hsl(205 100% 20% / 0.08);
-    --shadow-medium: 0 4px 16px -4px hsl(205 100% 20% / 0.12);
-    --shadow-glass: 0 8px 32px -8px hsl(205 100% 20% / 0.15);
-    --shadow-elevated: 0 16px 64px -12px hsl(205 100% 20% / 0.2);
+    /* Military shadows */
+    --shadow-soft: 0 2px 8px -2px hsl(210 100% 20% / 0.08);
+    --shadow-medium: 0 4px 16px -4px hsl(210 100% 20% / 0.12);
+    --shadow-glass: 0 8px 32px -8px hsl(210 100% 20% / 0.15);
+    --shadow-elevated: 0 16px 64px -12px hsl(210 100% 20% / 0.2);
 
     /* Smooth animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -76,60 +79,60 @@ Accent: #00B4D8 (194 100% 58%)
 
     --radius: 0.75rem;
 
-    /* Sidebar institutional styling */
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 205 100% 20%;
-    --sidebar-primary: 205 100% 20%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 11% 97%;
-    --sidebar-accent-foreground: 205 100% 20%;
-    --sidebar-border: 210 20% 85%;
-    --sidebar-ring: 194 100% 58%;
+    /* Sidebar military styling */
+    --sidebar-background: 210 100% 20%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 210 81% 72%;
+    --sidebar-primary-foreground: 210 100% 20%;
+    --sidebar-accent: 209 96% 22%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 209 96% 22%;
+    --sidebar-ring: 210 81% 72%;
   }
 
   .dark {
-    /* Dark mode - maintaining institutional feel */
-    --background: 205 100% 8%;
+    /* Dark mode - maintaining military feel */
+    --background: 210 100% 8%;
     --foreground: 0 0% 100%;
     
-    --card: 205 80% 12%;
+    --card: 209 96% 12%;
     --card-foreground: 0 0% 100%;
     
-    --popover: 205 80% 12%;
+    --popover: 209 96% 12%;
     --popover-foreground: 0 0% 100%;
     
-    --primary: 194 100% 58%;
-    --primary-foreground: 205 100% 8%;
+    --primary: 210 81% 72%;
+    --primary-foreground: 210 100% 8%;
     
-    --secondary: 205 20% 18%;
+    --secondary: 209 96% 18%;
     --secondary-foreground: 0 0% 100%;
     
-    --muted: 205 20% 18%;
-    --muted-foreground: 210 15% 65%;
+    --muted: 209 96% 18%;
+    --muted-foreground: 209 100% 65%;
     
-    --accent: 194 100% 58%;
-    --accent-foreground: 205 100% 8%;
+    --accent: 210 81% 72%;
+    --accent-foreground: 210 100% 8%;
     
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 205 20% 25%;
-    --input: 205 20% 25%;
-    --ring: 194 100% 58%;
+    --border: 209 96% 25%;
+    --input: 209 96% 25%;
+    --ring: 210 81% 72%;
     
-    /* Dark glass morphism */
-    --glass-bg: 205 80% 12% / 0.85;
-    --glass-border: 0 0% 100% / 0.1;
+    /* Dark glass morphism with military tones */
+    --glass-bg: 209 96% 12% / 0.85;
+    --glass-border: 210 81% 72% / 0.1;
     --glass-shadow: 0 8px 32px 0 hsla(0, 0%, 0%, 0.3);
     
-    --sidebar-background: 205 100% 8%;
+    --sidebar-background: 210 100% 8%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 194 100% 58%;
-    --sidebar-primary-foreground: 205 100% 8%;
-    --sidebar-accent: 205 20% 18%;
+    --sidebar-primary: 210 81% 72%;
+    --sidebar-primary-foreground: 210 100% 8%;
+    --sidebar-accent: 209 96% 18%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 205 20% 25%;
-    --sidebar-ring: 194 100% 58%;
+    --sidebar-border: 209 96% 25%;
+    --sidebar-ring: 210 81% 72%;
   }
 }
 
