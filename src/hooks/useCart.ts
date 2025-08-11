@@ -6,23 +6,23 @@ export const useCart = () => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const addToCart = (product: Product, size: string, priceType: PriceType) => {
+  const addToCart = (product: Product, size: string, priceType: PriceType, quantity: number = 1) => {
     const existingItemIndex = items.findIndex(
-      item => item.productId === product.id && item.size === size
+      item => item.productId === product.id && item.size === size && item.name === product.name
     );
 
     if (existingItemIndex >= 0) {
-      updateQuantity(items[existingItemIndex].id, items[existingItemIndex].quantity + 1);
+      updateQuantity(items[existingItemIndex].id, items[existingItemIndex].quantity + quantity);
     } else {
       const newItem: CartItem = {
         id: `${product.id}-${size}-${Date.now()}`,
         productId: product.id,
         name: product.name,
-        image: product.images[0] || '/api/placeholder/64/64',
+        image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=64&h=64&fit=crop",
         size,
         priceType,
         price: product.prices[priceType],
-        quantity: 1,
+        quantity,
       };
       setItems(prev => [...prev, newItem]);
     }

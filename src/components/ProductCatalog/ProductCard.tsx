@@ -10,11 +10,24 @@ import { ProductModal } from './ProductModal';
 interface ProductCardProps {
   product: Product;
   priceType: PriceType;
-  onAddToCart?: (product: Product, size: string, priceType: PriceType) => void;
+  onAddToCart?: (product: Product, size: string, priceType: PriceType, quantity?: number) => void;
 }
 
 export const ProductCard = ({ product, priceType, onAddToCart }: ProductCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Use different images based on product category for variety
+  const getProductImage = (productId: string) => {
+    const images = [
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=200&fit=crop",
+      "https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?w=300&h=200&fit=crop",
+      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop",
+      "https://images.unsplash.com/photo-1574263867128-a70d6c4d14c9?w=300&h=200&fit=crop",
+      "https://images.unsplash.com/photo-1583416750470-965b2707b8f1?w=300&h=200&fit=crop"
+    ];
+    const index = productId.charCodeAt(0) % images.length;
+    return images[index];
+  };
 
   return (
     <>
@@ -22,7 +35,7 @@ export const ProductCard = ({ product, priceType, onAddToCart }: ProductCardProp
         <CardHeader className="p-0">
           <div className="relative w-full h-48 bg-gradient-glass rounded-t-lg overflow-hidden">
             <img 
-              src={product.images[0] || `/api/placeholder/300/200`}
+              src={getProductImage(product.id)}
               alt={product.name}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
