@@ -75,11 +75,11 @@ export const CategorySidebar = ({
   };
 
   const sidebarContent = (
-    <div className="h-full flex flex-col bg-sidebar text-sidebar-foreground">
-      <div className="p-6 border-b border-sidebar-border">
+    <div className="h-full flex flex-col bg-[#003366] text-white">
+      <div className="p-6 border-b border-[#023B73]">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-sidebar-primary mb-2">FORTLAR</h1>
-          <p className="text-sidebar-accent-foreground text-sm">Utensílios de Qualidade</p>
+          <h1 className="text-3xl font-bold text-[#7EB8F2] mb-2">FORTLAR</h1>
+          <p className="text-[#C4E2FF] text-sm">Utensílios de Qualidade</p>
         </div>
       </div>
 
@@ -88,8 +88,8 @@ export const CategorySidebar = ({
           <Button
             variant={selectedCategory === null ? "default" : "ghost"}
             className={cn(
-              "w-full justify-start text-left h-auto p-3 text-sidebar-foreground hover:bg-sidebar-accent",
-              selectedCategory === null && "bg-sidebar-primary hover:bg-sidebar-primary/80 text-sidebar-primary-foreground"
+              "w-full justify-start text-left h-auto p-3 text-white hover:bg-[#023B73]",
+              selectedCategory === null && "bg-[#7EB8F2] hover:bg-[#7EB8F2]/80 text-[#003366]"
             )}
             onClick={() => {
               onCategorySelect(null);
@@ -105,8 +105,8 @@ export const CategorySidebar = ({
               <Button
                 variant="ghost"
                 className={cn(
-                  "w-full justify-between text-left h-auto p-3 text-sidebar-foreground hover:bg-sidebar-accent",
-                  selectedCategory === category.id && "bg-sidebar-primary hover:bg-sidebar-primary/80 text-sidebar-primary-foreground"
+                  "w-full justify-between text-left h-auto p-3 text-white hover:bg-[#023B73]",
+                  selectedCategory === category.id && "bg-[#7EB8F2] hover:bg-[#7EB8F2]/80 text-[#003366]"
                 )}
                 onClick={() => {
                   handleCategorySelect(category.id);
@@ -135,8 +135,8 @@ export const CategorySidebar = ({
                       variant="ghost"
                       size="sm"
                       className={cn(
-                        "w-full justify-start text-left h-auto p-2 pl-4 text-sidebar-accent-foreground hover:bg-sidebar-accent",
-                        selectedSubcategory === subcategory.id && "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/80"
+                        "w-full justify-start text-left h-auto p-2 pl-4 text-[#C4E2FF] hover:bg-[#023B73]",
+                        selectedSubcategory === subcategory.id && "bg-[#7EB8F2] text-[#003366] hover:bg-[#7EB8F2]/80"
                       )}
                       onClick={() => handleSubcategorySelect(subcategory.id)}
                     >
@@ -159,7 +159,7 @@ export const CategorySidebar = ({
           variant="default"
           size="icon"
           onClick={() => setIsMobileOpen(true)}
-          className="bg-sidebar hover:bg-sidebar-accent text-sidebar-foreground shadow-lg"
+          className="bg-[#003366] hover:bg-[#023B73] text-white shadow-lg"
         >
           <Menu className="h-4 w-4" />
         </Button>
@@ -181,7 +181,7 @@ export const CategorySidebar = ({
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsMobileOpen(false)}
-                className="text-sidebar-foreground hover:bg-sidebar-accent"
+                className="text-white hover:bg-[#023B73]"
               >
                 <X className="h-4 w-4" />
               </Button>
