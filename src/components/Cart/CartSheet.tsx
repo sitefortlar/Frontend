@@ -30,6 +30,8 @@ interface CartSheetProps {
   getTotalPrice: () => number;
   generateWhatsAppMessage: (data: CheckoutData) => string;
   onClearCart: () => void;
+  onUpdateAllItemsPriceType?: (priceType: PriceType, allProducts: any[]) => void;
+  allProducts?: any[];
 }
 
 export const CartSheet = ({
@@ -42,6 +44,8 @@ export const CartSheet = ({
   getTotalPrice,
   generateWhatsAppMessage,
   onClearCart,
+  onUpdateAllItemsPriceType,
+  allProducts = [],
 }: CartSheetProps) => {
   const { toast } = useToast();
   const [checkoutData, setCheckoutData] = useState<CheckoutData>({
@@ -178,9 +182,13 @@ export const CartSheet = ({
 
                 <div>
                   <Label className="text-sm font-medium">Forma de Pagamento</Label>
-                  <Select value={checkoutData.paymentType} onValueChange={(value: PriceType) => 
-                    setCheckoutData(prev => ({ ...prev, paymentType: value }))
-                  }>
+                  <Select value={checkoutData.paymentType} onValueChange={(value: PriceType) => {
+                    setCheckoutData(prev => ({ ...prev, paymentType: value }));
+                    // Atualizar preços de todos os itens quando mudar a forma de pagamento
+                    if (onUpdateAllItemsPriceType) {
+                      onUpdateAllItemsPriceType(value, allProducts);
+                    }
+                  }}>
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>

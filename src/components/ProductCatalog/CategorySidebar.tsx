@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -46,16 +45,23 @@ export const CategorySidebar = ({
     setExpandedCategories(newExpanded);
   };
 
+  const handleCategoryClick = (categoryId: string) => {
+    // Apenas expandir/retrair categoria sem selecionar
+    toggleCategory(categoryId);
+  };
+
   const handleCategorySelect = (categoryId: string) => {
+    // Selecionar categoria
     if (selectedCategory === categoryId) {
       onCategorySelect(null);
       onSubcategorySelect(null);
     } else {
       onCategorySelect(categoryId);
       onSubcategorySelect(null);
-      if (!expandedCategories.has(categoryId)) {
-        toggleCategory(categoryId);
-      }
+      // Expandir categoria quando selecionada
+      const newExpanded = new Set(expandedCategories);
+      newExpanded.add(categoryId);
+      setExpandedCategories(newExpanded);
     }
   };
 
@@ -69,11 +75,11 @@ export const CategorySidebar = ({
   };
 
   const sidebarContent = (
-    <div className="h-full flex flex-col bg-[hsl(210,100%,20%)] text-white">
-      <div className="p-6 border-b border-[hsl(209,96%,22%)]">
+    <div className="h-full flex flex-col bg-[#003366] text-white">
+      <div className="p-6 border-b border-[#023B73]">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-[hsl(210,81%,72%)] mb-2">FORTLAR</h1>
-          <p className="text-[hsl(209,100%,88%)] text-sm">Utensílios de Qualidade</p>
+          <h1 className="text-3xl font-bold text-[#7EB8F2] mb-2">FORTLAR</h1>
+          <p className="text-[#C4E2FF] text-sm">Utensílios de Qualidade</p>
         </div>
       </div>
 
@@ -82,8 +88,8 @@ export const CategorySidebar = ({
           <Button
             variant={selectedCategory === null ? "default" : "ghost"}
             className={cn(
-              "w-full justify-start text-left h-auto p-3 text-white hover:bg-[hsl(209,96%,22%)]",
-              selectedCategory === null && "bg-[hsl(210,81%,72%)] hover:bg-[hsl(210,81%,65%)] text-[hsl(210,100%,20%)]"
+              "w-full justify-start text-left h-auto p-3 text-white hover:bg-[#023B73]",
+              selectedCategory === null && "bg-[#7EB8F2] hover:bg-[#7EB8F2]/80 text-[#003366]"
             )}
             onClick={() => {
               onCategorySelect(null);
@@ -96,27 +102,37 @@ export const CategorySidebar = ({
 
           {categories.map((category) => (
             <div key={category.id} className="space-y-1">
-              <Button
-                variant="ghost"
-                className={cn(
-                  "w-full justify-between text-left h-auto p-3 text-white hover:bg-[hsl(209,96%,22%)]",
-                  selectedCategory === category.id && "bg-[hsl(210,81%,72%)] hover:bg-[hsl(210,81%,65%)] text-[hsl(210,100%,20%)]"
-                )}
-                onClick={() => handleCategorySelect(category.id)}
-              >
-                <div className="flex items-center gap-2">
-                  {(() => {
-                    const IconComponent = getCategoryIcon(category.id);
-                    return <IconComponent className="h-4 w-4" />;
-                  })()}
-                  <span className="font-medium">{category.name}</span>
-                </div>
-                {expandedCategories.has(category.id) ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronRight className="h-4 w-4" />
-                )}
-              </Button>
+              <div className="flex">
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "flex-1 justify-start text-left h-auto p-3 text-white hover:bg-[#023B73]",
+                    selectedCategory === category.id && "bg-[#7EB8F2] hover:bg-[#7EB8F2]/80 text-[#003366]"
+                  )}
+                  onClick={() => handleCategorySelect(category.id)}
+                >
+                  <div className="flex items-center gap-2">
+                    {(() => {
+                      const IconComponent = getCategoryIcon(category.id);
+                      return <IconComponent className="h-4 w-4" />;
+                    })()}
+                    <span className="font-medium">{category.name}</span>
+                  </div>
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-auto w-10 p-3 text-white hover:bg-[#023B73]"
+                  onClick={() => handleCategoryClick(category.id)}
+                >
+                  {expandedCategories.has(category.id) ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
 
               {expandedCategories.has(category.id) && (
                 <div className="ml-4 space-y-1 animate-fade-in">
@@ -126,8 +142,8 @@ export const CategorySidebar = ({
                       variant="ghost"
                       size="sm"
                       className={cn(
-                        "w-full justify-start text-left h-auto p-2 pl-4 text-[hsl(209,100%,88%)] hover:bg-[hsl(209,96%,22%)]",
-                        selectedSubcategory === subcategory.id && "bg-[hsl(210,81%,72%)] text-[hsl(210,100%,20%)] hover:bg-[hsl(210,81%,65%)]"
+                        "w-full justify-start text-left h-auto p-2 pl-4 text-[#C4E2FF] hover:bg-[#023B73]",
+                        selectedSubcategory === subcategory.id && "bg-[#7EB8F2] text-[#003366] hover:bg-[#7EB8F2]/80"
                       )}
                       onClick={() => handleSubcategorySelect(subcategory.id)}
                     >
@@ -150,7 +166,7 @@ export const CategorySidebar = ({
           variant="default"
           size="icon"
           onClick={() => setIsMobileOpen(true)}
-          className="bg-[hsl(210,100%,20%)] hover:bg-[hsl(209,96%,22%)] text-white shadow-lg"
+          className="bg-[#003366] hover:bg-[#023B73] text-white shadow-lg"
         >
           <Menu className="h-4 w-4" />
         </Button>
@@ -172,7 +188,7 @@ export const CategorySidebar = ({
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsMobileOpen(false)}
-                className="text-white hover:bg-[hsl(209,96%,22%)]"
+                className="text-white hover:bg-[#023B73]"
               >
                 <X className="h-4 w-4" />
               </Button>

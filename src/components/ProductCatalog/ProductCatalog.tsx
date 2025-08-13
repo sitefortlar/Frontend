@@ -9,197 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { ShoppingCart } from 'lucide-react';
 import { CartSheet } from '@/components/Cart/CartSheet';
 
-const mockProducts: Product[] = [
-  {
-    id: '1',
-    name: 'Panela de Pressão Inox 6L',
-    category: 'panelas-pressao',
-    subcategory: 'inox',
-    description: 'Panela de pressão em aço inoxidável de alta qualidade',
-    sizes: ['6L', '8L'],
-    defaultSize: '6L',
-    prices: { vista: 199.90, dias30: 219.90, dias90: 239.90 },
-    isKit: false,
-    images: ['https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop'],
-    icon: 'ChefHat',
-  },
-  {
-    id: '2',
-    name: 'Jogo de Panelas Antiaderente 5 Peças',
-    category: 'panelas-cacarolas',
-    subcategory: 'antiaderente',
-    description: 'Conjunto completo de panelas com revestimento antiaderente',
-    sizes: ['P', 'M', 'G'],
-    defaultSize: 'M',
-    prices: { vista: 299.00, dias30: 329.00, dias90: 359.00 },
-    isKit: true,
-    images: ['https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?w=400&h=400&fit=crop'],
-    icon: 'Package',
-  },
-  {
-    id: '3',
-    name: 'Caldeirão de Ferro Fundido 10L',
-    category: 'caldeiroes',
-    subcategory: 'ferro-fundido',
-    description: 'Caldeirão resistente em ferro fundido para cozimento lento',
-    sizes: ['10L', '12L'],
-    defaultSize: '10L',
-    prices: { vista: 349.50, dias30: 379.50, dias90: 409.50 },
-    isKit: false,
-    images: ['https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop'],
-    icon: 'Pot',
-  },
-  {
-    id: '4',
-    name: 'Canecão Esmaltado 1.5L',
-    category: 'canecoes-fervedores',
-    subcategory: 'esmaltado',
-    description: 'Canecão esmaltado ideal para ferver água e preparar bebidas',
-    sizes: ['1.5L', '2L'],
-    defaultSize: '1.5L',
-    prices: { vista: 49.99, dias30: 54.99, dias90: 59.99 },
-    isKit: false,
-    images: ['https://images.unsplash.com/photo-1574263867128-a70d6c4d14c9?w=400&h=400&fit=crop'],
-    icon: 'Coffee',
-  },
-  {
-    id: '5',
-    name: 'Frigideira Antiaderente 24cm',
-    category: 'frigideiras',
-    subcategory: 'antiaderente',
-    description: 'Frigideira com excelente revestimento antiaderente',
-    sizes: ['24cm', '28cm'],
-    defaultSize: '24cm',
-    prices: { vista: 79.90, dias30: 87.90, dias90: 95.90 },
-    isKit: false,
-    images: ['https://images.unsplash.com/photo-1583416750470-965b2707b8f1?w=400&h=400&fit=crop'],
-    icon: 'CircleDot',
-  },
-  {
-    id: '6',
-    name: 'Forma de Bolo Redonda 26cm',
-    category: 'formas-assadeiras',
-    subcategory: 'redonda',
-    description: 'Forma redonda perfeita para bolos e tortas',
-    sizes: ['26cm', '28cm'],
-    defaultSize: '26cm',
-    prices: { vista: 59.00, dias30: 64.90, dias90: 69.90 },
-    isKit: false,
-    images: ['https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop'],
-    icon: 'RectangleHorizontal',
-  },
-  {
-    id: '7',
-    name: 'Panela de Pressão Inox 4,5L',
-    category: 'panelas-pressao',
-    subcategory: 'inox',
-    description: 'Panela de pressão compacta em aço inoxidável',
-    sizes: ['4.5L'],
-    defaultSize: '4.5L',
-    prices: { vista: 179.90, dias30: 197.90, dias90: 215.90 },
-    isKit: false,
-    images: ['https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?w=400&h=400&fit=crop'],
-    icon: 'ChefHat',
-  },
-  {
-    id: '8',
-    name: 'Jogo de Panelas Inox 3 Peças',
-    category: 'panelas-cacarolas',
-    subcategory: 'inox',
-    description: 'Conjunto de panelas em aço inoxidável durável',
-    sizes: ['P', 'M'],
-    defaultSize: 'P',
-    prices: { vista: 349.00, dias30: 384.00, dias90: 419.00 },
-    isKit: true,
-    images: ['https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop'],
-    icon: 'Package',
-  },
-  {
-    id: '9',
-    name: 'Caldeirão Esmaltado 7L',
-    category: 'caldeiroes',
-    subcategory: 'esmaltado',
-    description: 'Caldeirão esmaltado de alta qualidade',
-    sizes: ['7L'],
-    defaultSize: '7L',
-    prices: { vista: 299.50, dias30: 329.50, dias90: 359.50 },
-    isKit: false,
-    images: ['https://images.unsplash.com/photo-1574263867128-a70d6c4d14c9?w=400&h=400&fit=crop'],
-    icon: 'Pot',
-  },
-  {
-    id: '10',
-    name: 'Canecão de Alumínio 1L',
-    category: 'canecoes-fervedores',
-    subcategory: 'aluminio',
-    description: 'Canecão leve e resistente em alumínio',
-    sizes: ['1L'],
-    defaultSize: '1L',
-    prices: { vista: 29.99, dias30: 32.99, dias90: 35.99 },
-    isKit: false,
-    images: ['https://images.unsplash.com/photo-1583416750470-965b2707b8f1?w=400&h=400&fit=crop'],
-    icon: 'Coffee',
-  },
-  {
-    id: '11',
-    name: 'Frigideira Wok Antiaderente 32cm',
-    category: 'frigideiras',
-    subcategory: 'wok',
-    description: 'Frigideira wok grande para refogados e frituras',
-    sizes: ['32cm'],
-    defaultSize: '32cm',
-    prices: { vista: 99.90, dias30: 109.90, dias90: 119.90 },
-    isKit: false,
-    images: ['https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop'],
-    icon: 'CircleDot',
-  },
-  {
-    id: '12',
-    name: 'Assadeira Retangular 30cm',
-    category: 'formas-assadeiras',
-    subcategory: 'retangular',
-    description: 'Assadeira retangular para bolos e assados',
-    sizes: ['30cm'],
-    defaultSize: '30cm',
-    prices: { vista: 69.00, dias30: 75.90, dias90: 82.90 },
-    isKit: false,
-    images: ['https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?w=400&h=400&fit=crop'],
-    icon: 'RectangleHorizontal',
-  },
-];
-
-const mockCategories: Category[] = [
-  {
-    id: 'panelas-pressao',
-    name: 'Panelas de Pressão',
-    subcategories: [{ id: 'inox', name: 'Inox' }, { id: 'aluminio', name: 'Alumínio' }],
-  },
-  {
-    id: 'panelas-cacarolas',
-    name: 'Panelas e Caçarolas',
-    subcategories: [{ id: 'antiaderente', name: 'Antiaderente' }, { id: 'inox', name: 'Inox' }],
-  },
-  {
-    id: 'caldeiroes',
-    name: 'Caldeirões',
-    subcategories: [{ id: 'ferro-fundido', name: 'Ferro Fundido' }, { id: 'esmaltado', name: 'Esmaltado' }],
-  },
-  {
-    id: 'canecoes-fervedores',
-    name: 'Canecões e Fervedores',
-    subcategories: [{ id: 'aluminio', name: 'Alumínio' }, { id: 'esmaltado', name: 'Esmaltado' }],
-  },
-  {
-    id: 'frigideiras',
-    name: 'Frigideiras',
-    subcategories: [{ id: 'antiaderente', name: 'Antiaderente' }, { id: 'wok', name: 'Wok' }],
-  },
-  {
-    id: 'formas-assadeiras',
-    name: 'Formas e Assadeiras',
-    subcategories: [{ id: 'redonda', name: 'Redonda' }, { id: 'retangular', name: 'Retangular' }],
-  },
-];
+// Importar produtos dos dados reais
+import { products as realProducts, categories as realCategories } from '@/data/products';
 
 interface ProductGridProps {
   products: Product[];
@@ -223,15 +34,15 @@ const ProductGrid = ({ products, priceType, onAddToCart }: ProductGridProps) => 
 };
 
 export const ProductCatalog = () => {
-  const [products, setProducts] = useState<Product[]>(mockProducts);
-  const [categories, setCategories] = useState<Category[]>(mockCategories);
+  const [products, setProducts] = useState<Product[]>(realProducts);
+  const [categories, setCategories] = useState<Category[]>(realCategories);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
   const [priceType, setPriceType] = useState<PriceType>('vista');
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [showKitsOnly, setShowKitsOnly] = useState(false);
   const [sortBy, setSortBy] = useState<'price-high' | 'price-low' | 'name'>('name');
-  const { items, addToCart, removeFromCart, updateQuantity, updatePriceType, getTotalPrice, getItemCount, clearCart, generateWhatsAppMessage, isDrawerOpen, setIsDrawerOpen } = useCart();
+  const { items, addToCart, removeFromCart, updateQuantity, updatePriceType, updateAllItemsPriceType, getTotalPrice, getItemCount, clearCart, generateWhatsAppMessage, isDrawerOpen, setIsDrawerOpen } = useCart();
 
   const filterProducts = useCallback(() => {
     let filtered = products;
@@ -341,6 +152,8 @@ export const ProductCatalog = () => {
         onRemoveItem={removeFromCart}
         onUpdateQuantity={updateQuantity}
         onUpdatePriceType={updatePriceType}
+        onUpdateAllItemsPriceType={updateAllItemsPriceType}
+        allProducts={products}
         getTotalPrice={getTotalPrice}
         generateWhatsAppMessage={generateWhatsAppMessage}
         onClearCart={clearCart}

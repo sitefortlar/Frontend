@@ -55,6 +55,26 @@ export const useCart = () => {
     );
   };
 
+  const updateAllItemsPriceType = (priceType: PriceType, allProducts: Product[]) => {
+    setItems(prev =>
+      prev.map(item => {
+        // Encontrar o produto original para obter os preços corretos
+        const originalProduct = allProducts.find(p => p.id === item.productId);
+        if (originalProduct) {
+          return {
+            ...item,
+            priceType,
+            price: originalProduct.prices[priceType]
+          };
+        }
+        return {
+          ...item,
+          priceType
+        };
+      })
+    );
+  };
+
   const getTotalPrice = () => {
     return items.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
@@ -99,6 +119,7 @@ export const useCart = () => {
     removeFromCart,
     updateQuantity,
     updatePriceType,
+    updateAllItemsPriceType,
     getTotalPrice,
     getItemCount,
     clearCart,
