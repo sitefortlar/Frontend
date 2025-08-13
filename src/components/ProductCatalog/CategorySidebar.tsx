@@ -102,37 +102,30 @@ export const CategorySidebar = ({
 
           {categories.map((category) => (
             <div key={category.id} className="space-y-1">
-              <div className="flex">
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "flex-1 justify-start text-left h-auto p-3 text-white hover:bg-[#023B73]",
-                    selectedCategory === category.id && "bg-[#7EB8F2] hover:bg-[#7EB8F2]/80 text-[#003366]"
-                  )}
-                  onClick={() => handleCategorySelect(category.id)}
-                >
-                  <div className="flex items-center gap-2">
-                    {(() => {
-                      const IconComponent = getCategoryIcon(category.id);
-                      return <IconComponent className="h-4 w-4" />;
-                    })()}
-                    <span className="font-medium">{category.name}</span>
-                  </div>
-                </Button>
-                
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-auto w-10 p-3 text-white hover:bg-[#023B73]"
-                  onClick={() => handleCategoryClick(category.id)}
-                >
-                  {expandedCategories.has(category.id) ? (
-                    <ChevronDown className="h-4 w-4" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "w-full justify-between text-left h-auto p-3 text-white hover:bg-[#023B73]",
+                  selectedCategory === category.id && "bg-[#7EB8F2] hover:bg-[#7EB8F2]/80 text-[#003366]"
+                )}
+                onClick={() => {
+                  handleCategorySelect(category.id);
+                  handleCategoryClick(category.id);
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  {(() => {
+                    const IconComponent = getCategoryIcon(category.id);
+                    return <IconComponent className="h-4 w-4" />;
+                  })()}
+                  <span className="font-medium">{category.name}</span>
+                </div>
+                {expandedCategories.has(category.id) ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </Button>
 
               {expandedCategories.has(category.id) && (
                 <div className="ml-4 space-y-1 animate-fade-in">
