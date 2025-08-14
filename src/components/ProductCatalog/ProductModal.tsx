@@ -24,20 +24,16 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
   const [kit20Quantity, setKit20Quantity] = useState(1);
 
   const handleAddUnit = () => {
-    onAddToCart?.(product, selectedSize, 'vista', unitQuantity);
+    onAddToCart?.(product, selectedSize, 'avista', unitQuantity);
   };
 
-  const handleAddKit = (kitSize: number, quantity: number) => {
+  const handleAddKit = (kitData: any, quantity: number) => {
     const kitProduct = {
       ...product,
-      name: `${product.name} - Kit ${kitSize} Unidades`,
-      prices: {
-        vista: product.prices.vista * kitSize * 0.85,
-        dias30: product.prices.dias30 * kitSize * 0.85,
-        dias90: product.prices.dias90 * kitSize * 0.85,
-      }
+      name: `${product.name} - Kit ${kitData.units} Unidades`,
+      prices: kitData.prices
     };
-    onAddToCart?.(kitProduct, selectedSize, 'vista', quantity);
+    onAddToCart?.(kitProduct, selectedSize, 'avista', quantity);
   };
 
   return (
@@ -86,23 +82,29 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
               <h3 className="text-xl font-semibold border-b pb-2">Compra Unitária</h3>
               
               <div className="bg-muted/30 rounded-lg p-4">
-                <div className="grid grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-4 gap-4 mb-4">
                   <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
                     <div className="text-sm text-green-600 font-medium">À vista</div>
                     <div className="text-xl font-bold text-green-600">
-                      R$ {product.prices.vista.toFixed(2)}
+                      R$ {product.prices.avista.toFixed(2)}
                     </div>
                   </div>
                   <div className="text-center p-3 bg-gray-50 rounded-lg border">
-                    <div className="text-sm text-muted-foreground">30 dias</div>
+                    <div className="text-sm text-muted-foreground">2x</div>
                     <div className="text-xl font-semibold">
-                      R$ {product.prices.dias30.toFixed(2)}
+                      R$ {product.prices['2x'].toFixed(2)}
                     </div>
                   </div>
                   <div className="text-center p-3 bg-gray-50 rounded-lg border">
-                    <div className="text-sm text-muted-foreground">90 dias</div>
+                    <div className="text-sm text-muted-foreground">4x</div>
                     <div className="text-xl font-semibold">
-                      R$ {product.prices.dias90.toFixed(2)}
+                      R$ {product.prices['4x'].toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="text-center p-3 bg-gray-50 rounded-lg border">
+                    <div className="text-sm text-muted-foreground">10x</div>
+                    <div className="text-xl font-semibold">
+                      R$ {product.prices['10x'].toFixed(2)}
                     </div>
                   </div>
                 </div>
@@ -159,154 +161,74 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
             </div>
 
             {/* Kits Available */}
-            {product.isKit && (
+            {product.kits && product.kits.length > 0 && (
               <div className="space-y-4">
                 <h3 className="text-xl font-semibold border-b pb-2">Kits Disponíveis</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Kit 6 Unidades */}
-                  <div className="bg-muted/30 rounded-lg p-4">
-                    <div className="text-center mb-3">
-                      <Badge variant="outline" className="mb-2">6 Unidades</Badge>
-                      <div className="space-y-1">
-                        <div className="text-sm text-green-600 font-medium">À vista</div>
-                        <div className="text-lg font-bold text-green-600">
-                          R$ {(product.prices.vista * 6 * 0.85).toFixed(2)}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          30d: R$ {(product.prices.dias30 * 6 * 0.85).toFixed(2)}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          90d: R$ {(product.prices.dias90 * 6 * 0.85).toFixed(2)}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-center gap-2 mb-3">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => setKit6Quantity(Math.max(1, kit6Quantity - 1))}
-                      >
-                        <Minus className="h-3 w-3" />
-                      </Button>
-                      <span className="w-8 text-center text-sm font-medium">{kit6Quantity}</span>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => setKit6Quantity(kit6Quantity + 1)}
-                      >
-                        <Plus className="h-3 w-3" />
-                      </Button>
-                    </div>
-
-                    <Button 
-                      onClick={() => handleAddKit(6, kit6Quantity)}
-                      className="w-full gap-2 bg-primary hover:bg-primary/90"
-                      size="sm"
-                    >
-                      <ShoppingCart className="h-3 w-3" />
-                      Adicionar
-                    </Button>
-                  </div>
-
-                  {/* Kit 12 Unidades */}
-                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                    <div className="text-center mb-3">
-                      <Badge className="bg-blue-600 text-white mb-2">Mais Vendido - 12 Unidades</Badge>
-                      <div className="space-y-1">
-                        <div className="text-sm text-green-600 font-medium">À vista</div>
-                        <div className="text-lg font-bold text-green-600">
-                          R$ {(product.prices.vista * 12 * 0.85).toFixed(2)}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          30d: R$ {(product.prices.dias30 * 12 * 0.85).toFixed(2)}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          90d: R$ {(product.prices.dias90 * 12 * 0.85).toFixed(2)}
+                  {product.kits.map((kit) => (
+                    <div key={kit.id} className={`${kit.popular ? 'bg-blue-50 border-2 border-blue-200' : 'bg-muted/30'} rounded-lg p-4`}>
+                      <div className="text-center mb-3">
+                        <Badge className={kit.popular ? "bg-blue-600 text-white mb-2" : "variant-outline mb-2"}>
+                          {kit.popular ? `Mais Vendido - ${kit.units} Unidades` : `${kit.units} Unidades`}
+                        </Badge>
+                        <div className="space-y-1">
+                          <div className="text-sm text-green-600 font-medium">À vista</div>
+                          <div className="text-lg font-bold text-green-600">
+                            R$ {kit.prices.avista.toFixed(2)}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            2x: R$ {kit.prices['2x'].toFixed(2)}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            4x: R$ {kit.prices['4x'].toFixed(2)}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            10x: R$ {kit.prices['10x'].toFixed(2)}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-center gap-2 mb-3">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => setKit12Quantity(Math.max(1, kit12Quantity - 1))}
-                      >
-                        <Minus className="h-3 w-3" />
-                      </Button>
-                      <span className="w-8 text-center text-sm font-medium">{kit12Quantity}</span>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => setKit12Quantity(kit12Quantity + 1)}
-                      >
-                        <Plus className="h-3 w-3" />
-                      </Button>
-                    </div>
-
-                    <Button 
-                      onClick={() => handleAddKit(12, kit12Quantity)}
-                      className="w-full gap-2 bg-primary hover:bg-primary/90"
-                      size="sm"
-                    >
-                      <ShoppingCart className="h-3 w-3" />
-                      Adicionar
-                    </Button>
-                  </div>
-
-                  {/* Kit 20 Unidades */}
-                  <div className="bg-muted/30 rounded-lg p-4">
-                    <div className="text-center mb-3">
-                      <Badge variant="outline" className="mb-2">20 Unidades</Badge>
-                      <div className="space-y-1">
-                        <div className="text-sm text-green-600 font-medium">À vista</div>
-                        <div className="text-lg font-bold text-green-600">
-                          R$ {(product.prices.vista * 20 * 0.85).toFixed(2)}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          30d: R$ {(product.prices.dias30 * 20 * 0.85).toFixed(2)}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          90d: R$ {(product.prices.dias90 * 20 * 0.85).toFixed(2)}
-                        </div>
+                      
+                      <div className="flex items-center justify-center gap-2 mb-3">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => {
+                            if (kit.units === 6) setKit6Quantity(Math.max(1, kit6Quantity - 1));
+                            if (kit.units === 12) setKit12Quantity(Math.max(1, kit12Quantity - 1));
+                            if (kit.units === 20) setKit20Quantity(Math.max(1, kit20Quantity - 1));
+                          }}
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <span className="w-8 text-center text-sm font-medium">
+                          {kit.units === 6 ? kit6Quantity : kit.units === 12 ? kit12Quantity : kit20Quantity}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => {
+                            if (kit.units === 6) setKit6Quantity(kit6Quantity + 1);
+                            if (kit.units === 12) setKit12Quantity(kit12Quantity + 1);
+                            if (kit.units === 20) setKit20Quantity(kit20Quantity + 1);
+                          }}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
                       </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-center gap-2 mb-3">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => setKit20Quantity(Math.max(1, kit20Quantity - 1))}
-                      >
-                        <Minus className="h-3 w-3" />
-                      </Button>
-                      <span className="w-8 text-center text-sm font-medium">{kit20Quantity}</span>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => setKit20Quantity(kit20Quantity + 1)}
-                      >
-                        <Plus className="h-3 w-3" />
-                      </Button>
-                    </div>
 
-                    <Button 
-                      onClick={() => handleAddKit(20, kit20Quantity)}
-                      className="w-full gap-2 bg-primary hover:bg-primary/90"
-                      size="sm"
-                    >
-                      <ShoppingCart className="h-3 w-3" />
-                      Adicionar
-                    </Button>
-                  </div>
+                      <Button 
+                        onClick={() => handleAddKit(kit, kit.units === 6 ? kit6Quantity : kit.units === 12 ? kit12Quantity : kit20Quantity)}
+                        className="w-full gap-2 bg-primary hover:bg-primary/90"
+                        size="sm"
+                      >
+                        <ShoppingCart className="h-3 w-3" />
+                        Adicionar
+                      </Button>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
