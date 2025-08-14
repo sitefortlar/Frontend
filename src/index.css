@@ -5,72 +5,72 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Institutional Design System with Military Monochromatic Palette
+/* New Design System with Custom Palette
 All colors MUST be HSL.
 Font: Inter
-Primary: #003366 (210 100% 20%)
-Secondary: #023B73 (209 96% 22%)
-Accent: #7EB8F2 (210 81% 72%)
-Light: #C4E2FF (209 100% 88%)
+Primary: #0A455C (197 72% 20%)
+Dark: #10171D (206 29% 9%)
+Light: #BBD5E5 (207 46% 80%)
+White: #FDFFFF (180 100% 99%)
 */
 
 @layer base {
   :root {
-    /* Military monochromatic color palette */
-    --background: 0 0% 100%;
-    --foreground: 210 100% 20%;
+    /* New color palette */
+    --background: 180 100% 99%;
+    --foreground: 206 29% 9%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 210 100% 20%;
+    --card: 180 100% 99%;
+    --card-foreground: 206 29% 9%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 210 100% 20%;
+    --popover: 180 100% 99%;
+    --popover-foreground: 206 29% 9%;
 
-    /* Primary military blue */
-    --primary: 210 100% 20%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 210 81% 72%;
+    /* Primary teal blue */
+    --primary: 197 72% 20%;
+    --primary-foreground: 180 100% 99%;
+    --primary-glow: 207 46% 80%;
 
-    /* Clean secondary grays with military tones */
-    --secondary: 209 100% 88%;
-    --secondary-foreground: 210 100% 20%;
+    /* Clean secondary */
+    --secondary: 207 46% 80%;
+    --secondary-foreground: 206 29% 9%;
 
-    --muted: 209 100% 88%;
-    --muted-foreground: 209 96% 22%;
+    --muted: 207 46% 80%;
+    --muted-foreground: 197 72% 20%;
 
-    /* Bright accent blue */
-    --accent: 210 81% 72%;
-    --accent-foreground: 0 0% 100%;
+    /* Light accent */
+    --accent: 207 46% 80%;
+    --accent-foreground: 206 29% 9%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 180 100% 99%;
 
-    --border: 209 100% 88%;
-    --input: 209 100% 88%;
-    --ring: 210 81% 72%;
+    --border: 207 46% 80%;
+    --input: 207 46% 80%;
+    --ring: 197 72% 20%;
 
-    /* Military theme colors */
-    --institutional-primary: 210 100% 20%;
-    --institutional-accent: 210 81% 72%;
-    --institutional-light: 209 100% 88%;
-    --institutional-neutral: 209 96% 22%;
-    --institutional-dark: 210 100% 15%;
+    /* Theme colors */
+    --institutional-primary: 197 72% 20%;
+    --institutional-dark: 206 29% 9%;
+    --institutional-light: 207 46% 80%;
+    --institutional-white: 180 100% 99%;
 
-    /* Glass morphism effects with military tones */
-    --glass-bg: 0 0% 100% / 0.85;
-    --glass-border: 210 81% 72% / 0.2;
-    --glass-shadow: 0 8px 32px 0 hsla(210, 100%, 20%, 0.1);
+    /* Glass morphism effects */
+    --glass-bg: 180 100% 99% / 0.85;
+    --glass-border: 207 46% 80% / 0.2;
+    --glass-shadow: 0 8px 32px 0 hsla(206, 29%, 9%, 0.1);
 
-    /* Military gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(210 100% 20%) 0%, hsl(210 81% 72%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(209 100% 88%) 100%);
-    --gradient-glass: linear-gradient(135deg, hsla(0, 0%, 100%, 0.9) 0%, hsla(209, 100%, 88%, 0.8) 100%);
+    /* New gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(197 72% 20%) 0%, hsl(206 29% 9%) 100%);
+    --gradient-sidebar: linear-gradient(180deg, hsl(197 72% 20%) 0%, hsl(206 29% 9%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(180 100% 99%) 0%, hsl(207 46% 80%) 100%);
+    --gradient-glass: linear-gradient(135deg, hsla(180, 100%, 99%, 0.9) 0%, hsla(207, 46%, 80%, 0.8) 100%);
 
-    /* Military shadows */
-    --shadow-soft: 0 2px 8px -2px hsl(210 100% 20% / 0.08);
-    --shadow-medium: 0 4px 16px -4px hsl(210 100% 20% / 0.12);
-    --shadow-glass: 0 8px 32px -8px hsl(210 100% 20% / 0.15);
-    --shadow-elevated: 0 16px 64px -12px hsl(210 100% 20% / 0.2);
+    /* Shadows */
+    --shadow-soft: 0 2px 8px -2px hsl(206 29% 9% / 0.08);
+    --shadow-medium: 0 4px 16px -4px hsl(206 29% 9% / 0.12);
+    --shadow-glass: 0 8px 32px -8px hsl(206 29% 9% / 0.15);
+    --shadow-elevated: 0 16px 64px -12px hsl(206 29% 9% / 0.2);
 
     /* Smooth animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -79,60 +79,60 @@ Light: #C4E2FF (209 100% 88%)
 
     --radius: 0.75rem;
 
-    /* Sidebar military styling */
-    --sidebar-background: 210 100% 20%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 210 81% 72%;
-    --sidebar-primary-foreground: 210 100% 20%;
-    --sidebar-accent: 209 96% 22%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 209 96% 22%;
-    --sidebar-ring: 210 81% 72%;
+    /* Sidebar styling with gradient */
+    --sidebar-background: 197 72% 20%;
+    --sidebar-foreground: 180 100% 99%;
+    --sidebar-primary: 207 46% 80%;
+    --sidebar-primary-foreground: 206 29% 9%;
+    --sidebar-accent: 206 29% 9%;
+    --sidebar-accent-foreground: 180 100% 99%;
+    --sidebar-border: 206 29% 15%;
+    --sidebar-ring: 207 46% 80%;
   }
 
   .dark {
-    /* Dark mode - maintaining military feel */
-    --background: 210 100% 8%;
-    --foreground: 0 0% 100%;
+    /* Dark mode with new palette */
+    --background: 206 29% 5%;
+    --foreground: 180 100% 99%;
     
-    --card: 209 96% 12%;
-    --card-foreground: 0 0% 100%;
+    --card: 206 29% 8%;
+    --card-foreground: 180 100% 99%;
     
-    --popover: 209 96% 12%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 206 29% 8%;
+    --popover-foreground: 180 100% 99%;
     
-    --primary: 210 81% 72%;
-    --primary-foreground: 210 100% 8%;
+    --primary: 207 46% 80%;
+    --primary-foreground: 206 29% 9%;
     
-    --secondary: 209 96% 18%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 206 29% 15%;
+    --secondary-foreground: 180 100% 99%;
     
-    --muted: 209 96% 18%;
-    --muted-foreground: 209 100% 65%;
+    --muted: 206 29% 15%;
+    --muted-foreground: 207 46% 65%;
     
-    --accent: 210 81% 72%;
-    --accent-foreground: 210 100% 8%;
+    --accent: 207 46% 80%;
+    --accent-foreground: 206 29% 9%;
     
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 180 100% 99%;
     
-    --border: 209 96% 25%;
-    --input: 209 96% 25%;
-    --ring: 210 81% 72%;
+    --border: 206 29% 20%;
+    --input: 206 29% 20%;
+    --ring: 207 46% 80%;
     
-    /* Dark glass morphism with military tones */
-    --glass-bg: 209 96% 12% / 0.85;
-    --glass-border: 210 81% 72% / 0.1;
+    /* Dark glass morphism */
+    --glass-bg: 206 29% 8% / 0.85;
+    --glass-border: 207 46% 80% / 0.1;
     --glass-shadow: 0 8px 32px 0 hsla(0, 0%, 0%, 0.3);
     
-    --sidebar-background: 210 100% 8%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 210 81% 72%;
-    --sidebar-primary-foreground: 210 100% 8%;
-    --sidebar-accent: 209 96% 18%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 209 96% 25%;
-    --sidebar-ring: 210 81% 72%;
+    --sidebar-background: 206 29% 5%;
+    --sidebar-foreground: 180 100% 99%;
+    --sidebar-primary: 207 46% 80%;
+    --sidebar-primary-foreground: 206 29% 9%;
+    --sidebar-accent: 206 29% 15%;
+    --sidebar-accent-foreground: 180 100% 99%;
+    --sidebar-border: 206 29% 20%;
+    --sidebar-ring: 207 46% 80%;
   }
 }
 

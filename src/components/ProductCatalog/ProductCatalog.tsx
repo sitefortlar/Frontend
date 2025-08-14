@@ -38,7 +38,7 @@ export const ProductCatalog = () => {
   const [categories, setCategories] = useState<Category[]>(realCategories);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
-  const [priceType, setPriceType] = useState<PriceType>('vista');
+  const [priceType, setPriceType] = useState<PriceType>('avista');
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [showKitsOnly, setShowKitsOnly] = useState(false);
   const [sortBy, setSortBy] = useState<'price-high' | 'price-low' | 'name'>('name');

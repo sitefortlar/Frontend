@@ -1,3 +1,15 @@
+export interface Kit {
+  id: string;
+  units: number;
+  prices: {
+    avista: number;
+    '2x': number;
+    '4x': number;
+    '10x': number;
+  };
+  popular?: boolean;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -5,15 +17,17 @@ export interface Product {
   subcategory: string;
   description: string;
   prices: {
-    vista: number;
-    dias30: number;
-    dias90: number;
+    avista: number;
+    '2x': number;
+    '4x': number;
+    '10x': number;
   };
   sizes: string[];
   defaultSize: string;
   isKit: boolean;
   images: string[];
   icon: string;
+  kits: Kit[];
 }
 
 export interface Category {
@@ -28,7 +42,7 @@ export interface Subcategory {
 }
 
 export type SortOption = 'price-high' | 'price-low' | 'name';
-export type PriceType = 'vista' | 'dias30' | 'dias90';
+export type PriceType = 'avista' | '2x' | '4x' | '10x';
 
 export interface FilterState {
   selectedCategory: string | null;

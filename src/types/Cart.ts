@@ -4,7 +4,7 @@ export interface CartItem {
   name: string;
   image: string;
   size: string;
-  priceType: 'vista' | 'dias30' | 'dias90';
+  priceType: 'avista' | '2x' | '4x' | '10x';
   price: number;
   quantity: number;
 }
@@ -14,5 +14,5 @@ export interface CheckoutData {
   cnpj: string;
   whatsapp: string;
   email: string;
-  paymentType: 'vista' | 'dias30' | 'dias90';
+  paymentType: 'avista' | '2x' | '4x' | '10x';
 }

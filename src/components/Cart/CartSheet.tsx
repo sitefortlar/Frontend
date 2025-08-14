@@ -53,7 +53,7 @@ export const CartSheet = ({
     cnpj: '',
     whatsapp: '',
     email: '',
-    paymentType: 'vista',
+    paymentType: 'avista',
   });
 
   const handleFinishOrder = () => {
@@ -193,9 +193,10 @@ export const CartSheet = ({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="vista">À vista</SelectItem>
-                      <SelectItem value="dias30">30 dias</SelectItem>
-                      <SelectItem value="dias90">90 dias</SelectItem>
+                      <SelectItem value="avista">À vista</SelectItem>
+                      <SelectItem value="2x">2x</SelectItem>
+                      <SelectItem value="4x">4x</SelectItem>
+                      <SelectItem value="10x">10x</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
