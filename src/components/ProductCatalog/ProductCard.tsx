@@ -68,15 +68,15 @@ export const ProductCard = ({ product, priceType, onAddToCart }: ProductCardProp
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-xs text-muted-foreground">2x:</div>
+                <div className="text-xs text-muted-foreground">30 dias:</div>
                 <div className="text-sm font-semibold">
-                  R$ {product.prices['2x'].toFixed(2)}
+                  R$ {product.prices.dias30.toFixed(2)}
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-xs text-muted-foreground">4x:</div>
+                <div className="text-xs text-muted-foreground">90 dias:</div>
                 <div className="text-sm font-semibold">
-                  R$ {product.prices['4x'].toFixed(2)}
+                  R$ {product.prices.dias90.toFixed(2)}
                 </div>
               </div>
             </div>
@@ -93,12 +93,12 @@ export const ProductCard = ({ product, priceType, onAddToCart }: ProductCardProp
                 </div>
                 <div className="text-center">
                   <div className="text-xs font-semibold">
-                    R$ {product.kits.find(k => k.units === 12)?.prices['2x'].toFixed(2) || 'N/A'}
+                    R$ {product.kits.find(k => k.units === 12)?.prices.dias30.toFixed(2) || 'N/A'}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs font-semibold">
-                    R$ {product.kits.find(k => k.units === 12)?.prices['4x'].toFixed(2) || 'N/A'}
+                    R$ {product.kits.find(k => k.units === 12)?.prices.dias90.toFixed(2) || 'N/A'}
                   </div>
                 </div>
               </div>

@@ -82,7 +82,7 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
               <h3 className="text-xl font-semibold border-b pb-2">Compra Unitária</h3>
               
               <div className="bg-muted/30 rounded-lg p-4">
-                <div className="grid grid-cols-4 gap-4 mb-4">
+                <div className="grid grid-cols-3 gap-4 mb-4">
                   <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
                     <div className="text-sm text-green-600 font-medium">À vista</div>
                     <div className="text-xl font-bold text-green-600">
@@ -90,21 +90,15 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
                     </div>
                   </div>
                   <div className="text-center p-3 bg-gray-50 rounded-lg border">
-                    <div className="text-sm text-muted-foreground">2x</div>
+                    <div className="text-sm text-muted-foreground">30 dias</div>
                     <div className="text-xl font-semibold">
-                      R$ {product.prices['2x'].toFixed(2)}
+                      R$ {product.prices.dias30.toFixed(2)}
                     </div>
                   </div>
                   <div className="text-center p-3 bg-gray-50 rounded-lg border">
-                    <div className="text-sm text-muted-foreground">4x</div>
+                    <div className="text-sm text-muted-foreground">90 dias</div>
                     <div className="text-xl font-semibold">
-                      R$ {product.prices['4x'].toFixed(2)}
-                    </div>
-                  </div>
-                  <div className="text-center p-3 bg-gray-50 rounded-lg border">
-                    <div className="text-sm text-muted-foreground">10x</div>
-                    <div className="text-xl font-semibold">
-                      R$ {product.prices['10x'].toFixed(2)}
+                      R$ {product.prices.dias90.toFixed(2)}
                     </div>
                   </div>
                 </div>
@@ -178,13 +172,10 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
                             R$ {kit.prices.avista.toFixed(2)}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            2x: R$ {kit.prices['2x'].toFixed(2)}
+                            30d: R$ {kit.prices.dias30.toFixed(2)}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            4x: R$ {kit.prices['4x'].toFixed(2)}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            10x: R$ {kit.prices['10x'].toFixed(2)}
+                            90d: R$ {kit.prices.dias90.toFixed(2)}
                           </div>
                         </div>
                       </div>

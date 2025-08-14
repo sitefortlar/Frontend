@@ -3,9 +3,8 @@ export interface Kit {
   units: number;
   prices: {
     avista: number;
-    '2x': number;
-    '4x': number;
-    '10x': number;
+    dias30: number;
+    dias90: number;
   };
   popular?: boolean;
 }
@@ -18,9 +17,8 @@ export interface Product {
   description: string;
   prices: {
     avista: number;
-    '2x': number;
-    '4x': number;
-    '10x': number;
+    dias30: number;
+    dias90: number;
   };
   sizes: string[];
   defaultSize: string;
@@ -42,7 +40,7 @@ export interface Subcategory {
 }
 
 export type SortOption = 'price-high' | 'price-low' | 'name';
-export type PriceType = 'avista' | '2x' | '4x' | '10x';
+export type PriceType = 'avista' | 'dias30' | 'dias90';
 
 export interface FilterState {
   selectedCategory: string | null;

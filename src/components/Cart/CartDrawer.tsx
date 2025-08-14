@@ -201,9 +201,8 @@ export const CartDrawer = ({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="avista">À vista</SelectItem>
-                      <SelectItem value="2x">2x</SelectItem>
-                      <SelectItem value="4x">4x</SelectItem>
-                      <SelectItem value="10x">10x</SelectItem>
+                      <SelectItem value="dias30">30 dias</SelectItem>
+                      <SelectItem value="dias90">90 dias</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

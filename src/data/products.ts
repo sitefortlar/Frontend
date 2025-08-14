@@ -75,7 +75,7 @@ export const products: Product[] = [
     category: 'panelas-pressao',
     subcategory: '4-5-litros',
     description: 'Panela de pressão em alumínio de alta qualidade com fechamento externo.',
-    prices: { avista: 119.90, '2x': 125.90, '4x': 134.30, '10x': 149.90 },
+    prices: { avista: 119.90, dias30: 134.30, dias90: 149.90 },
     sizes: ['4.5L'],
     defaultSize: '4.5L',
     isKit: false,
@@ -85,18 +85,18 @@ export const products: Product[] = [
       { 
         id: '1-6', 
         units: 6, 
-        prices: { avista: 540.00, '2x': 567.00, '4x': 604.80, '10x': 675.00 }
+        prices: { avista: 540.00, dias30: 604.80, dias90: 675.00 }
       },
       { 
         id: '1-12', 
         units: 12, 
-        prices: { avista: 1020.00, '2x': 1071.00, '4x': 1142.40, '10x': 1275.00 },
+        prices: { avista: 1020.00, dias30: 1142.40, dias90: 1275.00 },
         popular: true 
       },
       { 
         id: '1-20', 
         units: 20, 
-        prices: { avista: 1650.00, '2x': 1732.50, '4x': 1848.00, '10x': 2062.50 }
+        prices: { avista: 1650.00, dias30: 1848.00, dias90: 2062.50 }
       }
     ]
   },
@@ -106,7 +106,7 @@ export const products: Product[] = [
     category: 'panelas-pressao',
     subcategory: '7-litros',
     description: 'Panela de pressão em alumínio, ideal para família pequena.',
-    prices: { avista: 149.90, '2x': 157.40, '4x': 167.90, '10x': 187.40 },
+    prices: { avista: 149.90, dias30: 167.90, dias90: 187.40 },
     sizes: ['6L'],
     defaultSize: '6L',
     isKit: false,
@@ -116,18 +116,18 @@ export const products: Product[] = [
       { 
         id: '2-6', 
         units: 6, 
-        prices: { avista: 720.00, '2x': 756.00, '4x': 806.40, '10x': 900.00 }
+        prices: { avista: 720.00, dias30: 806.40, dias90: 900.00 }
       },
       { 
         id: '2-12', 
         units: 12, 
-        prices: { avista: 1380.00, '2x': 1449.00, '4x': 1545.60, '10x': 1725.00 },
+        prices: { avista: 1380.00, dias30: 1545.60, dias90: 1725.00 },
         popular: true 
       },
       { 
         id: '2-20', 
         units: 20, 
-        prices: { avista: 2200.00, '2x': 2310.00, '4x': 2464.00, '10x': 2750.00 }
+        prices: { avista: 2200.00, dias30: 2464.00, dias90: 2750.00 }
       }
     ]
   },
@@ -137,7 +137,7 @@ export const products: Product[] = [
     category: 'caldeiroes',
     subcategory: 'antiaderente-fort-flon',
     description: 'Caldeirão grande com revestimento antiaderente, ideal para grandes quantidades.',
-    prices: { avista: 229.90, '2x': 241.40, '4x': 257.50, '10x': 287.40 },
+    prices: { avista: 229.90, dias30: 257.50, dias90: 287.40 },
     sizes: ['20L'],
     defaultSize: '20L',
     isKit: false,
@@ -147,18 +147,18 @@ export const products: Product[] = [
       { 
         id: '3-6', 
         units: 6, 
-        prices: { avista: 1100.00, '2x': 1155.00, '4x': 1232.00, '10x': 1375.00 }
+        prices: { avista: 1100.00, dias30: 1232.00, dias90: 1375.00 }
       },
       { 
         id: '3-12', 
         units: 12, 
-        prices: { avista: 2040.00, '2x': 2142.00, '4x': 2284.80, '10x': 2550.00 },
+        prices: { avista: 2040.00, dias30: 2284.80, dias90: 2550.00 },
         popular: true 
       },
       { 
         id: '3-20', 
         units: 20, 
-        prices: { avista: 3300.00, '2x': 3465.00, '4x': 3696.00, '10x': 4125.00 }
+        prices: { avista: 3300.00, dias30: 3696.00, dias90: 4125.00 }
       }
     ]
   },
@@ -168,7 +168,7 @@ export const products: Product[] = [
     category: 'panelas-cacarolas',
     subcategory: 'super-forte-polida',
     description: 'Conjunto completo com 5 panelas da linha super forte polida.',
-    prices: { avista: 399.90, '2x': 419.90, '4x': 447.90, '10x': 499.90 },
+    prices: { avista: 399.90, dias30: 447.90, dias90: 499.90 },
     sizes: ['P', 'M', 'G'],
     defaultSize: 'M',
     isKit: true,
@@ -178,18 +178,18 @@ export const products: Product[] = [
       { 
         id: '4-6', 
         units: 6, 
-        prices: { avista: 1800.00, '2x': 1890.00, '4x': 2016.00, '10x': 2250.00 }
+        prices: { avista: 1800.00, dias30: 2016.00, dias90: 2250.00 }
       },
       { 
         id: '4-12', 
         units: 12, 
-        prices: { avista: 3360.00, '2x': 3528.00, '4x': 3763.20, '10x': 4200.00 },
+        prices: { avista: 3360.00, dias30: 3763.20, dias90: 4200.00 },
         popular: true 
       },
       { 
         id: '4-20', 
         units: 20, 
-        prices: { avista: 5400.00, '2x': 5670.00, '4x': 6048.00, '10x': 6750.00 }
+        prices: { avista: 5400.00, dias30: 6048.00, dias90: 6750.00 }
       }
     ]
   },
@@ -199,7 +199,7 @@ export const products: Product[] = [
     category: 'panelas-cacarolas',
     subcategory: 'extra-forte-polida',
     description: 'Panela de alumínio grosso para uso profissional.',
-    prices: { avista: 199.90, '2x': 209.90, '4x': 223.90, '10x': 249.90 },
+    prices: { avista: 199.90, dias30: 223.90, dias90: 249.90 },
     sizes: ['8L'],
     defaultSize: '8L',
     isKit: false,
@@ -209,18 +209,18 @@ export const products: Product[] = [
       { 
         id: '5-6', 
         units: 6, 
-        prices: { avista: 960.00, '2x': 1008.00, '4x': 1075.20, '10x': 1200.00 }
+        prices: { avista: 960.00, dias30: 1075.20, dias90: 1200.00 }
       },
       { 
         id: '5-12', 
         units: 12, 
-        prices: { avista: 1800.00, '2x': 1890.00, '4x': 2016.00, '10x': 2250.00 },
+        prices: { avista: 1800.00, dias30: 2016.00, dias90: 2250.00 },
         popular: true 
       },
       { 
         id: '5-20', 
         units: 20, 
-        prices: { avista: 2900.00, '2x': 3045.00, '4x': 3248.00, '10x': 3625.00 }
+        prices: { avista: 2900.00, dias30: 3248.00, dias90: 3625.00 }
       }
     ]
   },
@@ -230,7 +230,7 @@ export const products: Product[] = [
     category: 'frigideiras',
     subcategory: 'antiaderente-fort-flon',
     description: 'Frigideira com excelente revestimento antiaderente.',
-    prices: { avista: 279.90, '2x': 293.90, '4x': 313.50, '10x': 349.90 },
+    prices: { avista: 279.90, dias30: 313.50, dias90: 349.90 },
     sizes: ['26cm'],
     defaultSize: '26cm',
     isKit: false,
@@ -240,18 +240,18 @@ export const products: Product[] = [
       { 
         id: '6-6', 
         units: 6, 
-        prices: { avista: 1260.00, '2x': 1323.00, '4x': 1411.20, '10x': 1575.00 }
+        prices: { avista: 1260.00, dias30: 1411.20, dias90: 1575.00 }
       },
       { 
         id: '6-12', 
         units: 12, 
-        prices: { avista: 2400.00, '2x': 2520.00, '4x': 2688.00, '10x': 3000.00 },
+        prices: { avista: 2400.00, dias30: 2688.00, dias90: 3000.00 },
         popular: true 
       },
       { 
         id: '6-20', 
         units: 20, 
-        prices: { avista: 3900.00, '2x': 4095.00, '4x': 4368.00, '10x': 4875.00 }
+        prices: { avista: 3900.00, dias30: 4368.00, dias90: 4875.00 }
       }
     ]
   },
@@ -261,7 +261,7 @@ export const products: Product[] = [
     category: 'caldeiroes',
     subcategory: 'extra-forte-polida',
     description: 'Caldeirão profissional da linha hotel para grandes volumes.',
-    prices: { avista: 429.90, '2x': 451.40, '4x': 481.50, '10x': 537.40 },
+    prices: { avista: 429.90, dias30: 481.50, dias90: 537.40 },
     sizes: ['30L'],
     defaultSize: '30L',
     isKit: false,
@@ -271,18 +271,18 @@ export const products: Product[] = [
       { 
         id: '7-6', 
         units: 6, 
-        prices: { avista: 2040.00, '2x': 2142.00, '4x': 2284.80, '10x': 2550.00 }
+        prices: { avista: 2040.00, dias30: 2284.80, dias90: 2550.00 }
       },
       { 
         id: '7-12', 
         units: 12, 
-        prices: { avista: 3840.00, '2x': 4032.00, '4x': 4300.80, '10x': 4800.00 },
+        prices: { avista: 3840.00, dias30: 4300.80, dias90: 4800.00 },
         popular: true 
       },
       { 
         id: '7-20', 
         units: 20, 
-        prices: { avista: 6200.00, '2x': 6510.00, '4x': 6944.00, '10x': 7750.00 }
+        prices: { avista: 6200.00, dias30: 6944.00, dias90: 7750.00 }
       }
     ]
   },
@@ -292,7 +292,7 @@ export const products: Product[] = [
     category: 'formas-assadeiras',
     subcategory: 'redondas',
     description: 'Forma redonda clássica para bolos perfeitos.',
-    prices: { avista: 89.90, '2x': 94.40, '4x': 100.70, '10x': 112.40 },
+    prices: { avista: 89.90, dias30: 100.70, dias90: 112.40 },
     sizes: ['30cm'],
     defaultSize: '30cm',
     isKit: false,
@@ -302,18 +302,18 @@ export const products: Product[] = [
       { 
         id: '8-6', 
         units: 6, 
-        prices: { avista: 480.00, '2x': 504.00, '4x': 537.60, '10x': 600.00 }
+        prices: { avista: 480.00, dias30: 537.60, dias90: 600.00 }
       },
       { 
         id: '8-12', 
         units: 12, 
-        prices: { avista: 900.00, '2x': 945.00, '4x': 1008.00, '10x': 1125.00 },
+        prices: { avista: 900.00, dias30: 1008.00, dias90: 1125.00 },
         popular: true 
       },
       { 
         id: '8-20', 
         units: 20, 
-        prices: { avista: 1440.00, '2x': 1512.00, '4x': 1612.80, '10x': 1800.00 }
+        prices: { avista: 1440.00, dias30: 1612.80, dias90: 1800.00 }
       }
     ]
   },
@@ -323,7 +323,7 @@ export const products: Product[] = [
     category: 'formas-assadeiras',
     subcategory: 'bolo-pudim',
     description: 'Forma especial para pudins e bolos com furo central.',
-    prices: { avista: 69.90, '2x': 73.40, '4x': 78.30, '10x': 87.40 },
+    prices: { avista: 69.90, dias30: 78.30, dias90: 87.40 },
     sizes: ['22cm', '25cm'],
     defaultSize: '22cm',
     isKit: false,
@@ -333,18 +333,18 @@ export const products: Product[] = [
       { 
         id: '9-6', 
         units: 6, 
-        prices: { avista: 360.00, '2x': 378.00, '4x': 403.20, '10x': 450.00 }
+        prices: { avista: 360.00, dias30: 403.20, dias90: 450.00 }
       },
       { 
         id: '9-12', 
         units: 12, 
-        prices: { avista: 660.00, '2x': 693.00, '4x': 739.20, '10x': 825.00 },
+        prices: { avista: 660.00, dias30: 739.20, dias90: 825.00 },
         popular: true 
       },
       { 
         id: '9-20', 
         units: 20, 
-        prices: { avista: 1080.00, '2x': 1134.00, '4x': 1209.60, '10x': 1350.00 }
+        prices: { avista: 1080.00, dias30: 1209.60, dias90: 1350.00 }
       }
     ]
   },
@@ -354,7 +354,7 @@ export const products: Product[] = [
     category: 'panelas-cacarolas',
     subcategory: 'reforcada-polida',
     description: 'Tampa universal de alumínio para diversas panelas.',
-    prices: { avista: 49.90, '2x': 52.40, '4x': 55.90, '10x': 62.40 },
+    prices: { avista: 49.90, dias30: 55.90, dias90: 62.40 },
     sizes: ['32cm'],
     defaultSize: '32cm',
     isKit: false,
@@ -364,18 +364,18 @@ export const products: Product[] = [
       { 
         id: '10-6', 
         units: 6, 
-        prices: { avista: 240.00, '2x': 252.00, '4x': 268.80, '10x': 300.00 }
+        prices: { avista: 240.00, dias30: 268.80, dias90: 300.00 }
       },
       { 
         id: '10-12', 
         units: 12, 
-        prices: { avista: 450.00, '2x': 472.50, '4x': 504.00, '10x': 562.50 },
+        prices: { avista: 450.00, dias30: 504.00, dias90: 562.50 },
         popular: true 
       },
       { 
         id: '10-20', 
         units: 20, 
-        prices: { avista: 720.00, '2x': 756.00, '4x': 806.40, '10x': 900.00 }
+        prices: { avista: 720.00, dias30: 806.40, dias90: 900.00 }
       }
     ]
   },
@@ -385,7 +385,7 @@ export const products: Product[] = [
     category: 'panelas-cacarolas',
     subcategory: 'reforcada-polida',
     description: 'Escumadeira de alumínio resistente para uso profissional.',
-    prices: { avista: 29.90, '2x': 31.40, '4x': 33.50, '10x': 37.40 },
+    prices: { avista: 29.90, dias30: 33.50, dias90: 37.40 },
     sizes: ['Grande'],
     defaultSize: 'Grande',
     isKit: false,
@@ -395,18 +395,18 @@ export const products: Product[] = [
       { 
         id: '11-6', 
         units: 6, 
-        prices: { avista: 150.00, '2x': 157.50, '4x': 168.00, '10x': 187.50 }
+        prices: { avista: 150.00, dias30: 168.00, dias90: 187.50 }
       },
       { 
         id: '11-12', 
         units: 12, 
-        prices: { avista: 270.00, '2x': 283.50, '4x': 302.40, '10x': 337.50 },
+        prices: { avista: 270.00, dias30: 302.40, dias90: 337.50 },
         popular: true 
       },
       { 
         id: '11-20', 
         units: 20, 
-        prices: { avista: 420.00, '2x': 441.00, '4x': 470.40, '10x': 525.00 }
+        prices: { avista: 420.00, dias30: 470.40, dias90: 525.00 }
       }
     ]
   },
@@ -416,7 +416,7 @@ export const products: Product[] = [
     category: 'panelas-cacarolas',
     subcategory: 'reforcada-polida',
     description: 'Concha de alumínio para uso profissional em cozinhas comerciais.',
-    prices: { avista: 24.90, '2x': 26.20, '4x': 27.90, '10x': 31.20 },
+    prices: { avista: 24.90, dias30: 27.90, dias90: 31.20 },
     sizes: ['Média'],
     defaultSize: 'Média',
     isKit: false,
@@ -426,18 +426,18 @@ export const products: Product[] = [
       { 
         id: '12-6', 
         units: 6, 
-        prices: { avista: 120.00, '2x': 126.00, '4x': 134.40, '10x': 150.00 }
+        prices: { avista: 120.00, dias30: 134.40, dias90: 150.00 }
       },
       { 
         id: '12-12', 
         units: 12, 
-        prices: { avista: 216.00, '2x': 226.80, '4x': 241.92, '10x': 270.00 },
+        prices: { avista: 216.00, dias30: 241.92, dias90: 270.00 },
         popular: true 
       },
       { 
         id: '12-20', 
         units: 20, 
-        prices: { avista: 336.00, '2x': 352.80, '4x': 376.32, '10x': 420.00 }
+        prices: { avista: 336.00, dias30: 376.32, dias90: 420.00 }
       }
     ]
   },
@@ -447,7 +447,7 @@ export const products: Product[] = [
     category: 'formas-assadeiras',
     subcategory: 'retangulares',
     description: 'Assadeira retangular perfeita para assados e gratinados.',
-    prices: { avista: 129.90, '2x': 136.40, '4x': 145.50, '10x': 162.40 },
+    prices: { avista: 129.90, dias30: 145.50, dias90: 162.40 },
     sizes: ['35x25cm'],
     defaultSize: '35x25cm',
     isKit: false,
@@ -457,18 +457,18 @@ export const products: Product[] = [
       { 
         id: '13-6', 
         units: 6, 
-        prices: { avista: 660.00, '2x': 693.00, '4x': 739.20, '10x': 825.00 }
+        prices: { avista: 660.00, dias30: 739.20, dias90: 825.00 }
       },
       { 
         id: '13-12', 
         units: 12, 
-        prices: { avista: 1200.00, '2x': 1260.00, '4x': 1344.00, '10x': 1500.00 },
+        prices: { avista: 1200.00, dias30: 1344.00, dias90: 1500.00 },
         popular: true 
       },
       { 
         id: '13-20', 
         units: 20, 
-        prices: { avista: 1920.00, '2x': 2016.00, '4x': 2150.40, '10x': 2400.00 }
+        prices: { avista: 1920.00, dias30: 2150.40, dias90: 2400.00 }
       }
     ]
   },
@@ -478,7 +478,7 @@ export const products: Product[] = [
     category: 'canecoes-fervedores',
     subcategory: 'extra-forte-polido',
     description: 'Panela leiteira ideal para preparar bebidas quentes.',
-    prices: { avista: 79.90, '2x': 83.90, '4x': 89.50, '10x': 99.90 },
+    prices: { avista: 79.90, dias30: 89.50, dias90: 99.90 },
     sizes: ['2L'],
     defaultSize: '2L',
     isKit: false,
@@ -488,18 +488,18 @@ export const products: Product[] = [
       { 
         id: '14-6', 
         units: 6, 
-        prices: { avista: 420.00, '2x': 441.00, '4x': 470.40, '10x': 525.00 }
+        prices: { avista: 420.00, dias30: 470.40, dias90: 525.00 }
       },
       { 
         id: '14-12', 
         units: 12, 
-        prices: { avista: 780.00, '2x': 819.00, '4x': 873.60, '10x': 975.00 },
+        prices: { avista: 780.00, dias30: 873.60, dias90: 975.00 },
         popular: true 
       },
       { 
         id: '14-20', 
         units: 20, 
-        prices: { avista: 1260.00, '2x': 1323.00, '4x': 1411.20, '10x': 1575.00 }
+        prices: { avista: 1260.00, dias30: 1411.20, dias90: 1575.00 }
       }
     ]
   },
@@ -509,7 +509,7 @@ export const products: Product[] = [
     category: 'formas-assadeiras',
     subcategory: 'fundo-removivel',
     description: 'Conjunto com 3 formas de alumínio com fundo removível.',
-    prices: { avista: 189.90, '2x': 199.40, '4x': 212.70, '10x': 237.40 },
+    prices: { avista: 189.90, dias30: 212.70, dias90: 237.40 },
     sizes: ['P', 'M', 'G'],
     defaultSize: 'M',
     isKit: true,
@@ -519,18 +519,18 @@ export const products: Product[] = [
       { 
         id: '15-6', 
         units: 6, 
-        prices: { avista: 960.00, '2x': 1008.00, '4x': 1075.20, '10x': 1200.00 }
+        prices: { avista: 960.00, dias30: 1075.20, dias90: 1200.00 }
       },
       { 
         id: '15-12', 
         units: 12, 
-        prices: { avista: 1800.00, '2x': 1890.00, '4x': 2016.00, '10x': 2250.00 },
+        prices: { avista: 1800.00, dias30: 2016.00, dias90: 2250.00 },
         popular: true 
       },
       { 
         id: '15-20', 
         units: 20, 
-        prices: { avista: 2880.00, '2x': 3024.00, '4x': 3225.60, '10x': 3600.00 }
+        prices: { avista: 2880.00, dias30: 3225.60, dias90: 3600.00 }
       }
     ]
   }

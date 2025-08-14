@@ -106,7 +106,7 @@ export const useCart = () => {
     });
     
     message += `*TOTAL GERAL: R$ ${total.toFixed(2)}*\n`;
-    message += `*Forma de pagamento: ${checkoutData.paymentType === 'avista' ? 'À vista' : checkoutData.paymentType === '2x' ? '2x' : checkoutData.paymentType === '4x' ? '4x' : '10x'}*`;
+    message += `*Forma de pagamento: ${checkoutData.paymentType === 'avista' ? 'À vista' : checkoutData.paymentType === 'dias30' ? '30 dias' : '90 dias'}*`;
 
     return encodeURIComponent(message);
   };
