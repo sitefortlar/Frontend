@@ -18,8 +18,8 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        kitchen: "bg-gradient-warm text-primary-foreground hover:shadow-warm transform hover:scale-105 transition-all duration-300",
-        category: "bg-kitchen-warm-light text-kitchen-copper hover:bg-kitchen-warm hover:text-primary-foreground border border-kitchen-warm/20",
+        kitchen: "bg-gradient-to-r from-orange-400 to-orange-600 text-white hover:shadow-lg transform hover:scale-105 transition-all duration-300",
+        category: "bg-orange-50 text-orange-700 hover:bg-orange-100 hover:text-orange-800 border border-orange-200",
         filter: "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground border border-border",
       },
       size: {

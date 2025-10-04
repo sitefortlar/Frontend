@@ -31,16 +31,16 @@ export const ProductCard = ({ product, priceType, onAddToCart }: ProductCardProp
 
   return (
     <>
-      <Card className="group hover:shadow-glass transition-glass transform hover:-translate-y-1 glass-light border-0 cursor-pointer" onClick={() => setIsModalOpen(true)}>
+      <Card className="group product-card" onClick={() => setIsModalOpen(true)}>
         <CardHeader className="p-0">
-          <div className="relative w-full h-48 bg-gradient-glass rounded-t-lg overflow-hidden">
+          <div className="relative w-full h-48 glass-input rounded-t-lg overflow-hidden">
             <img 
               src={getProductImage(product.id)}
               alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className="product-image group-hover:scale-105"
             />
             {product.isKit && (
-              <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground">
+              <Badge className="product-badge">
                 <Package className="h-3 w-3 mr-1" />
                 Kit
               </Badge>
@@ -63,19 +63,19 @@ export const ProductCard = ({ product, priceType, onAddToCart }: ProductCardProp
             <div className="grid grid-cols-3 gap-2">
               <div className="text-center">
                 <div className="text-xs text-green-600 font-medium">À vista:</div>
-                <div className="text-sm font-bold text-green-600">
+                <div className="text-sm price-avista">
                   R$ {product.prices.avista.toFixed(2)}
                 </div>
               </div>
               <div className="text-center">
                 <div className="text-xs text-muted-foreground">30 dias:</div>
-                <div className="text-sm font-semibold">
+                <div className="text-sm price-other">
                   R$ {product.prices.dias30.toFixed(2)}
                 </div>
               </div>
               <div className="text-center">
                 <div className="text-xs text-muted-foreground">90 dias:</div>
-                <div className="text-sm font-semibold">
+                <div className="text-sm price-other">
                   R$ {product.prices.dias90.toFixed(2)}
                 </div>
               </div>

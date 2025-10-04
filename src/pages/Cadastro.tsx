@@ -1,21 +1,24 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Building, User, FileText, Search, Lock, Check, X } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useRegistrationForm } from "@/hooks/useRegistrationForm";
+import { CompanyDataForm } from "@/components/auth/CompanyDataForm";
+import { AddressForm } from "@/components/auth/AddressForm";
+import { ContactForm } from "@/components/auth/ContactForm";
+import { PasswordForm } from "@/components/auth/PasswordForm";
+import { AUTH_MESSAGES } from "@/constants/auth";
 
 const Cadastro = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { formData, errors, updateField, validateRegistration, resetForm } = useRegistrationForm();
 
   const handleSearchByCnpj = () => {
-    if (!cnpj) {
+    if (!formData.cnpj) {
       toast({
         title: "CNPJ necessário",
-        description: "Digite um CNPJ para buscar os dados da empresa.",
+        description: AUTH_MESSAGES.CNPJ_REQUIRED,
         variant: "destructive"
       });
       return;
@@ -23,72 +26,17 @@ const Cadastro = () => {
     
     toast({
       title: "Buscando dados...",
-      description: "Funcionalidade em desenvolvimento.",
+      description: AUTH_MESSAGES.SEARCHING_DATA,
     });
-  };
-  
-  // Dados da empresa - campos aparentes
-  const [razaoSocial, setRazaoSocial] = useState("");
-  const [fantasia, setFantasia] = useState("");
-  const [cnpj, setCnpj] = useState("");
-  
-  // Campos ocultos com códigos numéricos
-  const [origem] = useState("001"); // Código numérico para origem
-  const [pais] = useState("1058"); // Brasil
-  const [regimeTributario] = useState("001"); // Código numérico para regime
-  const [regiao] = useState("001"); // Código numérico para região
-  const [ramoAtividade] = useState("001"); // Código numérico para ramo
-  const [vendedor] = useState("001"); // Código numérico para vendedor
-  
-  // Endereço
-  const [cep, setCep] = useState("");
-  const [endereco, setEndereco] = useState("");
-  const [numero, setNumero] = useState("");
-  const [complemento, setComplemento] = useState("");
-  const [bairro, setBairro] = useState("");
-  const [cidade, setCidade] = useState("");
-  const [uf, setUf] = useState("");
-  const [ibge] = useState(""); // Oculto mas obrigatório, será preenchido via CEP
-
-  // Contatos
-  const [nomeContato, setNomeContato] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [email, setEmail] = useState("");
-  const [whatsapp, setWhatsapp] = useState("");
-  const [senha, setSenha] = useState("");
-
-  // Validações da senha em tempo real
-  const senhaValidations = {
-    hasMinLength: senha.length >= 8,
-    hasUppercase: /[A-Z]/.test(senha),
-    hasNumber: /\d/.test(senha),
-    hasSpecialChar: /[@$!%*?&]/.test(senha)
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Verificar se todos os campos obrigatórios estão preenchidos
-    const requiredFields = [
-      razaoSocial, fantasia, cep, endereco, numero, complemento, bairro, 
-      cidade, uf, cnpj, nomeContato, telefone, email, whatsapp, senha
-    ];
-    
-    // Validar senha
-    const allPasswordValidationsPass = Object.values(senhaValidations).every(Boolean);
-    if (!allPasswordValidationsPass) {
-      toast({
-        title: "Senha inválida",
-        description: "A senha deve atender todos os critérios de segurança.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    if (requiredFields.some(field => !field)) {
+    if (!validateRegistration()) {
       toast({
         title: "Erro",
-        description: "Por favor, preencha todos os campos obrigatórios.",
+        description: AUTH_MESSAGES.REQUIRED_FIELDS,
         variant: "destructive"
       });
       return;
@@ -96,11 +44,11 @@ const Cadastro = () => {
 
     toast({
       title: "Cadastro realizado!",
-      description: "Sua conta foi criada com sucesso. Redirecionando para o login...",
+      description: AUTH_MESSAGES.REGISTRATION_SUCCESS,
     });
 
     setTimeout(() => {
-      navigate("/");
+      navigate("/login");
     }, 2000);
   };
 
@@ -124,264 +72,52 @@ const Cadastro = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Dados da Empresa */}
-            <Card className="bg-[hsl(var(--auth-form-bg))] backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.1s'}}>
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-3 text-white text-xl font-semibold">
-                  <div className="p-2 bg-white/20 rounded-xl">
-                    <Building className="h-5 w-5 text-white" />
-                  </div>
-                  Dados da Empresa
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="relative group md:col-span-2">
-                  <Input
-                    placeholder="CNPJ *"
-                    value={cnpj}
-                    onChange={(e) => setCnpj(e.target.value)}
-                    className="h-12 pr-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={handleSearchByCnpj}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white hover:scale-110 transition-all duration-300"
-                    title="Buscar dados da empresa pelo CNPJ"
-                  >
-                    <Search className="h-5 w-5" />
-                  </button>
-                </div>
-                
-                <Input
-                  placeholder="Razão Social *"
-                  value={razaoSocial}
-                  onChange={(e) => setRazaoSocial(e.target.value)}
-                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-                  required
-                />
-                <Input
-                  placeholder="Fantasia *"
-                  value={fantasia}
-                  onChange={(e) => setFantasia(e.target.value)}
-                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-                  required
-                />
-              </CardContent>
-            </Card>
+            <CompanyDataForm
+              cnpj={formData.cnpj}
+              razaoSocial={formData.razaoSocial}
+              fantasia={formData.fantasia}
+              onCnpjChange={(value) => updateField('cnpj', value)}
+              onRazaoSocialChange={(value) => updateField('razaoSocial', value)}
+              onFantasiaChange={(value) => updateField('fantasia', value)}
+              onSearchByCnpj={handleSearchByCnpj}
+              errors={errors}
+            />
 
-            {/* Endereço */}
-            <Card className="bg-[hsl(var(--auth-form-bg))] backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.2s'}}>
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-3 text-white text-xl font-semibold">
-                  <div className="p-2 bg-white/20 rounded-xl">
-                    <FileText className="h-5 w-5 text-white" />
-                  </div>
-                  Endereço
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <Input
-                  placeholder="CEP *"
-                  value={cep}
-                  onChange={(e) => setCep(e.target.value)}
-                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-                  required
-                />
-                <Input
-                  placeholder="Endereço *"
-                  value={endereco}
-                  onChange={(e) => setEndereco(e.target.value)}
-                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-                  required
-                />
-                <Input
-                  placeholder="Número *"
-                  value={numero}
-                  onChange={(e) => setNumero(e.target.value)}
-                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-                  required
-                />
-                <Input
-                  placeholder="Complemento *"
-                  value={complemento}
-                  onChange={(e) => setComplemento(e.target.value)}
-                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-                  required
-                />
-                <Input
-                  placeholder="Bairro *"
-                  value={bairro}
-                  onChange={(e) => setBairro(e.target.value)}
-                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-                  required
-                />
-                <Input
-                  placeholder="Cidade *"
-                  value={cidade}
-                  onChange={(e) => setCidade(e.target.value)}
-                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-                  required
-                />
-                <Select value={uf} onValueChange={setUf}>
-                  <SelectTrigger className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white focus:border-white/40">
-                    <SelectValue placeholder="UF *" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-[hsl(var(--auth-bg-start))] border-white/20">
-                    <SelectItem value="AC">AC</SelectItem>
-                    <SelectItem value="AL">AL</SelectItem>
-                    <SelectItem value="AP">AP</SelectItem>
-                    <SelectItem value="AM">AM</SelectItem>
-                    <SelectItem value="BA">BA</SelectItem>
-                    <SelectItem value="CE">CE</SelectItem>
-                    <SelectItem value="DF">DF</SelectItem>
-                    <SelectItem value="ES">ES</SelectItem>
-                    <SelectItem value="GO">GO</SelectItem>
-                    <SelectItem value="MA">MA</SelectItem>
-                    <SelectItem value="MT">MT</SelectItem>
-                    <SelectItem value="MS">MS</SelectItem>
-                    <SelectItem value="MG">MG</SelectItem>
-                    <SelectItem value="PA">PA</SelectItem>
-                    <SelectItem value="PB">PB</SelectItem>
-                    <SelectItem value="PR">PR</SelectItem>
-                    <SelectItem value="PE">PE</SelectItem>
-                    <SelectItem value="PI">PI</SelectItem>
-                    <SelectItem value="RJ">RJ</SelectItem>
-                    <SelectItem value="RN">RN</SelectItem>
-                    <SelectItem value="RS">RS</SelectItem>
-                    <SelectItem value="RO">RO</SelectItem>
-                    <SelectItem value="RR">RR</SelectItem>
-                    <SelectItem value="SC">SC</SelectItem>
-                    <SelectItem value="SP">SP</SelectItem>
-                    <SelectItem value="SE">SE</SelectItem>
-                    <SelectItem value="TO">TO</SelectItem>
-                  </SelectContent>
-                </Select>
-              </CardContent>
-            </Card>
+            <AddressForm
+              cep={formData.cep}
+              endereco={formData.endereco}
+              numero={formData.numero}
+              complemento={formData.complemento}
+              bairro={formData.bairro}
+              cidade={formData.cidade}
+              uf={formData.uf}
+              onCepChange={(value) => updateField('cep', value)}
+              onEnderecoChange={(value) => updateField('endereco', value)}
+              onNumeroChange={(value) => updateField('numero', value)}
+              onComplementoChange={(value) => updateField('complemento', value)}
+              onBairroChange={(value) => updateField('bairro', value)}
+              onCidadeChange={(value) => updateField('cidade', value)}
+              onUfChange={(value) => updateField('uf', value)}
+              errors={errors}
+            />
 
-            {/* Contato */}
-            <Card className="bg-[hsl(var(--auth-form-bg))] backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.3s'}}>
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-3 text-white text-xl font-semibold">
-                  <div className="p-2 bg-white/20 rounded-xl">
-                    <User className="h-5 w-5 text-white" />
-                  </div>
-                  Contato
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <Input
-                  placeholder="Nome *"
-                  value={nomeContato}
-                  onChange={(e) => setNomeContato(e.target.value)}
-                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-                  required
-                />
-                <Input
-                  placeholder="Telefone *"
-                  value={telefone}
-                  onChange={(e) => setTelefone(e.target.value)}
-                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-                  required
-                />
-                <Input
-                  type="email"
-                  placeholder="E-mail *"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-                  required
-                />
-                <Input
-                  placeholder="WhatsApp *"
-                  value={whatsapp}
-                  onChange={(e) => setWhatsapp(e.target.value)}
-                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-                  required
-                />
-              </CardContent>
-            </Card>
+            <ContactForm
+              nomeContato={formData.nomeContato}
+              telefone={formData.telefone}
+              email={formData.email}
+              whatsapp={formData.whatsapp}
+              onNomeContatoChange={(value) => updateField('nomeContato', value)}
+              onTelefoneChange={(value) => updateField('telefone', value)}
+              onEmailChange={(value) => updateField('email', value)}
+              onWhatsappChange={(value) => updateField('whatsapp', value)}
+              errors={errors}
+            />
 
-            {/* Senha */}
-            <Card className="bg-[hsl(var(--auth-form-bg))] backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.4s'}}>
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-3 text-white text-xl font-semibold">
-                  <div className="p-2 bg-white/20 rounded-xl">
-                    <Lock className="h-5 w-5 text-white" />
-                  </div>
-                  Senha de Acesso
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-5">
-                <Input
-                  type="password"
-                  placeholder="Senha *"
-                  value={senha}
-                  onChange={(e) => setSenha(e.target.value)}
-                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-                  required
-                />
-                
-                {/* Checklist de validação */}
-                <div className="space-y-3">
-                  <p className="text-white/90 text-sm font-medium">Critérios de segurança:</p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <div className={`flex items-center gap-2 text-sm transition-colors duration-300 ${
-                      senhaValidations.hasMinLength 
-                        ? 'text-green-400' 
-                        : 'text-white/60'
-                    }`}>
-                      {senhaValidations.hasMinLength ? (
-                        <Check className="h-4 w-4" />
-                      ) : (
-                        <X className="h-4 w-4" />
-                      )}
-                      Mínimo 8 caracteres
-                    </div>
-                    
-                    <div className={`flex items-center gap-2 text-sm transition-colors duration-300 ${
-                      senhaValidations.hasUppercase 
-                        ? 'text-green-400' 
-                        : 'text-white/60'
-                    }`}>
-                      {senhaValidations.hasUppercase ? (
-                        <Check className="h-4 w-4" />
-                      ) : (
-                        <X className="h-4 w-4" />
-                      )}
-                      Uma letra maiúscula
-                    </div>
-                    
-                    <div className={`flex items-center gap-2 text-sm transition-colors duration-300 ${
-                      senhaValidations.hasNumber 
-                        ? 'text-green-400' 
-                        : 'text-white/60'
-                    }`}>
-                      {senhaValidations.hasNumber ? (
-                        <Check className="h-4 w-4" />
-                      ) : (
-                        <X className="h-4 w-4" />
-                      )}
-                      Um número
-                    </div>
-                    
-                    <div className={`flex items-center gap-2 text-sm transition-colors duration-300 ${
-                      senhaValidations.hasSpecialChar 
-                        ? 'text-green-400' 
-                        : 'text-white/60'
-                    }`}>
-                      {senhaValidations.hasSpecialChar ? (
-                        <Check className="h-4 w-4" />
-                      ) : (
-                        <X className="h-4 w-4" />
-                      )}
-                      Um caractere especial (@$!%*?&)
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <PasswordForm
+              password={formData.senha}
+              onPasswordChange={(value) => updateField('senha', value)}
+              errors={errors}
+            />
 
             {/* Submit Button */}
             <div className="flex justify-end space-x-4 animate-slide-up" style={{animationDelay: '0.5s'}}>

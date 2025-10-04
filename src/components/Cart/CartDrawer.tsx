@@ -184,7 +184,7 @@ export const CartDrawer = ({
               <div className="border-t border-border/20 p-4 space-y-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-primary">
-                    Total: R$ {getTotalPrice().toFixed(2)}
+                    Total: R$ {getTotalPrice.toFixed(2)}
                   </div>
                 </div>
 

@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Product, Category, PriceType } from '@/types/Product';
+import { useState, useEffect } from 'react';
+import { Product, Category } from '@/types/Product';
 import { ProductCard } from './ProductCard';
 import { CategorySidebar } from './CategorySidebar';
 import { FilterBar } from './FilterBar';
 import { useCart } from '@/hooks/useCart';
+import { useProductFilters } from '@/hooks/useProductFilters';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingCart } from 'lucide-react';
@@ -14,8 +15,8 @@ import { products as realProducts, categories as realCategories } from '@/data/p
 
 interface ProductGridProps {
   products: Product[];
-  priceType: PriceType;
-  onAddToCart?: (product: Product, size: string, priceType: PriceType, quantity?: number) => void;
+  priceType: 'avista' | 'dias30' | 'dias90';
+  onAddToCart?: (product: Product, size: string, priceType: 'avista' | 'dias30' | 'dias90', quantity?: number) => void;
 }
 
 const ProductGrid = ({ products, priceType, onAddToCart }: ProductGridProps) => {
@@ -34,97 +35,57 @@ const ProductGrid = ({ products, priceType, onAddToCart }: ProductGridProps) => 
 };
 
 export const ProductCatalog = () => {
-  const [products, setProducts] = useState<Product[]>(realProducts);
-  const [categories, setCategories] = useState<Category[]>(realCategories);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
-  const [priceType, setPriceType] = useState<PriceType>('avista');
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [showKitsOnly, setShowKitsOnly] = useState(false);
-  const [sortBy, setSortBy] = useState<'price-high' | 'price-low' | 'name'>('name');
-  const { items, addToCart, removeFromCart, updateQuantity, updatePriceType, updateAllItemsPriceType, getTotalPrice, getItemCount, clearCart, generateWhatsAppMessage, isDrawerOpen, setIsDrawerOpen } = useCart();
+  const [products] = useState<Product[]>(realProducts);
+  const [categories] = useState<Category[]>(realCategories);
+  const { 
+    items, 
+    addToCart, 
+    removeFromCart, 
+    updateQuantity, 
+    updatePriceType, 
+    updateAllItemsPriceType, 
+    getTotalPrice, 
+    getItemCount, 
+    clearCart, 
+    generateWhatsAppMessage, 
+    isDrawerOpen, 
+    setIsDrawerOpen 
+  } = useCart();
 
-  const filterProducts = useCallback(() => {
-    let filtered = products;
-
-    if (selectedCategory) {
-      filtered = filtered.filter(product => product.category === selectedCategory);
-    }
-
-    if (selectedSubcategory) {
-      filtered = filtered.filter(product => product.subcategory === selectedSubcategory);
-    }
-
-    if (selectedSize) {
-      filtered = filtered.filter(product => product.sizes.includes(selectedSize));
-    }
-
-    if (showKitsOnly) {
-      filtered = filtered.filter(product => product.isKit);
-    }
-
-    return filtered;
-  }, [products, selectedCategory, selectedSubcategory, selectedSize, showKitsOnly]);
-
-  const sortProducts = useCallback((filteredProducts: Product[]) => {
-    const sorted = [...filteredProducts];
-    sorted.sort((a, b) => {
-      if (sortBy === 'name') {
-        return a.name.localeCompare(b.name);
-      }
-      
-      const priceA = a.prices[priceType];
-      const priceB = b.prices[priceType];
-
-      if (sortBy === 'price-high') {
-        return priceB - priceA;
-      } else {
-        return priceA - priceB;
-      }
-    });
-    return sorted;
-  }, [priceType, sortBy]);
-
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    const filtered = filterProducts();
-    const sorted = sortProducts(filtered);
-    setFilteredProducts(sorted);
-  }, [filterProducts, sortProducts]);
-
-  // Get available sizes from filtered products
-  const availableSizes = Array.from(
-    new Set(filteredProducts.flatMap(product => product.sizes))
-  ).sort();
+  const {
+    filters,
+    filteredProducts,
+    availableSizes,
+    updateFilter,
+  } = useProductFilters(products);
 
   return (
     <div className="min-h-screen bg-background relative">
       <CategorySidebar
         categories={categories}
-        selectedCategory={selectedCategory}
-        selectedSubcategory={selectedSubcategory}
-        onCategorySelect={setSelectedCategory}
-        onSubcategorySelect={setSelectedSubcategory}
+        selectedCategory={filters.selectedCategory}
+        selectedSubcategory={filters.selectedSubcategory}
+        onCategorySelect={(category) => updateFilter('selectedCategory', category)}
+        onSubcategorySelect={(subcategory) => updateFilter('selectedSubcategory', subcategory)}
       />
       
       <div className="lg:ml-80 min-h-screen">
         <div className="p-6">
           <FilterBar
-            selectedSize={selectedSize}
-            showKitsOnly={showKitsOnly}
-            sortBy={sortBy}
+            selectedSize={filters.selectedSize}
+            showKitsOnly={filters.showKitsOnly}
+            sortBy={filters.sortBy}
             availableSizes={availableSizes}
-            onSizeChange={setSelectedSize}
-            onKitsToggle={() => setShowKitsOnly(!showKitsOnly)}
-            onSortChange={setSortBy}
+            onSizeChange={(size) => updateFilter('selectedSize', size)}
+            onKitsToggle={() => updateFilter('showKitsOnly', !filters.showKitsOnly)}
+            onSortChange={(sortBy) => updateFilter('sortBy', sortBy)}
             productCount={filteredProducts.length}
           />
         </div>
         
         <ProductGrid
           products={filteredProducts}
-          priceType={priceType}
+          priceType={filters.priceType}
           onAddToCart={addToCart}
         />
       </div>
@@ -137,9 +98,9 @@ export const ProductCatalog = () => {
           className="rounded-full w-16 h-16 shadow-lg bg-primary hover:bg-primary/90 relative"
         >
           <ShoppingCart className="h-6 w-6" />
-          {getItemCount() > 0 && (
+          {getItemCount > 0 && (
             <Badge className="absolute -top-2 -right-2 bg-red-500 text-white min-w-[1.5rem] h-6 rounded-full flex items-center justify-center text-xs">
-              {getItemCount()}
+              {getItemCount}
             </Badge>
           )}
         </Button>

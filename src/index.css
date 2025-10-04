@@ -14,6 +14,104 @@ Light: #BBD5E5 (207 46% 80%)
 White: #FDFFFF (180 100% 99%)
 */
 
+@layer components {
+  /* Auth Components */
+  .auth-input {
+    @apply bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 hover:border-white/30 transition-all duration-300;
+  }
+  
+  .auth-button {
+    @apply bg-[hsl(var(--auth-button))] hover:bg-[hsl(var(--primary-glow))] text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+  }
+  
+  .auth-form-bg {
+    @apply bg-[hsl(var(--auth-form-bg))] backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl;
+  }
+  
+  /* Glass Effects */
+  .glass-card {
+    @apply hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border-0;
+  }
+  
+  .glass-input {
+    @apply bg-gradient-to-br from-white/10 to-white/5 rounded-lg backdrop-blur-sm;
+  }
+  
+  /* Product Components */
+  .product-card {
+    @apply hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border-0 cursor-pointer;
+  }
+  
+  .product-image {
+    @apply w-full h-full object-cover transition-transform duration-300;
+  }
+  
+  .product-badge {
+    @apply absolute top-2 left-2 bg-primary text-primary-foreground;
+  }
+  
+  /* Price Display */
+  .price-avista {
+    @apply text-green-600 font-bold;
+  }
+  
+  .price-other {
+    @apply text-muted-foreground font-semibold;
+  }
+  
+  /* Loading States */
+  .loading-spinner {
+    @apply w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin;
+  }
+  
+  .loading-overlay {
+    @apply min-h-screen flex items-center justify-center bg-background;
+  }
+  
+  /* Form Elements */
+  .form-error {
+    @apply text-red-400 text-sm mt-1;
+  }
+  
+  .form-group {
+    @apply relative;
+  }
+  
+  .form-icon {
+    @apply absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/70 transition-colors duration-300;
+  }
+  
+  /* Cart Components */
+  .cart-item {
+    @apply flex items-center space-x-4 p-4 border-b border-border/20 last:border-b-0;
+  }
+  
+  .cart-quantity {
+    @apply flex items-center space-x-2;
+  }
+  
+  .cart-total {
+    @apply text-2xl font-bold text-primary;
+  }
+  
+  /* Animations */
+  .fade-in {
+    @apply animate-fade-in;
+  }
+  
+  .fade-in-scale {
+    @apply animate-fade-in-scale;
+  }
+  
+  .slide-up {
+    @apply animate-slide-up;
+  }
+  
+  .float {
+    @apply animate-float;
+  }
+}
+
 @layer base {
   :root {
     /* Main application background - Off-white */

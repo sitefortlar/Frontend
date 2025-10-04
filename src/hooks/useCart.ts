@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { CartItem, CheckoutData } from '@/types/Cart';
 import { Product, PriceType } from '@/types/Product';
 
@@ -6,34 +6,40 @@ export const useCart = () => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const addToCart = (product: Product, size: string, priceType: PriceType, quantity: number = 1) => {
-    const existingItemIndex = items.findIndex(
-      item => item.productId === product.id && item.size === size && item.name === product.name
-    );
+  const addToCart = useCallback((product: Product, size: string, priceType: PriceType, quantity: number = 1) => {
+    setItems(prev => {
+      const existingItemIndex = prev.findIndex(
+        item => item.productId === product.id && item.size === size && item.name === product.name
+      );
 
-    if (existingItemIndex >= 0) {
-      updateQuantity(items[existingItemIndex].id, items[existingItemIndex].quantity + quantity);
-    } else {
-      const newItem: CartItem = {
-        id: `${product.id}-${size}-${Date.now()}`,
-        productId: product.id,
-        name: product.name,
-        image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=64&h=64&fit=crop",
-        size,
-        priceType,
-        price: product.prices[priceType],
-        quantity,
-      };
-      setItems(prev => [...prev, newItem]);
-    }
+      if (existingItemIndex >= 0) {
+        return prev.map((item, index) => 
+          index === existingItemIndex 
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        );
+      } else {
+        const newItem: CartItem = {
+          id: `${product.id}-${size}-${Date.now()}`,
+          productId: product.id,
+          name: product.name,
+          image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=64&h=64&fit=crop",
+          size,
+          priceType,
+          price: product.prices[priceType],
+          quantity,
+        };
+        return [...prev, newItem];
+      }
+    });
     setIsDrawerOpen(true);
-  };
+  }, []);
 
-  const removeFromCart = (itemId: string) => {
+  const removeFromCart = useCallback((itemId: string) => {
     setItems(prev => prev.filter(item => item.id !== itemId));
-  };
+  }, []);
 
-  const updateQuantity = (itemId: string, quantity: number) => {
+  const updateQuantity = useCallback((itemId: string, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(itemId);
       return;
@@ -43,9 +49,9 @@ export const useCart = () => {
         item.id === itemId ? { ...item, quantity } : item
       )
     );
-  };
+  }, [removeFromCart]);
 
-  const updatePriceType = (itemId: string, priceType: PriceType, product: Product) => {
+  const updatePriceType = useCallback((itemId: string, priceType: PriceType, product: Product) => {
     setItems(prev =>
       prev.map(item =>
         item.id === itemId 
@@ -53,9 +59,9 @@ export const useCart = () => {
           : item
       )
     );
-  };
+  }, []);
 
-  const updateAllItemsPriceType = (priceType: PriceType, allProducts: Product[]) => {
+  const updateAllItemsPriceType = useCallback((priceType: PriceType, allProducts: Product[]) => {
     setItems(prev =>
       prev.map(item => {
         // Encontrar o produto original para obter os preços corretos
@@ -73,22 +79,22 @@ export const useCart = () => {
         };
       })
     );
-  };
+  }, []);
 
-  const getTotalPrice = () => {
+  const getTotalPrice = useMemo(() => {
     return items.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
+  }, [items]);
 
-  const getItemCount = () => {
+  const getItemCount = useMemo(() => {
     return items.reduce((total, item) => total + item.quantity, 0);
-  };
+  }, [items]);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setItems([]);
-  };
+  }, []);
 
-  const generateWhatsAppMessage = (checkoutData: CheckoutData) => {
-    const total = getTotalPrice();
+  const generateWhatsAppMessage = useCallback((checkoutData: CheckoutData) => {
+    const total = getTotalPrice;
     
     let message = `*PEDIDO DE ORÇAMENTO*\n\n`;
     message += `*Cliente:* ${checkoutData.name}\n`;
@@ -109,7 +115,7 @@ export const useCart = () => {
     message += `*Forma de pagamento: ${checkoutData.paymentType === 'avista' ? 'À vista' : checkoutData.paymentType === 'dias30' ? '30 dias' : '90 dias'}*`;
 
     return encodeURIComponent(message);
-  };
+  }, [items, getTotalPrice]);
 
   return {
     items,
