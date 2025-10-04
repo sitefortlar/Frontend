@@ -16,64 +16,70 @@ White: #FDFFFF (180 100% 99%)
 
 @layer base {
   :root {
-    /* New color palette */
-    --background: 210 100% 12%;
-    --foreground: 0 0% 100%;
+    /* Main application background - Off-white */
+    --background: 40 20% 97%;
+    --foreground: 210 100% 10%;
 
-    --card: 180 100% 99%;
-    --card-foreground: 206 29% 9%;
+    --card: 0 0% 100%;
+    --card-foreground: 210 100% 10%;
 
-    --popover: 180 100% 99%;
-    --popover-foreground: 206 29% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 100% 10%;
 
-    /* Primary teal blue */
-    --primary: 210 100% 45%;
+    /* Primary blue from reference image */
+    --primary: 210 100% 50%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 207 46% 80%;
+    --primary-glow: 210 100% 65%;
 
-    /* Clean secondary */
-    --secondary: 207 46% 80%;
-    --secondary-foreground: 206 29% 9%;
+    /* Secondary */
+    --secondary: 210 20% 90%;
+    --secondary-foreground: 210 100% 10%;
 
-    --muted: 207 46% 80%;
-    --muted-foreground: 197 72% 20%;
+    --muted: 210 20% 95%;
+    --muted-foreground: 210 20% 40%;
 
-    /* Light accent */
-    --accent: 207 46% 80%;
-    --accent-foreground: 206 29% 9%;
+    /* Accent */
+    --accent: 210 100% 45%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 180 100% 99%;
+    --destructive-foreground: 0 0% 100%;
 
     --success: 120 100% 40%;
     --success-foreground: 0 0% 100%;
 
-    --border: 210 30% 25%;
-    --input: 210 30% 20%;
-    --ring: 210 100% 45%;
+    --border: 210 20% 85%;
+    --input: 210 20% 90%;
+    --ring: 210 100% 50%;
 
-    /* Theme colors */
-    --institutional-primary: 197 72% 20%;
-    --institutional-dark: 206 29% 9%;
-    --institutional-light: 207 46% 80%;
-    --institutional-white: 180 100% 99%;
+    /* Login/Auth page colors - Blue gradient from reference */
+    --auth-bg-start: 200 100% 15%;
+    --auth-bg-end: 210 100% 40%;
+    --auth-form-bg: 205 70% 20% / 0.4;
+    --auth-input-bg: 210 50% 25% / 0.3;
+    --auth-button: 210 100% 50%;
 
-    /* Glass morphism effects */
-    --glass-bg: 180 100% 99% / 0.85;
-    --glass-border: 207 46% 80% / 0.2;
-    --glass-shadow: 0 8px 32px 0 hsla(206, 29%, 9%, 0.1);
+    /* Glass morphism effects for auth pages */
+    --glass-bg: 205 70% 20% / 0.15;
+    --glass-border: 210 100% 80% / 0.2;
+    --glass-shadow: 0 8px 32px 0 hsla(210, 100%, 10%, 0.3);
 
-    /* New gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(197 72% 20%) 0%, hsl(206 29% 9%) 100%);
-    --gradient-sidebar: linear-gradient(180deg, hsl(197 72% 20%) 0%, hsl(206 29% 9%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(180 100% 99%) 0%, hsl(207 46% 80%) 100%);
-    --gradient-glass: linear-gradient(135deg, hsla(180, 100%, 99%, 0.9) 0%, hsla(207, 46%, 80%, 0.8) 100%);
+    /* Sidebar gradient - Blue gradient matching login */
+    --gradient-sidebar: linear-gradient(180deg, hsl(200 100% 15%) 0%, hsl(210 100% 40%) 100%);
+    
+    /* Auth page gradient */
+    --gradient-auth: linear-gradient(180deg, hsl(200 100% 15%) 0%, hsl(210 100% 40%) 100%);
+
+    /* Other gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(210 100% 50%) 0%, hsl(220 100% 55%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(40 20% 97%) 0%, hsl(40 15% 94%) 100%);
+    --gradient-glass: linear-gradient(135deg, hsla(205, 70%, 20%, 0.3) 0%, hsla(210, 60%, 25%, 0.25) 100%);
 
     /* Shadows */
-    --shadow-soft: 0 2px 8px -2px hsl(206 29% 9% / 0.08);
-    --shadow-medium: 0 4px 16px -4px hsl(206 29% 9% / 0.12);
-    --shadow-glass: 0 8px 32px -8px hsl(206 29% 9% / 0.15);
-    --shadow-elevated: 0 16px 64px -12px hsl(206 29% 9% / 0.2);
+    --shadow-soft: 0 2px 8px -2px hsl(210 20% 20% / 0.08);
+    --shadow-medium: 0 4px 16px -4px hsl(210 20% 20% / 0.12);
+    --shadow-glass: 0 8px 32px -8px hsl(210 100% 10% / 0.3);
+    --shadow-elevated: 0 16px 64px -12px hsl(210 20% 20% / 0.2);
 
     /* Smooth animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -82,39 +88,23 @@ White: #FDFFFF (180 100% 99%)
 
     --radius: 0.75rem;
 
-    /* Sidebar styling with gradient */
-    --sidebar-background: 197 72% 20%;
-    --sidebar-foreground: 180 100% 99%;
-    --sidebar-primary: 207 46% 80%;
-    --sidebar-primary-foreground: 206 29% 9%;
-    --sidebar-accent: 206 29% 9%;
-    --sidebar-accent-foreground: 180 100% 99%;
-    --sidebar-border: 206 29% 15%;
-    --sidebar-ring: 207 46% 80%;
+    /* Sidebar styling with blue gradient */
+    --sidebar-background: 200 100% 15%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 210 100% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 60% 25%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 210 50% 20%;
+    --sidebar-ring: 210 100% 60%;
 
-    --fort-blue: 210 100% 20%;
-    --fort-blue-light: 210 100% 45%;
-    --fort-blue-dark: 210 100% 12%;
-    --fort-input: 210 50% 15%;
-    --fort-input-border: 210 30% 30%;
+    /* Legacy fort-blue variables for compatibility */
+    --fort-blue: 200 100% 15%;
+    --fort-blue-light: 210 100% 40%;
+    --fort-blue-dark: 200 100% 12%;
+    --fort-input: 210 50% 25%;
+    --fort-input-border: 210 50% 30%;
 
-    /* Modern gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(210 100% 20%) 0%, hsl(210 100% 35%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(210 50% 15% / 0.8) 0%, hsl(210 30% 10% / 0.9) 100%);
-    --gradient-input: linear-gradient(145deg, hsl(210 50% 15% / 0.6) 0%, hsl(210 30% 20% / 0.8) 100%);
-    --gradient-button: linear-gradient(135deg, hsl(210 100% 45%) 0%, hsl(220 100% 55%) 100%);
-    --gradient-button-hover: linear-gradient(135deg, hsl(220 100% 55%) 0%, hsl(230 100% 65%) 100%);
-
-    /* Modern shadows */
-    --shadow-soft: 0 4px 20px -4px hsl(210 100% 20% / 0.3);
-    --shadow-medium: 0 8px 32px -8px hsl(210 100% 20% / 0.4);
-    --shadow-strong: 0 16px 48px -16px hsl(210 100% 20% / 0.5);
-    --shadow-glow: 0 0 24px hsl(210 100% 45% / 0.3);
-
-    /* Glass effect */
-    --glass-bg: hsl(210 50% 15% / 0.1);
-    --glass-border: hsl(210 30% 80% / 0.1);
-    --glass-blur: blur(12px);
 
     /* Modern spacing and sizing */
     --space-xs: 0.5rem;
@@ -128,69 +118,51 @@ White: #FDFFFF (180 100% 99%)
     --radius-md: 1rem;
     --radius-lg: 1.5rem;
     --radius-xl: 2rem;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    /* Dark mode with new palette */
-    --background: 206 29% 5%;
-    --foreground: 180 100% 99%;
+    /* Dark mode */
+    --background: 210 100% 5%;
+    --foreground: 0 0% 100%;
     
-    --card: 206 29% 8%;
-    --card-foreground: 180 100% 99%;
+    --card: 210 50% 10%;
+    --card-foreground: 0 0% 100%;
     
-    --popover: 206 29% 8%;
-    --popover-foreground: 180 100% 99%;
+    --popover: 210 50% 10%;
+    --popover-foreground: 0 0% 100%;
     
-    --primary: 207 46% 80%;
-    --primary-foreground: 206 29% 9%;
+    --primary: 210 100% 50%;
+    --primary-foreground: 0 0% 100%;
     
-    --secondary: 206 29% 15%;
-    --secondary-foreground: 180 100% 99%;
+    --secondary: 210 30% 20%;
+    --secondary-foreground: 0 0% 100%;
     
-    --muted: 206 29% 15%;
-    --muted-foreground: 207 46% 65%;
+    --muted: 210 30% 20%;
+    --muted-foreground: 210 20% 70%;
     
-    --accent: 207 46% 80%;
-    --accent-foreground: 206 29% 9%;
+    --accent: 210 100% 45%;
+    --accent-foreground: 0 0% 100%;
     
     --destructive: 0 84% 60%;
-    --destructive-foreground: 180 100% 99%;
+    --destructive-foreground: 0 0% 100%;
     
-    --border: 206 29% 20%;
-    --input: 206 29% 20%;
-    --ring: 207 46% 80%;
+    --border: 210 30% 25%;
+    --input: 210 30% 20%;
+    --ring: 210 100% 50%;
     
     /* Dark glass morphism */
-    --glass-bg: 206 29% 8% / 0.85;
-    --glass-border: 207 46% 80% / 0.1;
-    --glass-shadow: 0 8px 32px 0 hsla(0, 0%, 0%, 0.3);
+    --glass-bg: 210 50% 10% / 0.85;
+    --glass-border: 210 100% 60% / 0.1;
+    --glass-shadow: 0 8px 32px 0 hsla(0, 0%, 0%, 0.4);
     
-    --sidebar-background: 206 29% 5%;
-    --sidebar-foreground: 180 100% 99%;
-    --sidebar-primary: 207 46% 80%;
-    --sidebar-primary-foreground: 206 29% 9%;
-    --sidebar-accent: 206 29% 15%;
-    --sidebar-accent-foreground: 180 100% 99%;
-    --sidebar-border: 206 29% 20%;
-    --sidebar-ring: 207 46% 80%;
+    --sidebar-background: 200 100% 15%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 210 100% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 60% 25%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 210 50% 20%;
+    --sidebar-ring: 210 100% 60%;
   }
 }
 

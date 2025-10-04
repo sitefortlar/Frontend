@@ -105,51 +105,48 @@ const Cadastro = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Modern gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-fort-blue via-fort-blue-dark to-fort-blue-light"></div>
-      
+    <div className="min-h-screen relative overflow-hidden" style={{ background: 'var(--gradient-auth)' }}>
       {/* Floating elements */}
-      <div className="absolute top-10 right-20 w-40 h-40 bg-primary/5 rounded-full blur-2xl animate-float"></div>
-      <div className="absolute bottom-32 left-16 w-32 h-32 bg-accent/5 rounded-full blur-xl animate-float" style={{animationDelay: '1.5s'}}></div>
+      <div className="absolute top-10 right-20 w-40 h-40 bg-white/5 rounded-full blur-2xl animate-float"></div>
+      <div className="absolute bottom-32 left-16 w-32 h-32 bg-white/5 rounded-full blur-xl animate-float" style={{animationDelay: '1.5s'}}></div>
 
       <div className="relative z-10 min-h-screen p-4">
         <div className="max-w-5xl mx-auto">
           {/* Header with glassmorphism */}
-          <div className="flex items-center mb-12 animate-fade-in">
-            <Link to="/" className="text-white hover:text-primary transition-all duration-300 mr-6 p-3 rounded-2xl bg-white/5 backdrop-blur-lg border border-white/10 hover:bg-white/10 transform hover:scale-105">
+          <div className="flex items-center mb-8 animate-fade-in">
+            <Link to="/login" className="text-white hover:text-white/80 transition-all duration-300 mr-4 p-3 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 hover:bg-white/15 transform hover:scale-105">
               <ArrowLeft className="h-6 w-6" />
             </Link>
-            <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl p-6 flex-1">
-              <h1 className="text-4xl font-bold text-white mb-2">Cadastro de Cliente</h1>
-              <p className="text-white/80 text-lg">Preencha os dados para criar sua conta no sistema</p>
+            <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-5 flex-1">
+              <h1 className="text-3xl font-bold text-white mb-1">Cadastro de Cliente</h1>
+              <p className="text-white/90 text-base">Preencha os dados para criar sua conta no sistema</p>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Dados da Empresa */}
-            <Card className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.1s'}}>
-              <CardHeader className="pb-6">
-                <CardTitle className="flex items-center gap-3 text-white text-2xl font-semibold">
-                  <div className="p-2 bg-primary/20 rounded-2xl">
-                    <Building className="h-6 w-6 text-primary" />
+            <Card className="bg-[hsl(var(--auth-form-bg))] backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.1s'}}>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-white text-xl font-semibold">
+                  <div className="p-2 bg-white/20 rounded-xl">
+                    <Building className="h-5 w-5 text-white" />
                   </div>
                   Dados da Empresa
                 </CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="relative group md:col-span-2">
                   <Input
                     placeholder="CNPJ *"
                     value={cnpj}
                     onChange={(e) => setCnpj(e.target.value)}
-                    className="h-12 pr-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder:text-white/60 focus:border-primary/50 focus:bg-white/10 transition-all duration-300 hover:bg-white/8"
+                    className="h-12 pr-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
                     required
                   />
                   <button
                     type="button"
                     onClick={handleSearchByCnpj}
-                    className="absolute right-4 top-4 h-5 w-5 text-white/60 hover:text-primary hover:scale-110 transition-all duration-300"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white hover:scale-110 transition-all duration-300"
                     title="Buscar dados da empresa pelo CNPJ"
                   >
                     <Search className="h-5 w-5" />
@@ -160,77 +157,77 @@ const Cadastro = () => {
                   placeholder="Razão Social *"
                   value={razaoSocial}
                   onChange={(e) => setRazaoSocial(e.target.value)}
-                  className="h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder:text-white/60 focus:border-primary/50 focus:bg-white/10 transition-all duration-300 hover:bg-white/8"
+                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
                   required
                 />
                 <Input
                   placeholder="Fantasia *"
                   value={fantasia}
                   onChange={(e) => setFantasia(e.target.value)}
-                  className="h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder:text-white/60 focus:border-primary/50 focus:bg-white/10 transition-all duration-300 hover:bg-white/8"
+                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
                   required
                 />
               </CardContent>
             </Card>
 
             {/* Endereço */}
-            <Card className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.2s'}}>
-              <CardHeader className="pb-6">
-                <CardTitle className="flex items-center gap-3 text-white text-2xl font-semibold">
-                  <div className="p-2 bg-primary/20 rounded-2xl">
-                    <FileText className="h-6 w-6 text-primary" />
+            <Card className="bg-[hsl(var(--auth-form-bg))] backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.2s'}}>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-white text-xl font-semibold">
+                  <div className="p-2 bg-white/20 rounded-xl">
+                    <FileText className="h-5 w-5 text-white" />
                   </div>
                   Endereço
                 </CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Input
                   placeholder="CEP *"
                   value={cep}
                   onChange={(e) => setCep(e.target.value)}
-                  className="h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder:text-white/60 focus:border-primary/50 focus:bg-white/10 transition-all duration-300 hover:bg-white/8"
+                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
                   required
                 />
                 <Input
                   placeholder="Endereço *"
                   value={endereco}
                   onChange={(e) => setEndereco(e.target.value)}
-                  className="h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder:text-white/60 focus:border-primary/50 focus:bg-white/10 transition-all duration-300 hover:bg-white/8"
+                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
                   required
                 />
                 <Input
                   placeholder="Número *"
                   value={numero}
                   onChange={(e) => setNumero(e.target.value)}
-                  className="h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder:text-white/60 focus:border-primary/50 focus:bg-white/10 transition-all duration-300 hover:bg-white/8"
+                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
                   required
                 />
                 <Input
                   placeholder="Complemento *"
                   value={complemento}
                   onChange={(e) => setComplemento(e.target.value)}
-                  className="h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder:text-white/60 focus:border-primary/50 focus:bg-white/10 transition-all duration-300 hover:bg-white/8"
+                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
                   required
                 />
                 <Input
                   placeholder="Bairro *"
                   value={bairro}
                   onChange={(e) => setBairro(e.target.value)}
-                  className="h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder:text-white/60 focus:border-primary/50 focus:bg-white/10 transition-all duration-300 hover:bg-white/8"
+                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
                   required
                 />
                 <Input
                   placeholder="Cidade *"
                   value={cidade}
                   onChange={(e) => setCidade(e.target.value)}
-                  className="h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder:text-white/60 focus:border-primary/50 focus:bg-white/10 transition-all duration-300 hover:bg-white/8"
+                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
                   required
                 />
                 <Select value={uf} onValueChange={setUf}>
-                  <SelectTrigger className="h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white focus:border-primary/50">
+                  <SelectTrigger className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white focus:border-white/40">
                     <SelectValue placeholder="UF *" />
                   </SelectTrigger>
-                  <SelectContent className="bg-fort-blue border-white/10">
+                  <SelectContent className="bg-[hsl(var(--auth-bg-start))] border-white/20">
                     <SelectItem value="AC">AC</SelectItem>
                     <SelectItem value="AL">AL</SelectItem>
                     <SelectItem value="AP">AP</SelectItem>
@@ -264,28 +261,28 @@ const Cadastro = () => {
             </Card>
 
             {/* Contato */}
-            <Card className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.3s'}}>
-              <CardHeader className="pb-6">
-                <CardTitle className="flex items-center gap-3 text-white text-2xl font-semibold">
-                  <div className="p-2 bg-primary/20 rounded-2xl">
-                    <User className="h-6 w-6 text-primary" />
+            <Card className="bg-[hsl(var(--auth-form-bg))] backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.3s'}}>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-white text-xl font-semibold">
+                  <div className="p-2 bg-white/20 rounded-xl">
+                    <User className="h-5 w-5 text-white" />
                   </div>
                   Contato
                 </CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Input
                   placeholder="Nome *"
                   value={nomeContato}
                   onChange={(e) => setNomeContato(e.target.value)}
-                  className="h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder:text-white/60 focus:border-primary/50 focus:bg-white/10 transition-all duration-300 hover:bg-white/8"
+                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
                   required
                 />
                 <Input
                   placeholder="Telefone *"
                   value={telefone}
                   onChange={(e) => setTelefone(e.target.value)}
-                  className="h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder:text-white/60 focus:border-primary/50 focus:bg-white/10 transition-all duration-300 hover:bg-white/8"
+                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
                   required
                 />
                 <Input
@@ -293,42 +290,42 @@ const Cadastro = () => {
                   placeholder="E-mail *"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder:text-white/60 focus:border-primary/50 focus:bg-white/10 transition-all duration-300 hover:bg-white/8"
+                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
                   required
                 />
                 <Input
                   placeholder="WhatsApp *"
                   value={whatsapp}
                   onChange={(e) => setWhatsapp(e.target.value)}
-                  className="h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder:text-white/60 focus:border-primary/50 focus:bg-white/10 transition-all duration-300 hover:bg-white/8"
+                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
                   required
                 />
               </CardContent>
             </Card>
 
             {/* Senha */}
-            <Card className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.4s'}}>
-              <CardHeader className="pb-6">
-                <CardTitle className="flex items-center gap-3 text-white text-2xl font-semibold">
-                  <div className="p-2 bg-primary/20 rounded-2xl">
-                    <Lock className="h-6 w-6 text-primary" />
+            <Card className="bg-[hsl(var(--auth-form-bg))] backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.4s'}}>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-white text-xl font-semibold">
+                  <div className="p-2 bg-white/20 rounded-xl">
+                    <Lock className="h-5 w-5 text-white" />
                   </div>
                   Senha de Acesso
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-5">
                 <Input
                   type="password"
                   placeholder="Senha *"
                   value={senha}
                   onChange={(e) => setSenha(e.target.value)}
-                  className="h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder:text-white/60 focus:border-primary/50 focus:bg-white/10 transition-all duration-300 hover:bg-white/8"
+                  className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
                   required
                 />
                 
                 {/* Checklist de validação */}
                 <div className="space-y-3">
-                  <p className="text-white/80 text-sm font-medium">Critérios de segurança:</p>
+                  <p className="text-white/90 text-sm font-medium">Critérios de segurança:</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div className={`flex items-center gap-2 text-sm transition-colors duration-300 ${
                       senhaValidations.hasMinLength 
@@ -387,17 +384,17 @@ const Cadastro = () => {
             </Card>
 
             {/* Submit Button */}
-            <div className="flex justify-end space-x-6 animate-slide-up" style={{animationDelay: '0.5s'}}>
+            <div className="flex justify-end space-x-4 animate-slide-up" style={{animationDelay: '0.5s'}}>
               <Button 
                 type="button" 
-                onClick={() => navigate("/")}
-                className="px-8 h-12 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-2xl transition-all duration-300 backdrop-blur-sm"
+                onClick={() => navigate("/login")}
+                className="px-8 h-12 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl transition-all duration-300 backdrop-blur-sm"
               >
                 Cancelar
               </Button>
               <Button 
                 type="submit" 
-                className="px-8 h-12 bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-white rounded-2xl transition-all duration-500 transform hover:scale-[1.02] hover:shadow-xl shadow-lg"
+                className="px-8 h-12 bg-[hsl(var(--auth-button))] hover:bg-[hsl(var(--primary-glow))] text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
               >
                 Criar Conta
               </Button>
