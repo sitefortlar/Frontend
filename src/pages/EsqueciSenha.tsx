@@ -4,6 +4,7 @@ import { ArrowLeft, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const EsqueciSenha = () => {
   const [email, setEmail] = useState("");
@@ -24,19 +25,38 @@ const EsqueciSenha = () => {
     }
 
     setIsLoading(true);
-    
-    // Simular envio do e-mail
-    setTimeout(() => {
-      setIsLoading(false);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/login`,
+      });
+
+      if (error) {
+        toast({
+          title: "Erro",
+          description: error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
       toast({
         title: "E-mail enviado!",
         description: "Verifique sua caixa de entrada e siga as instruções para redefinir sua senha.",
       });
       
       setTimeout(() => {
-        navigate("/");
+        navigate("/login");
       }, 2000);
-    }, 1000);
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro ao enviar o e-mail. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -53,7 +73,7 @@ const EsqueciSenha = () => {
         <div className="w-full max-w-md">
           {/* Header with glassmorphism */}
           <div className="text-center mb-12 animate-fade-in">
-            <Link to="/" className="inline-flex items-center text-white hover:text-primary transition-all duration-300 mb-8 p-3 rounded-2xl bg-white/5 backdrop-blur-lg border border-white/10 hover:bg-white/10 transform hover:scale-105">
+            <Link to="/login" className="inline-flex items-center text-white hover:text-primary transition-all duration-300 mb-8 p-3 rounded-2xl bg-white/5 backdrop-blur-lg border border-white/10 hover:bg-white/10 transform hover:scale-105">
               <ArrowLeft className="h-5 w-5 mr-3" />
               Voltar ao Login
             </Link>
@@ -103,7 +123,7 @@ const EsqueciSenha = () => {
             <p className="text-white/80 text-lg">
               Lembrou da senha?{" "}
               <Link 
-                to="/" 
+                to="/login" 
                 className="text-white hover:text-primary transition-all duration-300 font-medium relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
               >
                 Fazer Login

@@ -1,20 +1,42 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import fortLarLogo from "@/assets/fort-lar-logo.png";
 
 const Login = () => {
-  const [emailOrCnpj, setEmailOrCnpj] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/");
+      }
+    };
+    checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        navigate("/");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!emailOrCnpj || !password) {
+    
+    if (!email || !password) {
       toast({
         title: "Erro",
         description: "Por favor, preencha todos os campos.",
@@ -22,11 +44,42 @@ const Login = () => {
       });
       return;
     }
-    
-    toast({
-      title: "Login realizado",
-      description: "Bem-vindo ao sistema Fort-Lar!",
-    });
+
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        toast({
+          title: "Erro ao fazer login",
+          description: error.message === "Invalid login credentials" 
+            ? "E-mail ou senha incorretos." 
+            : error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (data.session) {
+        toast({
+          title: "Login realizado",
+          description: "Bem-vindo ao sistema Fort-Lar!",
+        });
+        navigate("/");
+      }
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro ao fazer login. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -59,11 +112,12 @@ const Login = () => {
                 <div className="relative group">
                   <Mail className="absolute left-4 top-4 h-5 w-5 text-white/60 group-focus-within:text-white/90 transition-colors duration-300" />
                   <Input
-                    type="text"
-                    placeholder="E-mail ou CNPJ"
-                    value={emailOrCnpj}
-                    onChange={(e) => setEmailOrCnpj(e.target.value)}
+                    type="email"
+                    placeholder="E-mail"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="pl-12 h-14 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder:text-white/60 focus:border-primary/50 focus:bg-white/10 transition-all duration-300 hover:bg-white/8"
+                    required
                   />
                 </div>
                 
@@ -87,10 +141,18 @@ const Login = () => {
               </div>
 
               <Button 
-                type="submit" 
-                className="w-full h-14 bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-white font-medium text-lg rounded-2xl transition-all duration-500 transform hover:scale-[1.02] hover:shadow-xl shadow-lg"
+                type="submit"
+                disabled={isLoading}
+                className="w-full h-14 bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-white font-medium text-lg rounded-2xl transition-all duration-500 transform hover:scale-[1.02] hover:shadow-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                Entrar
+                {isLoading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Entrando...
+                  </div>
+                ) : (
+                  "Entrar"
+                )}
               </Button>
             </form>
           </div>
