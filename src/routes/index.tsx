@@ -7,22 +7,22 @@ const router = createBrowserRouter([
   {
     path: paths.login,
     loader: () => import('@/pages/login/loader').then(module => module.loginLoader()),
-    lazy: () => import('@/pages/Login').then(module => ({ Component: module.default })),
+    lazy: () => import('@/pages/login').then(module => ({ Component: module.default })),
   },
   {
     path: paths.cadastro,
-    lazy: () => import('@/pages/Cadastro').then(module => ({ Component: module.default })),
+    lazy: () => import('@/pages/cadastro').then(module => ({ Component: module.default })),
   },
   {
     path: paths.esqueciSenha,
-    lazy: () => import('@/pages/EsqueciSenha').then(module => ({ Component: module.default })),
+    lazy: () => import('@/pages/esqueci-senha').then(module => ({ Component: module.default })),
   },
   
   // Protected routes
   {
     path: paths.welcome,
     loader: () => import('@/pages/welcome/loader').then(module => module.welcomeLoader()),
-    lazy: () => import('@/pages/Welcome').then(module => ({ Component: module.default })),
+    lazy: () => import('@/pages/welcome').then(module => ({ Component: module.default })),
   },
   
   // Main layout with protected routes
@@ -32,7 +32,7 @@ const router = createBrowserRouter([
       {
         path: paths.home,
         loader: () => import('@/pages/home/loader').then(module => module.homeLoader()),
-        lazy: () => import('@/pages/Index').then(module => ({ Component: module.default })),
+        lazy: () => import('@/pages/home').then(module => ({ Component: module.default })),
       },
       // Add more protected routes here in the future
       // {
@@ -45,7 +45,7 @@ const router = createBrowserRouter([
   // Error routes
   {
     path: paths.notFound,
-    lazy: () => import('@/pages/NotFound').then(module => ({ Component: module.default })),
+    lazy: () => import('@/pages/not-found').then(module => ({ Component: module.default })),
   },
   
   // Catch all route - redirect to login

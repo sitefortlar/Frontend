@@ -7,17 +7,17 @@ export const routeConfig = {
   public: [
     {
       path: paths.login,
-      Component: lazy(() => import('@/pages/Login')),
+      Component: lazy(() => import('@/pages/login')),
       title: 'Login - Fort-Lar',
     },
     {
       path: paths.cadastro,
-      Component: lazy(() => import('@/pages/Cadastro')),
+      Component: lazy(() => import('@/pages/cadastro')),
       title: 'Cadastro - Fort-Lar',
     },
     {
       path: paths.esqueciSenha,
-      Component: lazy(() => import('@/pages/EsqueciSenha')),
+      Component: lazy(() => import('@/pages/esqueci-senha')),
       title: 'Esqueci Senha - Fort-Lar',
     },
   ],
@@ -26,7 +26,7 @@ export const routeConfig = {
   protected: [
     {
       path: paths.home,
-      Component: lazy(() => import('@/pages/Index')),
+      Component: lazy(() => import('@/pages/home')),
       title: 'Fort-Lar - Catálogo de Produtos',
     },
     // Add more protected routes here
@@ -41,7 +41,7 @@ export const routeConfig = {
   error: [
     {
       path: paths.notFound,
-      Component: lazy(() => import('@/pages/NotFound')),
+      Component: lazy(() => import('@/pages/not-found')),
       title: '404 - Página Não Encontrada',
     },
   ],
