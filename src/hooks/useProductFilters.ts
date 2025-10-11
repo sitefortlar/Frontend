@@ -4,8 +4,6 @@ import { Product, PriceType, SortOption } from '@/types/Product';
 export interface FilterState {
   selectedCategory: string | null;
   selectedSubcategory: string | null;
-  selectedSize: string | null;
-  showKitsOnly: boolean;
   sortBy: SortOption;
   priceType: PriceType;
 }
@@ -14,9 +12,7 @@ export const useProductFilters = (products: Product[]) => {
   const [filters, setFilters] = useState<FilterState>({
     selectedCategory: null,
     selectedSubcategory: null,
-    selectedSize: null,
-    showKitsOnly: false,
-    sortBy: 'name',
+    sortBy: 'price-low',
     priceType: 'avista',
   });
 
@@ -31,21 +27,9 @@ export const useProductFilters = (products: Product[]) => {
       filtered = filtered.filter(product => product.subcategory === filters.selectedSubcategory);
     }
 
-    if (filters.selectedSize) {
-      filtered = filtered.filter(product => product.sizes.includes(filters.selectedSize));
-    }
-
-    if (filters.showKitsOnly) {
-      filtered = filtered.filter(product => product.isKit);
-    }
-
-    // Sort products
+    // Sort products by price only
     const sorted = [...filtered];
     sorted.sort((a, b) => {
-      if (filters.sortBy === 'name') {
-        return a.name.localeCompare(b.name);
-      }
-      
       const priceA = a.prices[filters.priceType];
       const priceB = b.prices[filters.priceType];
 
@@ -59,11 +43,6 @@ export const useProductFilters = (products: Product[]) => {
     return sorted;
   }, [products, filters]);
 
-  const availableSizes = useMemo(() => {
-    return Array.from(
-      new Set(filteredProducts.flatMap(product => product.sizes))
-    ).sort();
-  }, [filteredProducts]);
 
   const updateFilter = useCallback((key: keyof FilterState, value: any) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -73,9 +52,7 @@ export const useProductFilters = (products: Product[]) => {
     setFilters({
       selectedCategory: null,
       selectedSubcategory: null,
-      selectedSize: null,
-      showKitsOnly: false,
-      sortBy: 'name',
+      sortBy: 'price-low',
       priceType: 'avista',
     });
   }, []);
@@ -83,7 +60,6 @@ export const useProductFilters = (products: Product[]) => {
   return {
     filters,
     filteredProducts,
-    availableSizes,
     updateFilter,
     resetFilters,
   };

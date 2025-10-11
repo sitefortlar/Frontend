@@ -39,14 +39,5 @@ export interface Subcategory {
   name: string;
 }
 
-export type SortOption = 'price-high' | 'price-low' | 'name';
+export type SortOption = 'price-high' | 'price-low';
 export type PriceType = 'avista' | 'dias30' | 'dias90';
-
-export interface FilterState {
-  selectedCategory: string | null;
-  selectedSubcategory: string | null;
-  selectedSize: string | null;
-  showKitsOnly: boolean;
-  sortBy: SortOption;
-  priceType: PriceType;
-}

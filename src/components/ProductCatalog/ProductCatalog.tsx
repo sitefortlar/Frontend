@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Product, Category } from '@/types/Product';
 import { ProductCard } from './ProductCard';
 import { CategorySidebar } from './CategorySidebar';
@@ -55,7 +55,6 @@ export const ProductCatalog = () => {
   const {
     filters,
     filteredProducts,
-    availableSizes,
     updateFilter,
   } = useProductFilters(products);
 
@@ -72,12 +71,7 @@ export const ProductCatalog = () => {
       <div className="lg:ml-80 min-h-screen">
         <div className="p-6">
           <FilterBar
-            selectedSize={filters.selectedSize}
-            showKitsOnly={filters.showKitsOnly}
             sortBy={filters.sortBy}
-            availableSizes={availableSizes}
-            onSizeChange={(size) => updateFilter('selectedSize', size)}
-            onKitsToggle={() => updateFilter('showKitsOnly', !filters.showKitsOnly)}
             onSortChange={(sortBy) => updateFilter('sortBy', sortBy)}
             productCount={filteredProducts.length}
           />

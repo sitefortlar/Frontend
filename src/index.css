@@ -17,7 +17,15 @@ White: #FDFFFF (180 100% 99%)
 @layer components {
   /* Auth Components */
   .auth-input {
-    @apply bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/90 focus:border-white/40 hover:border-white/30 transition-all duration-300;
+    @apply bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/70 focus:border-white/40 hover:border-white/30 transition-all duration-300;
+  }
+  
+  .auth-input::placeholder {
+    @apply text-white/70;
+  }
+  
+  .auth-input:focus {
+    @apply text-white;
   }
   
   .auth-button {
