@@ -9,9 +9,6 @@ export const paths = {
   // Protected routes
   welcome: '/welcome',
   home: '/home',
-  dashboard: '/dashboard',
-  profile: '/profile',
-  settings: '/settings',
   
   // Error routes
   notFound: '/404',

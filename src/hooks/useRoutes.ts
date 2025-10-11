@@ -5,7 +5,6 @@ export const useRoutes = () => {
   const routeConfig = useMemo(() => ({
     // Public routes
     public: {
-      home: paths.home,
       login: paths.login,
       cadastro: paths.cadastro,
       esqueciSenha: paths.esqueciSenha,
@@ -13,9 +12,8 @@ export const useRoutes = () => {
     
     // Protected routes
     protected: {
-      dashboard: paths.dashboard,
-      profile: paths.profile,
-      settings: paths.settings,
+      home: paths.home,
+      welcome: paths.welcome,
     },
     
     // Error routes

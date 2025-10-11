@@ -74,7 +74,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
             placeholder="E-mail ou CNPJ"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="pl-12 h-14 auth-input"
+            className="pl-12 h-14 auth-input text-white placeholder:text-white/80 bg-[hsl(var(--auth-input-bg))] border-white/20 focus-visible:ring-white/40 focus-visible:ring-offset-0"
             required
           />
           {errors.email && (
@@ -89,7 +89,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
             placeholder="Senha"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="pl-12 pr-12 h-14 auth-input"
+            className="pl-12 pr-12 h-14 auth-input text-white placeholder:text-white/80 bg-[hsl(var(--auth-input-bg))] border-white/20 focus-visible:ring-white/40 focus-visible:ring-offset-0"
           />
           <button
             type="button"

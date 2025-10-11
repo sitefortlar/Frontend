@@ -8,9 +8,6 @@ const pageTitles: Record<string, string> = {
   [paths.esqueciSenha]: 'Esqueci Senha - Fort-Lar',
   [paths.welcome]: 'Bem-vindo - Fort-Lar',
   [paths.home]: 'Fort-Lar - Catálogo de Produtos',
-  [paths.dashboard]: 'Dashboard - Fort-Lar',
-  [paths.profile]: 'Perfil - Fort-Lar',
-  [paths.settings]: 'Configurações - Fort-Lar',
   [paths.notFound]: '404 - Página Não Encontrada',
 };
 
