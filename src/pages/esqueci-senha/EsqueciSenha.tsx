@@ -4,7 +4,7 @@ import { ArrowLeft, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/services/api";
 
 const EsqueciSenha = () => {
   const [email, setEmail] = useState("");
@@ -27,18 +27,7 @@ const EsqueciSenha = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/login`,
-      });
-
-      if (error) {
-        toast({
-          title: "Erro",
-          description: error.message,
-          variant: "destructive"
-        });
-        return;
-      }
+      await api.post('/auth/forgot-password', { email });
 
       toast({
         title: "E-mail enviado!",
@@ -48,10 +37,10 @@ const EsqueciSenha = () => {
       setTimeout(() => {
         navigate("/login");
       }, 2000);
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Erro",
-        description: "Ocorreu um erro ao enviar o e-mail. Tente novamente.",
+        description: error.response?.data?.message || "Ocorreu um erro ao enviar o e-mail. Tente novamente.",
         variant: "destructive"
       });
     } finally {

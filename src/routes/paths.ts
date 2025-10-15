@@ -7,7 +7,7 @@ export const paths = {
   esqueciSenha: '/esqueci-senha',
   
   // Protected routes
-  welcome: '/welcome',
+  catalog: '/catalog',
   home: '/home',
   
   // Error routes

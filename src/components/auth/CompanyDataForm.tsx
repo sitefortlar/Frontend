@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building } from "lucide-react";
+import { formatCNPJ } from "@/utils/validation";
 
 interface CompanyDataFormProps {
   cnpj: string;
@@ -25,23 +26,27 @@ export const CompanyDataForm = ({
   onSearchByCnpj,
   errors,
 }: CompanyDataFormProps) => {
+  const handleCnpjChange = (value: string) => {
+    const maskedValue = formatCNPJ(value);
+    onCnpjChange(maskedValue);
+  };
   return (
-    <Card className="bg-[hsl(var(--auth-form-bg))] backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.1s'}}>
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-3 text-white text-xl font-semibold">
-          <div className="p-2 bg-white/20 rounded-xl">
-            <Building className="h-5 w-5 text-white" />
+    <Card className="bg-[hsl(var(--auth-form-bg))] backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.1s'}}>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-3 text-white text-lg font-semibold">
+          <div className="p-2 bg-white/20 rounded-lg">
+            <Building className="h-4 w-4 text-white" />
           </div>
           Dados da Empresa
         </CardTitle>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="relative group md:col-span-2">
           <Input
             placeholder="CNPJ *"
             value={cnpj}
-            onChange={(e) => onCnpjChange(e.target.value)}
-            className="h-12 pr-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
+            onChange={(e) => handleCnpjChange(e.target.value)}
+            className="h-11 pr-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
             required
           />
           <button
@@ -61,7 +66,7 @@ export const CompanyDataForm = ({
           placeholder="Razão Social *"
           value={razaoSocial}
           onChange={(e) => onRazaoSocialChange(e.target.value)}
-          className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
+          className="h-11 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
           required
         />
         {errors.razaoSocial && (
@@ -72,7 +77,7 @@ export const CompanyDataForm = ({
           placeholder="Fantasia *"
           value={fantasia}
           onChange={(e) => onFantasiaChange(e.target.value)}
-          className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
+          className="h-11 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
           required
         />
         {errors.fantasia && (

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { validateEmail, validateCNPJ, validatePhone, validatePassword } from '@/utils/validation';
-import { VALIDATION_MESSAGES } from '@/constants';
+import { VALIDATION_MESSAGES } from '@/constants/auth';
 
 export interface PasswordValidation {
   hasMinLength: boolean;

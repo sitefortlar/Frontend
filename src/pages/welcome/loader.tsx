@@ -1,46 +1,55 @@
-import { authService, userService } from '@/services';
+// import { authService } from '@/services';
 
-export const welcomeLoader = async () => {
-  const token = authService.getToken();
+// export const welcomeLoader = async () => {
+//   const token = authService.getToken();
   
-  // Check if token is valid
-  if (!token || !authService.isTokenValid(token)) {
-    // Clear invalid token and redirect to login
-    await authService.logout();
-    throw new Response(null, {
-      status: 302,
-      headers: {
-        Location: '/login',
-      },
-    });
-  }
+//   // Check if token is valid
+//   if (!token || !authService.isTokenValid(token)) {
+//     // Just redirect to login without clearing localStorage
+//     throw new Response(null, {
+//       status: 302,
+//       headers: {
+//         Location: '/login',
+//       },
+//     });
+//   }
 
-  try {
-    // Get user data
-    const user = await userService.getCurrentUser();
-    const clients = user.clients.filter(client => client.isActive);
+//   // Get user data from localStorage
+//   const user = authService.getCurrentUserFromStorage();
+  
+//   if (!user) {
+//     // Just redirect to login without clearing localStorage
+//     throw new Response(null, {
+//       status: 302,
+//       headers: {
+//         Location: '/login',
+//       },
+//     });
+//   }
 
-    // If user has only 1 client, save clientId and redirect to home
-    if (clients.length === 1) {
-      localStorage.setItem('selected_client_id', clients[0].id);
-      throw new Response(null, {
-        status: 302,
-        headers: {
-          Location: '/home',
-        },
-      });
-    }
+//   // Mock clients for now
+//   const clients = [
+//     {
+//       id: 'client_1',
+//       name: 'Empresa ABC Ltda',
+//       cnpj: '12.345.678/0001-90',
+//       email: 'contato@empresaabc.com',
+//       phone: '(11) 99999-9999',
+//       isActive: true,
+//     }
+//   ];
 
-    // If user has multiple clients, return user data to show client selection
-    return { user, clients };
-  } catch (error) {
-    // If error getting user data, clear token and redirect to login
-    await authService.logout();
-    throw new Response(null, {
-      status: 302,
-      headers: {
-        Location: '/login',
-      },
-    });
-  }
-};
+//   // If user has only 1 client, save clientId and redirect to catalog
+//   if (clients.length === 1) {
+//     localStorage.setItem('selected_client_id', clients[0].id);
+//     throw new Response(null, {
+//       status: 302,
+//       headers: {
+//         Location: '/home',
+//       },
+//     });
+//   }
+
+//   // If user has multiple clients, return user data to show client selection
+//   return { user, clients };
+// };

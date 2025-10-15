@@ -26,21 +26,21 @@ export const ContactForm = ({
   errors,
 }: ContactFormProps) => {
   return (
-    <Card className="bg-[hsl(var(--auth-form-bg))] backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.3s'}}>
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-3 text-white text-xl font-semibold">
-          <div className="p-2 bg-white/20 rounded-xl">
-            <User className="h-5 w-5 text-white" />
+    <Card className="bg-[hsl(var(--auth-form-bg))] backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.3s'}}>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-3 text-white text-lg font-semibold">
+          <div className="p-2 bg-white/20 rounded-lg">
+            <User className="h-4 w-4 text-white" />
           </div>
           Contato
         </CardTitle>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
           placeholder="Nome *"
           value={nomeContato}
           onChange={(e) => onNomeContatoChange(e.target.value)}
-          className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
+          className="h-11 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
           required
         />
         {errors.nomeContato && (
@@ -51,7 +51,7 @@ export const ContactForm = ({
           placeholder="Telefone *"
           value={telefone}
           onChange={(e) => onTelefoneChange(e.target.value)}
-          className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
+          className="h-11 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
           required
         />
         {errors.telefone && (
@@ -63,7 +63,7 @@ export const ContactForm = ({
           placeholder="E-mail *"
           value={email}
           onChange={(e) => onEmailChange(e.target.value)}
-          className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
+          className="h-11 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
           required
         />
         {errors.email && (
@@ -74,7 +74,7 @@ export const ContactForm = ({
           placeholder="WhatsApp *"
           value={whatsapp}
           onChange={(e) => onWhatsappChange(e.target.value)}
-          className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
+          className="h-11 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
           required
         />
         {errors.whatsapp && (

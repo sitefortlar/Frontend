@@ -9,12 +9,6 @@ export const APP_CONFIG = {
     timeout: 10000,
   },
   
-  // Supabase Configuration
-  supabase: {
-    url: import.meta.env.VITE_SUPABASE_URL || '',
-    anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY || '',
-  },
-  
   // Pagination
   pagination: {
     defaultPageSize: 20,

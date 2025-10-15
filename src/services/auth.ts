@@ -1,23 +1,8 @@
-// Mock JWT token generator
-const generateMockToken = (userId: string): string => {
-  const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-  const payload = btoa(JSON.stringify({ 
-    userId, 
-    exp: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
-    iat: Date.now()
-  }));
-  const signature = btoa('mock-signature');
-  return `${header}.${payload}.${signature}`;
-};
-
-// Mock credentials validation
-const validateCredentials = (email: string, password: string): boolean => {
-  // Mock validation - accept any email/password for demo
-  return email && password && email.includes('@');
-};
+import { jwtDecode } from 'jwt-decode';
+import { api } from './api';
 
 export interface LoginCredentials {
-  email: string;
+  login: string;
   password: string;
 }
 
@@ -32,42 +17,47 @@ export interface LoginResponse {
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (!validateCredentials(credentials.email, credentials.password)) {
-          reject(new Error('Credenciais inválidas'));
-          return;
-        }
+    try {
+      const response = await api.post('/auth/login', credentials);
+      
+      // Estrutura do seu backend: { access_token: "jwt_token_here", token_type: "bearer" }
+      const { access_token: token } = response.data;
+      
+      if (!token) {
+        throw new Error('Token não encontrado na resposta do servidor');
+      }
 
-        const userId = `user_${Date.now()}`;
-        const token = generateMockToken(userId);
-        
-        const response: LoginResponse = {
-          token,
-          user: {
-            id: userId,
-            email: credentials.email,
-            name: credentials.email.split('@')[0],
-          }
-        };
+      // Decodificar o JWT para extrair dados do usuário
+      const decodedToken = jwtDecode<any>(token);
 
-        // Save token to localStorage
-        localStorage.setItem('auth_token', token);
-        localStorage.setItem('user_id', userId);
+      // Extrair dados do usuário do token decodificado
+      const user = {
+        id: decodedToken.id || decodedToken.userId || decodedToken.sub,
+        email: decodedToken.email || decodedToken.login || credentials.login,
+        name: decodedToken.name || decodedToken.username || credentials.login.split('@')[0]
+      };
 
-        resolve(response);
-      }, 1000); // Simulate network delay
-    });
+      // Save token and user data to localStorage
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('user_id', user.id);
+      localStorage.setItem('user_email', user.email);
+      localStorage.setItem('user_name', user.name);
+      localStorage.setItem('user_data', JSON.stringify(user));
+
+      return { token, user };
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || error.message || 'Erro ao fazer login');
+    }
   },
 
   async logout(): Promise<void> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user_id');
-        resolve();
-      }, 500);
-    });
+    // Clear all user data from localStorage
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('user_email');
+    localStorage.removeItem('user_name');
+    localStorage.removeItem('user_data');
+    localStorage.removeItem('selected_client_id');
   },
 
   getToken(): string | null {
@@ -98,5 +88,50 @@ export const authService = {
 
   getCurrentUserId(): string | null {
     return localStorage.getItem('user_id');
+  },
+
+  async getCurrentUser(): Promise<any> {
+    const userId = this.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuário não autenticado');
+    }
+    
+    // Retorna os dados do usuário do localStorage ou faz uma chamada para a API
+    const userData = localStorage.getItem('user_data');
+    if (userData) {
+      return JSON.parse(userData);
+    }
+    
+    // Se não tiver dados no localStorage, pode fazer uma chamada para a API
+    // Por enquanto, vamos retornar dados básicos
+    return {
+      id: userId,
+      email: localStorage.getItem('user_email') || '',
+      name: localStorage.getItem('user_name') || ''
+    };
+  },
+
+  getCurrentUserFromStorage(): any | null {
+    try {
+      const userId = this.getCurrentUserId();
+      if (!userId) {
+        return null;
+      }
+      
+      // Retorna os dados do usuário do localStorage
+      const userData = localStorage.getItem('user_data');
+      if (userData) {
+        return JSON.parse(userData);
+      }
+      
+      // Se não tiver dados completos, retorna dados básicos
+      return {
+        id: userId,
+        email: localStorage.getItem('user_email') || '',
+        name: localStorage.getItem('user_name') || ''
+      };
+    } catch (error) {
+      return null;
+    }
   }
 };

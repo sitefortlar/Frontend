@@ -25,9 +25,14 @@ export const routeConfig = {
   // Protected routes (wrapped in Layout)
   protected: [
     {
+      path: paths.catalog,
+      Component: lazy(() => import('@/pages/catalog')),
+      title: 'Fort-Lar - Catálogo de Produtos',
+    },
+    {
       path: paths.home,
       Component: lazy(() => import('@/pages/home')),
-      title: 'Fort-Lar - Catálogo de Produtos',
+      title: 'Fort-Lar - Home',
     },
     // Add more protected routes here
     // {

@@ -13,7 +13,7 @@ interface LoginFormProps {
 }
 
 export const LoginForm = ({ onSuccess }: LoginFormProps) => {
-  const [email, setEmail] = useState("");
+  const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +26,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
     e.preventDefault();
     clearErrors();
     
-    if (!validateForm({ email, password })) {
+    if (!validateForm({ email: login, password })) {
       toast({
         title: "Erro",
         description: AUTH_MESSAGES.REQUIRED_FIELDS,
@@ -38,15 +38,15 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
     setIsLoading(true);
 
     try {
-      const response = await authService.login({ email, password });
+      const response = await authService.login({ login, password });
       
       toast({
         title: "Login realizado",
         description: AUTH_MESSAGES.LOGIN_SUCCESS,
       });
 
-      // Redirect to welcome page
-      navigate('/welcome');
+      // Redirect to catalog page
+      navigate('/catalog');
     } catch (error) {
       toast({
         title: "Erro ao fazer login",
@@ -71,9 +71,9 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
           <Mail className="form-icon group-focus-within:text-white" />
           <Input
             type="email"
-            placeholder="E-mail ou CNPJ"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            placeholder="E-mail"
+            value={login}
+            onChange={(e) => setLogin(e.target.value)}
             className="pl-12 h-14 auth-input text-white placeholder:text-white/80 bg-[hsl(var(--auth-input-bg))] border-white/20 focus-visible:ring-white/40 focus-visible:ring-offset-0"
             required
           />
@@ -118,6 +118,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
           "Entrar"
         )}
       </Button>
+
     </form>
   );
 };

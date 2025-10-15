@@ -18,20 +18,17 @@ const router = createBrowserRouter([
     lazy: () => import('@/pages/esqueci-senha').then(module => ({ Component: module.default })),
   },
   
-  // Protected routes
-  {
-    path: paths.welcome,
-    loader: () => import('@/pages/welcome/loader').then(module => module.welcomeLoader()),
-    lazy: () => import('@/pages/welcome').then(module => ({ Component: module.default })),
-  },
-  
   // Main layout with protected routes
   {
     element: <Layout />,
     children: [
       {
+        path: paths.catalog,
+        loader: () => import('@/pages/catalog/loader').then(module => module.catalogLoader()),
+        lazy: () => import('@/pages/catalog').then(module => ({ Component: module.default })),
+      },
+      {
         path: paths.home,
-        loader: () => import('@/pages/home/loader').then(module => module.homeLoader()),
         lazy: () => import('@/pages/home').then(module => ({ Component: module.default })),
       },
       // Add more protected routes here in the future
