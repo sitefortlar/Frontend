@@ -41,7 +41,7 @@ export const useCart = () => {
 
   // Mutation para adicionar item ao carrinho
   const addToCartMutation = useMutation({
-    mutationFn: ({ product, size, priceType, quantity }: {
+    mutationFn: async ({ product, size, priceType, quantity }: {
       product: Product;
       size: string;
       priceType: PriceType;
@@ -74,7 +74,7 @@ export const useCart = () => {
       }
 
       localStorage.setItem('cart_items', JSON.stringify(newItems));
-      return newItems;
+      return Promise.resolve(newItems);
     },
     onSuccess: () => {
       // Invalida o cache do carrinho
@@ -85,11 +85,11 @@ export const useCart = () => {
 
   // Mutation para remover item do carrinho
   const removeFromCartMutation = useMutation({
-    mutationFn: (itemId: string) => {
+    mutationFn: async (itemId: string) => {
       const items = JSON.parse(localStorage.getItem('cart_items') || '[]');
       const newItems = items.filter((item: CartItem) => item.id !== itemId);
       localStorage.setItem('cart_items', JSON.stringify(newItems));
-      return newItems;
+      return Promise.resolve(newItems);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.cart.items });
@@ -98,7 +98,7 @@ export const useCart = () => {
 
   // Mutation para atualizar quantidade
   const updateQuantityMutation = useMutation({
-    mutationFn: ({ itemId, quantity }: { itemId: string; quantity: number }) => {
+    mutationFn: async ({ itemId, quantity }: { itemId: string; quantity: number }) => {
       const items = JSON.parse(localStorage.getItem('cart_items') || '[]');
       let newItems: CartItem[];
       
@@ -111,7 +111,7 @@ export const useCart = () => {
       }
       
       localStorage.setItem('cart_items', JSON.stringify(newItems));
-      return newItems;
+      return Promise.resolve(newItems);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.cart.items });
@@ -120,7 +120,7 @@ export const useCart = () => {
 
   // Mutation para atualizar tipo de preço
   const updatePriceTypeMutation = useMutation({
-    mutationFn: ({ itemId, priceType, product }: {
+    mutationFn: async ({ itemId, priceType, product }: {
       itemId: string;
       priceType: PriceType;
       product: Product;
@@ -133,7 +133,7 @@ export const useCart = () => {
       );
       
       localStorage.setItem('cart_items', JSON.stringify(newItems));
-      return newItems;
+      return Promise.resolve(newItems);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.cart.items });
@@ -142,7 +142,7 @@ export const useCart = () => {
 
   // Mutation para atualizar tipo de preço de todos os itens
   const updateAllItemsPriceTypeMutation = useMutation({
-    mutationFn: ({ priceType, allProducts }: {
+    mutationFn: async ({ priceType, allProducts }: {
       priceType: PriceType;
       allProducts: Product[];
     }) => {
@@ -160,7 +160,7 @@ export const useCart = () => {
       });
       
       localStorage.setItem('cart_items', JSON.stringify(newItems));
-      return newItems;
+      return Promise.resolve(newItems);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.cart.items });
@@ -169,9 +169,9 @@ export const useCart = () => {
 
   // Mutation para limpar carrinho
   const clearCartMutation = useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
       localStorage.removeItem('cart_items');
-      return [];
+      return Promise.resolve([]);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.cart.items });
@@ -275,6 +275,11 @@ export const useCart = () => {
     total,
     itemCount,
     isDrawerOpen,
+    setIsDrawerOpen,
+    
+    // Alias para compatibilidade
+    getItemCount: itemCount,
+    getTotalPrice: () => total,
 
     // Estados de loading
     isCartLoading,

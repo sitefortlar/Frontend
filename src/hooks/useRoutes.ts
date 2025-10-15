@@ -13,7 +13,7 @@ export const useRoutes = () => {
     // Protected routes
     protected: {
       home: paths.home,
-      welcome: paths.welcome,
+      catalog: paths.catalog,
     },
     
     // Error routes

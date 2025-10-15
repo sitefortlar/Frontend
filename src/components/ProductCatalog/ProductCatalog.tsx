@@ -8,7 +8,7 @@ import { useProductFilters } from '@/hooks/useProductFilters';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingCart } from 'lucide-react';
-import { CartSheet } from '@/components/Cart/CartSheet';
+import CartSheet from '@/components/Cart/CartSheet';
 
 // Importar produtos dos dados reais
 import { products as realProducts, categories as realCategories } from '@/data/products';
@@ -43,9 +43,9 @@ export const ProductCatalog = () => {
     removeFromCart, 
     updateQuantity, 
     updatePriceType, 
-    updateAllItemsPriceType, 
-    getTotalPrice, 
-    getItemCount, 
+    updateAllItemsPriceType,
+    getTotalPrice,
+    getItemCount,
     clearCart, 
     generateWhatsAppMessage, 
     isDrawerOpen, 
@@ -116,3 +116,5 @@ export const ProductCatalog = () => {
     </div>
   );
 };
+
+export default ProductCatalog;

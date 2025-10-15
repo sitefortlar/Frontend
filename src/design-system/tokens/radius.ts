@@ -6,19 +6,15 @@
 export const radius = {
   // Valores básicos
   none: '0',
-  sm: '0.125rem',    // 2px
-  base: '0.25rem',   // 4px
-  md: '0.375rem',    // 6px
-  lg: '0.5rem',      // 8px
-  xl: '0.75rem',     // 12px
-  '2xl': '1rem',     // 16px
-  '3xl': '1.5rem',   // 24px
+  xs: '0.125rem',    // 2px
+  sm: '0.25rem',     // 4px
+  base: '0.375rem',  // 6px
+  md: '0.5rem',      // 8px
+  lg: '0.75rem',     // 12px
+  xl: '1rem',        // 16px
+  '2xl': '1.5rem',   // 24px
+  '3xl': '2rem',     // 32px
   full: '9999px',
-  
-  // Valores do sistema atual (baseados nas CSS variables)
-  sm: 'calc(var(--radius) - 4px)',
-  md: 'calc(var(--radius) - 2px)',
-  lg: 'var(--radius)',
   
   // Valores específicos do Fort-Lar
   auth: '0.75rem',     // 12px - para inputs de auth

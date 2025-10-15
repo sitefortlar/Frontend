@@ -31,7 +31,7 @@ interface CartDrawerProps {
   onClearCart: () => void;
 }
 
-export const CartDrawer = ({
+const CartDrawer = ({
   isOpen,
   onClose,
   items,
@@ -268,3 +268,5 @@ export const CartDrawer = ({
     </Drawer>
   );
 };
+
+export default CartDrawer;

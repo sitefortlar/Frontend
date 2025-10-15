@@ -40,9 +40,6 @@ export const createQueryClient = (): QueryClient => {
         // Não revalidar em background por padrão (pode ser sobrescrito por query)
         refetchInterval: false,
         
-        // Configurações de suspense
-        suspense: false,
-        
         // Configurações de erro
         throwOnError: false,
       },
@@ -62,23 +59,6 @@ export const createQueryClient = (): QueryClient => {
         
         // Configurações de erro
         throwOnError: false,
-      },
-    },
-    
-    // Configurações globais
-    logger: {
-      log: (...args) => {
-        if (isDevelopment) {
-          console.log('[React Query]', ...args);
-        }
-      },
-      warn: (...args) => {
-        if (isDevelopment) {
-          console.warn('[React Query]', ...args);
-        }
-      },
-      error: (...args) => {
-        console.error('[React Query]', ...args);
       },
     },
   });

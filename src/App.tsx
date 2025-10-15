@@ -12,7 +12,6 @@ import { theme } from '@/design-system/theme';
 import { GlobalStyles } from '@/design-system/GlobalStyles';
 import router from './routes';
 
-// Cria o cliente do React Query com configurações otimizadas
 const queryClient = createQueryClient();
 
 const App = () => (
@@ -24,7 +23,6 @@ const App = () => (
           <Toaster />
           <Sonner />
           <RouterProvider router={router} />
-          {/* DevTools apenas em desenvolvimento */}
           {isDevelopment && <ReactQueryDevtools initialIsOpen={false} />}
         </TooltipProvider>
       </QueryClientProvider>

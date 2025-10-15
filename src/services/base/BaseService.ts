@@ -91,7 +91,8 @@ export abstract class BaseService implements IBaseService {
    */
   protected handleError(error: AxiosError): Error {
     const status = error.response?.status;
-    const message = error.response?.data?.message || error.message || 'Erro desconhecido';
+    const data = error.response?.data as any;
+    const message = data?.message || error.message || 'Erro desconhecido';
     
     // Log do erro para debugging (apenas em desenvolvimento)
     if (process.env.NODE_ENV === 'development') {

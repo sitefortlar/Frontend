@@ -28,7 +28,7 @@ interface CartSheetProps {
   allProducts?: Product[];
 }
 
-export const CartSheet = ({
+const CartSheet = ({
   isOpen,
   onClose,
   items,
@@ -94,3 +94,5 @@ export const CartSheet = ({
     </Sheet>
   );
 };
+
+export default CartSheet;

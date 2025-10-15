@@ -229,3 +229,5 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
     </Dialog>
   );
 };
+
+export default ProductModal;
