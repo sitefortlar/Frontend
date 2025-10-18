@@ -9,7 +9,6 @@ export const paths = {
   
   // Protected routes
   catalog: '/catalog',
-  home: '/home',
   
   // Error routes
   notFound: '/404',

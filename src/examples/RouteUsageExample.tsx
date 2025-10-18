@@ -24,7 +24,7 @@ const RouteUsageExample = () => {
       <h1 className="text-2xl font-bold">Exemplo de Uso de Rotas</h1>
       
       <div className="space-y-2">
-        <p>Rota atual: {isCurrentPath(paths.home) ? 'Home' : 'Outra rota'}</p>
+        <p>Rota atual: {isCurrentPath(paths.catalog) ? 'Catalog' : 'Outra rota'}</p>
         
         <div className="flex gap-2">
           <Button onClick={handleNavigation}>

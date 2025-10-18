@@ -4,8 +4,7 @@ import { lazy } from 'react';
 export const LazyLogin = lazy(() => import('@/pages/login/Login'));
 export const LazyCadastro = lazy(() => import('@/pages/cadastro/Cadastro'));
 export const LazyEsqueciSenha = lazy(() => import('@/pages/esqueci-senha/EsqueciSenha'));
-export const LazyHome = lazy(() => import('@/pages/home/HomePage'));
-export const LazyWelcome = lazy(() => import('@/pages/welcome/Welcome'));
+export const LazyRedefinirSenha = lazy(() => import('@/pages/redefinir-senha/RedefinirSenha'));
 export const LazyCatalog = lazy(() => import('@/pages/catalog/CatalogPage'));
 
 // Lazy load component pieces

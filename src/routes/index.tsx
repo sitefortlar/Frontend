@@ -31,15 +31,6 @@ const router = createBrowserRouter([
         loader: () => import('@/pages/catalog/loader').then(module => module.catalogLoader()),
         lazy: () => import('@/pages/catalog').then(module => ({ Component: module.default })),
       },
-      {
-        path: paths.home,
-        lazy: () => import('@/pages/home').then(module => ({ Component: module.default })),
-      },
-      // Add more protected routes here in the future
-      // {
-      //   path: paths.dashboard,
-      //   lazy: () => import('@/pages/Dashboard').then(module => ({ Component: module.default })),
-      // },
     ],
   },
   

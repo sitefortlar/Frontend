@@ -8,11 +8,11 @@ export const useRoutes = () => {
       login: paths.login,
       cadastro: paths.cadastro,
       esqueciSenha: paths.esqueciSenha,
+      redefinirSenha: paths.redefinirSenha,
     },
     
     // Protected routes
     protected: {
-      home: paths.home,
       catalog: paths.catalog,
     },
     

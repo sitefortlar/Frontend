@@ -20,6 +20,11 @@ export const routeConfig = {
       Component: lazy(() => import('@/pages/esqueci-senha')),
       title: 'Esqueci Senha - Fort-Lar',
     },
+    {
+      path: paths.redefinirSenha,
+      Component: lazy(() => import('@/pages/redefinir-senha')),
+      title: 'Redefinir Senha - Fort-Lar',
+    },
   ],
   
   // Protected routes (wrapped in Layout)
@@ -29,17 +34,6 @@ export const routeConfig = {
       Component: lazy(() => import('@/pages/catalog')),
       title: 'Fort-Lar - Catálogo de Produtos',
     },
-    {
-      path: paths.home,
-      Component: lazy(() => import('@/pages/home')),
-      title: 'Fort-Lar - Home',
-    },
-    // Add more protected routes here
-    // {
-    //   path: paths.dashboard,
-    //   Component: lazy(() => import('@/pages/Dashboard')),
-    //   title: 'Dashboard - Fort-Lar',
-    // },
   ],
   
   // Error routes

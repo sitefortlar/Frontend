@@ -123,7 +123,6 @@ const Cadastro = () => {
             <Button 
               type="button" 
               variant="outline"
-              size="md"
               onClick={() => navigate("/login")}
               className="px-6 h-11 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl transition-all duration-300 backdrop-blur-sm"
             >
@@ -131,8 +130,7 @@ const Cadastro = () => {
             </Button>
             <Button 
               type="submit" 
-              variant="primary"
-              size="md"
+              variant="default"
               className="px-6 h-11 bg-[hsl(var(--auth-button))] hover:bg-[hsl(var(--primary-glow))] text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
             >
               Criar Conta
