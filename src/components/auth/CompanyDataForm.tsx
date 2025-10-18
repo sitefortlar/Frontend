@@ -1,9 +1,18 @@
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building } from "lucide-react";
+import { Search, Building } from "lucide-react";
 import { formatCNPJ } from "@/utils/validation";
+import {
+  AuthFormCard,
+  AuthFormHeader,
+  AuthFormTitle,
+  AuthFormIcon,
+  AuthFormContent,
+  AuthFormFullWidth,
+  AuthInputGroup,
+  AuthInput,
+  AuthInputWithIcon,
+  AuthInputButton,
+  AuthError
+} from "./styles";
 
 interface CompanyDataFormProps {
   cnpj: string;
@@ -31,59 +40,61 @@ export const CompanyDataForm = ({
     onCnpjChange(maskedValue);
   };
   return (
-    <Card className="bg-[hsl(var(--auth-form-bg))] backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.1s'}}>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-3 text-white text-lg font-semibold">
-          <div className="p-2 bg-white/20 rounded-lg">
+    <AuthFormCard delay="0.1s">
+      <AuthFormHeader>
+        <AuthFormTitle>
+          <AuthFormIcon>
             <Building className="h-4 w-4 text-white" />
-          </div>
+          </AuthFormIcon>
           Dados da Empresa
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="relative group md:col-span-2">
-          <Input
-            placeholder="CNPJ *"
-            value={cnpj}
-            onChange={(e) => handleCnpjChange(e.target.value)}
-            className="h-11 pr-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
+        </AuthFormTitle>
+      </AuthFormHeader>
+      <AuthFormContent>
+        <AuthFormFullWidth>
+          <AuthInputGroup>
+            <AuthInputWithIcon
+              placeholder="CNPJ *"
+              value={cnpj}
+              onChange={(e) => handleCnpjChange(e.target.value)}
+              required
+            />
+            <AuthInputButton
+              type="button"
+              onClick={onSearchByCnpj}
+              title="Buscar dados da empresa pelo CNPJ"
+            >
+              <Search className="h-5 w-5" />
+            </AuthInputButton>
+          </AuthInputGroup>
+          {errors.cnpj && (
+            <AuthError>{errors.cnpj}</AuthError>
+          )}
+        </AuthFormFullWidth>
+        
+        <div>
+          <AuthInput
+            placeholder="Razão Social *"
+            value={razaoSocial}
+            onChange={(e) => onRazaoSocialChange(e.target.value)}
             required
           />
-          <button
-            type="button"
-            onClick={onSearchByCnpj}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white hover:scale-110 transition-all duration-300"
-            title="Buscar dados da empresa pelo CNPJ"
-          >
-            <Search className="h-5 w-5" />
-          </button>
-          {errors.cnpj && (
-            <p className="text-red-400 text-sm mt-1">{errors.cnpj}</p>
+          {errors.razaoSocial && (
+            <AuthError>{errors.razaoSocial}</AuthError>
           )}
         </div>
         
-        <Input
-          placeholder="Razão Social *"
-          value={razaoSocial}
-          onChange={(e) => onRazaoSocialChange(e.target.value)}
-          className="h-11 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-          required
-        />
-        {errors.razaoSocial && (
-          <p className="text-red-400 text-sm mt-1">{errors.razaoSocial}</p>
-        )}
-        
-        <Input
-          placeholder="Fantasia *"
-          value={fantasia}
-          onChange={(e) => onFantasiaChange(e.target.value)}
-          className="h-11 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-          required
-        />
-        {errors.fantasia && (
-          <p className="text-red-400 text-sm mt-1">{errors.fantasia}</p>
-        )}
-      </CardContent>
-    </Card>
+        <div>
+          <AuthInput
+            placeholder="Fantasia *"
+            value={fantasia}
+            onChange={(e) => onFantasiaChange(e.target.value)}
+            required
+          />
+          {errors.fantasia && (
+            <AuthError>{errors.fantasia}</AuthError>
+          )}
+        </div>
+      </AuthFormContent>
+    </AuthFormCard>
   );
 };

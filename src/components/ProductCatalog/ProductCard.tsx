@@ -1,11 +1,26 @@
 
 import { useState } from 'react';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Eye, Package } from 'lucide-react';
 import { Product, PriceType } from '@/types/Product';
 import { ProductModal } from './ProductModal';
+import {
+  ProductCard as StyledProductCard,
+  ProductImageContainer,
+  ProductImage,
+  ProductBadge,
+  ProductContent,
+  ProductCategory,
+  ProductName,
+  ProductPrices,
+  ProductPriceLabel,
+  ProductPriceGrid,
+  ProductPriceItem,
+  ProductPriceValue,
+  ProductKits,
+  ProductKitsLabel,
+  ProductKitsGrid,
+  ProductKitsInfo
+} from './styles';
 
 interface ProductCardProps {
   product: Product;
@@ -31,84 +46,81 @@ export const ProductCard = ({ product, priceType, onAddToCart }: ProductCardProp
 
   return (
     <>
-      <Card className="group product-card" onClick={() => setIsModalOpen(true)}>
-        <CardHeader className="p-0">
-          <div className="relative w-full h-48 glass-input rounded-t-lg overflow-hidden">
-            <img 
-              src={getProductImage(product.id)}
-              alt={product.name}
-              className="product-image group-hover:scale-105"
-            />
-            {product.isKit && (
-              <Badge className="product-badge">
-                <Package className="h-3 w-3 mr-1" />
-                Kit
-              </Badge>
-            )}
-          </div>
-        </CardHeader>
+      <StyledProductCard onClick={() => setIsModalOpen(true)}>
+        <ProductImageContainer>
+          <ProductImage 
+            src={getProductImage(product.id)}
+            alt={product.name}
+          />
+          {product.isKit && (
+            <ProductBadge>
+              <Package className="h-3 w-3" />
+              Kit
+            </ProductBadge>
+          )}
+        </ProductImageContainer>
 
-        <CardContent className="p-4 space-y-3">
+        <ProductContent>
           <div>
-            <Badge variant="outline" className="text-xs mb-2 capitalize">
+            <ProductCategory>
               {product.category.replace('-', ' ')}
-            </Badge>
-            <h3 className="font-semibold text-base line-clamp-2 group-hover:text-primary transition-colors">
+            </ProductCategory>
+            <ProductName>
               {product.name}
-            </h3>
+            </ProductName>
           </div>
 
-          <div className="space-y-2">
-            <div className="text-xs text-muted-foreground">Unidade:</div>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="text-center">
-                <div className="text-xs text-green-600 font-medium">À vista:</div>
-                <div className="text-sm price-avista">
+          <ProductPrices>
+            <ProductPriceLabel>Unidade:</ProductPriceLabel>
+            <ProductPriceGrid>
+              <ProductPriceItem>
+                <ProductPriceLabel>À vista:</ProductPriceLabel>
+                <ProductPriceValue isHighlight>
                   R$ {product.prices.avista.toFixed(2)}
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-xs text-muted-foreground">30 dias:</div>
-                <div className="text-sm price-other">
+                </ProductPriceValue>
+              </ProductPriceItem>
+              <ProductPriceItem>
+                <ProductPriceLabel>30 dias:</ProductPriceLabel>
+                <ProductPriceValue>
                   R$ {product.prices.dias30.toFixed(2)}
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-xs text-muted-foreground">90 dias:</div>
-                <div className="text-sm price-other">
+                </ProductPriceValue>
+              </ProductPriceItem>
+              <ProductPriceItem>
+                <ProductPriceLabel>90 dias:</ProductPriceLabel>
+                <ProductPriceValue>
                   R$ {product.prices.dias90.toFixed(2)}
-                </div>
-              </div>
-            </div>
-          </div>
+                </ProductPriceValue>
+              </ProductPriceItem>
+            </ProductPriceGrid>
+          </ProductPrices>
 
           {product.kits && product.kits.length > 0 && (
-            <div className="border-t pt-2">
-              <div className="text-xs text-muted-foreground">Kit Popular (12 un):</div>
-              <div className="grid grid-cols-3 gap-2 mt-1">
-                <div className="text-center">
-                  <div className="text-xs font-bold text-green-600">
+            <ProductKits>
+              <ProductKitsLabel>Kit Popular (12 un):</ProductKitsLabel>
+              <ProductKitsGrid>
+                <ProductPriceItem>
+                  <ProductPriceValue isHighlight>
                     R$ {product.kits.find(k => k.units === 12)?.prices.avista.toFixed(2) || 'N/A'}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xs font-semibold">
+                  </ProductPriceValue>
+                </ProductPriceItem>
+                <ProductPriceItem>
+                  <ProductPriceValue>
                     R$ {product.kits.find(k => k.units === 12)?.prices.dias30.toFixed(2) || 'N/A'}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xs font-semibold">
+                  </ProductPriceValue>
+                </ProductPriceItem>
+                <ProductPriceItem>
+                  <ProductPriceValue>
                     R$ {product.kits.find(k => k.units === 12)?.prices.dias90.toFixed(2) || 'N/A'}
-                  </div>
-                </div>
-              </div>
-              <div className="text-xs text-muted-foreground text-center mt-1">
+                  </ProductPriceValue>
+                </ProductPriceItem>
+              </ProductKitsGrid>
+              <ProductKitsInfo>
                 {product.kits.length} opções de kit disponíveis
-              </div>
-            </div>
+              </ProductKitsInfo>
+            </ProductKits>
           )}
-        </CardContent>
-      </Card>
+        </ProductContent>
+      </StyledProductCard>
 
       <ProductModal
         product={product}

@@ -1,8 +1,15 @@
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText } from "lucide-react";
 import { BRAZILIAN_STATES } from "@/constants/auth";
+import {
+  AuthFormCard,
+  AuthFormHeader,
+  AuthFormTitle,
+  AuthFormIcon,
+  AuthFormContent,
+  AuthInput,
+  AuthSelect,
+  AuthError
+} from "./styles";
 
 interface AddressFormProps {
   cep: string;
@@ -40,98 +47,106 @@ export const AddressForm = ({
   errors,
 }: AddressFormProps) => {
   return (
-    <Card className="bg-[hsl(var(--auth-form-bg))] backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl animate-fade-in-scale" style={{animationDelay: '0.2s'}}>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-3 text-white text-lg font-semibold">
-          <div className="p-2 bg-white/20 rounded-lg">
+    <AuthFormCard delay="0.2s">
+      <AuthFormHeader>
+        <AuthFormTitle>
+          <AuthFormIcon>
             <FileText className="h-4 w-4 text-white" />
-          </div>
+          </AuthFormIcon>
           Endereço
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Input
-          placeholder="CEP *"
-          value={cep}
-          onChange={(e) => onCepChange(e.target.value)}
-          className="h-11 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-          required
-        />
-        {errors.cep && (
-          <p className="text-red-400 text-sm mt-1">{errors.cep}</p>
-        )}
+        </AuthFormTitle>
+      </AuthFormHeader>
+      <AuthFormContent>
+        <div>
+          <AuthInput
+            placeholder="CEP *"
+            value={cep}
+            onChange={(e) => onCepChange(e.target.value)}
+            required
+          />
+          {errors.cep && (
+            <AuthError>{errors.cep}</AuthError>
+          )}
+        </div>
         
-        <Input
-          placeholder="Endereço *"
-          value={endereco}
-          onChange={(e) => onEnderecoChange(e.target.value)}
-          className="h-11 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-          required
-        />
-        {errors.endereco && (
-          <p className="text-red-400 text-sm mt-1">{errors.endereco}</p>
-        )}
+        <div>
+          <AuthInput
+            placeholder="Endereço *"
+            value={endereco}
+            onChange={(e) => onEnderecoChange(e.target.value)}
+            required
+          />
+          {errors.endereco && (
+            <AuthError>{errors.endereco}</AuthError>
+          )}
+        </div>
         
-        <Input
-          placeholder="Número *"
-          value={numero}
-          onChange={(e) => onNumeroChange(e.target.value)}
-          className="h-11 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-          required
-        />
-        {errors.numero && (
-          <p className="text-red-400 text-sm mt-1">{errors.numero}</p>
-        )}
+        <div>
+          <AuthInput
+            placeholder="Número *"
+            value={numero}
+            onChange={(e) => onNumeroChange(e.target.value)}
+            required
+          />
+          {errors.numero && (
+            <AuthError>{errors.numero}</AuthError>
+          )}
+        </div>
         
-        <Input
-          placeholder="Complemento *"
-          value={complemento}
-          onChange={(e) => onComplementoChange(e.target.value)}
-          className="h-11 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-          required
-        />
-        {errors.complemento && (
-          <p className="text-red-400 text-sm mt-1">{errors.complemento}</p>
-        )}
+        <div>
+          <AuthInput
+            placeholder="Complemento *"
+            value={complemento}
+            onChange={(e) => onComplementoChange(e.target.value)}
+            required
+          />
+          {errors.complemento && (
+            <AuthError>{errors.complemento}</AuthError>
+          )}
+        </div>
         
-        <Input
-          placeholder="Bairro *"
-          value={bairro}
-          onChange={(e) => onBairroChange(e.target.value)}
-          className="h-11 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-          required
-        />
-        {errors.bairro && (
-          <p className="text-red-400 text-sm mt-1">{errors.bairro}</p>
-        )}
+        <div>
+          <AuthInput
+            placeholder="Bairro *"
+            value={bairro}
+            onChange={(e) => onBairroChange(e.target.value)}
+            required
+          />
+          {errors.bairro && (
+            <AuthError>{errors.bairro}</AuthError>
+          )}
+        </div>
         
-        <Input
-          placeholder="Cidade *"
-          value={cidade}
-          onChange={(e) => onCidadeChange(e.target.value)}
-          className="h-11 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/60 focus:border-white/40 transition-all duration-300 hover:border-white/30"
-          required
-        />
-        {errors.cidade && (
-          <p className="text-red-400 text-sm mt-1">{errors.cidade}</p>
-        )}
+        <div>
+          <AuthInput
+            placeholder="Cidade *"
+            value={cidade}
+            onChange={(e) => onCidadeChange(e.target.value)}
+            required
+          />
+          {errors.cidade && (
+            <AuthError>{errors.cidade}</AuthError>
+          )}
+        </div>
         
-        <Select value={uf} onValueChange={onUfChange}>
-          <SelectTrigger className="h-12 bg-[hsl(var(--auth-input-bg))] backdrop-blur-sm border border-white/20 rounded-xl text-white focus:border-white/40">
-            <SelectValue placeholder="UF *" />
-          </SelectTrigger>
-          <SelectContent className="bg-[hsl(var(--auth-bg-start))] border-white/20">
+        <div>
+          <AuthSelect
+            value={uf}
+            onChange={(e) => onUfChange(e.target.value)}
+            required
+          >
+            <option value="">UF *</option>
             {BRAZILIAN_STATES.map((state) => (
-              <SelectItem key={state} value={state}>
+              <option key={state} value={state}>
                 {state}
-              </SelectItem>
+              </option>
             ))}
-          </SelectContent>
-        </Select>
-        {errors.uf && (
-          <p className="text-red-400 text-sm mt-1">{errors.uf}</p>
-        )}
-      </CardContent>
-    </Card>
+          </AuthSelect>
+          {errors.uf && (
+            <AuthError>{errors.uf}</AuthError>
+          )}
+        </div>
+      </AuthFormContent>
+    </AuthFormCard>
   );
 };

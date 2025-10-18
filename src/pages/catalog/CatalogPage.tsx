@@ -1,41 +1,38 @@
-import { useAuthGuard } from '@/hooks/useAuthGuard';
+import { useLoaderData } from 'react-router-dom';
 import ProductCatalog from '@/components/ProductCatalog/ProductCatalog';
+import {
+  CatalogContainer,
+  FloatingElement,
+  CatalogLoadingContainer,
+  CatalogLoadingContent,
+  CatalogLoadingSpinner,
+  CatalogLoadingText,
+  CatalogErrorContainer,
+  CatalogErrorContent,
+  CatalogErrorCard,
+  CatalogErrorTitle,
+  CatalogErrorDescription,
+  CatalogErrorButton,
+  CatalogContent
+} from './styles';
+import type { CatalogLoaderData } from './loader';
 
 const CatalogPage = () => {
-  const { isAuthenticated, isLoading } = useAuthGuard();
+  const loaderData = useLoaderData() as CatalogLoaderData;
+  console.log('CatalogPage received data:', loaderData);
 
-  // Show loading state
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="loading-spinner mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Carregando catálogo...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Show error state
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-destructive mb-4">
-            Acesso não autorizado
-          </h1>
-          <p className="text-muted-foreground">
-            Você precisa estar logado para acessar o catálogo.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // Se chegou até aqui, o loader já validou a autenticação
+  // e retornou os dados do usuário e empresa
 
   return (
-    <div className="min-h-screen">
-      <ProductCatalog />
-    </div>
+    <CatalogContainer>
+      <FloatingElement top="5%" right="5%" width="4rem" height="4rem" />
+      <FloatingElement bottom="10%" left="5%" width="6rem" height="6rem" delay="3s" />
+      
+      <CatalogContent>
+        <ProductCatalog />
+      </CatalogContent>
+    </CatalogContainer>
   );
 };
 

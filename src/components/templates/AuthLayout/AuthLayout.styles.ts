@@ -1,10 +1,4 @@
-/**
- * AuthLayout Component - Styled Components
- * Template para páginas de autenticação
- */
-
-import styled from 'styled-components'
-import { Theme } from '../../../design-system/theme'
+import styled, { css } from 'styled-components'
 
 export const AuthContainer = styled.div`
   min-height: 100vh;
@@ -14,6 +8,7 @@ export const AuthContainer = styled.div`
     ${props => props.theme.colors.auth.bgEnd} 100%
   );
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 1rem;
@@ -37,7 +32,7 @@ export const AuthContainer = styled.div`
 
 export const AuthContent = styled.div`
   width: 100%;
-  max-width: 28rem;
+  max-width: 30rem;
   position: relative;
   z-index: 1;
 `
@@ -47,45 +42,44 @@ export const AuthHeader = styled.div`
   margin-bottom: 2rem;
 `
 
-export const AuthLogo = styled.div`
-  width: 4rem;
-  height: 4rem;
-  margin: 0 auto 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+export const AuthLogo = styled.div<{width: string; height: string}>`
+  ${({width, height}) => css`
+    width: ${width};
+    height: ${height};
+    margin: 0 0 1rem 8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      color: white;
+    }
+  `}
+`;
+
+
+export const AuthFormContainer = styled.div`
+  background: hsl(var(--auth-form-bg));
+  backdrop-filter: blur(2rem);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  
-  svg {
-    width: 2rem;
-    height: 2rem;
-    color: white;
-  }
-`
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: fadeInScale 0.6s ease-out;
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
 
-export const AuthTitle = styled.h1`
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 0.5rem;
-  line-height: 1.2;
-  
-  @media (min-width: 768px) {
-    font-size: 2.25rem;
-  }
-`
-
-export const AuthSubtitle = styled.p`
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1rem;
-  line-height: 1.5;
-  
-  @media (min-width: 768px) {
-    font-size: 1.125rem;
+  @keyframes fadeInScale {
+    0% {
+      opacity: 0;
+      transform: scale(0.95) translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
   }
 `
 

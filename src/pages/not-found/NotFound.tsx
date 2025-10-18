@@ -1,5 +1,17 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { Home } from "lucide-react";
+import {
+  NotFoundContainer,
+  FloatingElement,
+  NotFoundContent,
+  NotFoundCard,
+  NotFoundNumber,
+  NotFoundTitle,
+  NotFoundDescription,
+  NotFoundButton,
+  NotFoundIcon
+} from "./styles";
 
 const NotFound = () => {
   const location = useLocation();
@@ -12,15 +24,29 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
-        </a>
-      </div>
-    </div>
+    <NotFoundContainer>
+      {/* Floating elements */}
+      <FloatingElement top="10%" right="10%" width="8rem" height="8rem" />
+      <FloatingElement bottom="20%" left="15%" width="12rem" height="12rem" delay="2s" />
+      <FloatingElement top="60%" right="30%" width="6rem" height="6rem" delay="4s" />
+
+      <NotFoundContent>
+        <NotFoundCard>
+          <NotFoundNumber>404</NotFoundNumber>
+          <NotFoundTitle>Oops! Página não encontrada</NotFoundTitle>
+          <NotFoundDescription>
+            A página que você está procurando não existe ou foi movida.
+            Que tal voltar para a página inicial?
+          </NotFoundDescription>
+          <NotFoundButton to="/">
+            <NotFoundIcon>
+              <Home className="h-5 w-5" />
+            </NotFoundIcon>
+            Voltar ao Início
+          </NotFoundButton>
+        </NotFoundCard>
+      </NotFoundContent>
+    </NotFoundContainer>
   );
 };
 

@@ -5,10 +5,16 @@ import { CategorySidebar } from './CategorySidebar';
 import { FilterBar } from './FilterBar';
 import { useCart } from '@/hooks/useCart';
 import { useProductFilters } from '@/hooks/useProductFilters';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ShoppingCart } from 'lucide-react';
 import CartSheet from '@/components/Cart/CartSheet';
+import {
+  ProductCatalogContainer,
+  ProductCatalogContent,
+  ProductCatalogHeader,
+  ProductGrid,
+  CartButton,
+  CartBadge
+} from './styles';
 
 // Importar produtos dos dados reais
 import { products as realProducts, categories as realCategories } from '@/data/products';
@@ -19,9 +25,9 @@ interface ProductGridProps {
   onAddToCart?: (product: Product, size: string, priceType: 'avista' | 'dias30' | 'dias90', quantity?: number) => void;
 }
 
-const ProductGrid = ({ products, priceType, onAddToCart }: ProductGridProps) => {
+const ProductGridComponent = ({ products, priceType, onAddToCart }: ProductGridProps) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
+    <ProductGrid>
       {products.map((product) => (
         <ProductCard
           key={product.id}
@@ -30,7 +36,7 @@ const ProductGrid = ({ products, priceType, onAddToCart }: ProductGridProps) => 
           onAddToCart={onAddToCart}
         />
       ))}
-    </div>
+    </ProductGrid>
   );
 };
 
@@ -59,7 +65,7 @@ export const ProductCatalog = () => {
   } = useProductFilters(products);
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <ProductCatalogContainer>
       <CategorySidebar
         categories={categories}
         selectedCategory={filters.selectedCategory}
@@ -68,37 +74,31 @@ export const ProductCatalog = () => {
         onSubcategorySelect={(subcategory) => updateFilter('selectedSubcategory', subcategory)}
       />
       
-      <div className="lg:ml-80 min-h-screen">
-        <div className="p-6">
+      <ProductCatalogContent>
+        <ProductCatalogHeader>
           <FilterBar
             sortBy={filters.sortBy}
             onSortChange={(sortBy) => updateFilter('sortBy', sortBy)}
             productCount={filteredProducts.length}
           />
-        </div>
+        </ProductCatalogHeader>
         
-        <ProductGrid
+        <ProductGridComponent
           products={filteredProducts}
           priceType={filters.priceType}
           onAddToCart={addToCart}
         />
-      </div>
+      </ProductCatalogContent>
 
       {/* Cart Button */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          size="lg"
-          onClick={() => setIsDrawerOpen(true)}
-          className="rounded-full w-16 h-16 shadow-lg bg-primary hover:bg-primary/90 relative"
-        >
-          <ShoppingCart className="h-6 w-6" />
-          {getItemCount > 0 && (
-            <Badge className="absolute -top-2 -right-2 bg-red-500 text-white min-w-[1.5rem] h-6 rounded-full flex items-center justify-center text-xs">
-              {getItemCount}
-            </Badge>
-          )}
-        </Button>
-      </div>
+      <CartButton onClick={() => setIsDrawerOpen(true)}>
+        <ShoppingCart className="h-6 w-6" />
+        {getItemCount > 0 && (
+          <CartBadge>
+            {getItemCount}
+          </CartBadge>
+        )}
+      </CartButton>
 
       <CartSheet
         isOpen={isDrawerOpen}
@@ -113,7 +113,7 @@ export const ProductCatalog = () => {
         generateWhatsAppMessage={generateWhatsAppMessage}
         onClearCart={clearCart}
       />
-    </div>
+    </ProductCatalogContainer>
   );
 };
 

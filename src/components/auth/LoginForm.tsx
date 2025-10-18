@@ -1,18 +1,26 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useFormValidation } from "@/hooks/useFormValidation";
 import { authService } from "@/services";
 import { AUTH_MESSAGES } from "@/constants/auth";
+import {
+  LoginForm as StyledLoginForm,
+  LoginFormGroup,
+  LoginInputGroup,
+  LoginInput,
+  LoginInputIcon,
+  LoginInputButton,
+  LoginError,
+  LoginButton,
+  LoginButtonContent,
+  LoadingSpinner
+} from "./styles";
 
-interface LoginFormProps {
-  onSuccess?: () => void;
-}
+interface LoginFormProps {}
 
-export const LoginForm = ({ onSuccess }: LoginFormProps) => {
+export const LoginForm = ({}: LoginFormProps) => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -65,60 +73,60 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-5">
-        <div className="form-group group">
-          <Mail className="form-icon group-focus-within:text-white" />
-          <Input
+    <StyledLoginForm onSubmit={handleSubmit}>
+      <LoginFormGroup>
+        <LoginInputGroup>
+          <LoginInputIcon>
+            <Mail className="h-5 w-5" />
+          </LoginInputIcon>
+          <LoginInput
             type="email"
             placeholder="E-mail"
             value={login}
             onChange={(e) => setLogin(e.target.value)}
-            className="pl-12 h-14 auth-input text-white placeholder:text-white/80 bg-[hsl(var(--auth-input-bg))] border-white/20 focus-visible:ring-white/40 focus-visible:ring-offset-0"
             required
           />
-          {errors.email && (
-            <p className="form-error">{errors.email}</p>
-          )}
-        </div>
+        </LoginInputGroup>
+        {errors.email && (
+          <LoginError>{errors.email}</LoginError>
+        )}
         
-        <div className="form-group group">
-          <Lock className="form-icon group-focus-within:text-white" />
-          <Input
+        <LoginInputGroup>
+          <LoginInputIcon>
+            <Lock className="h-5 w-5" />
+          </LoginInputIcon>
+          <LoginInput
             type={showPassword ? "text" : "password"}
             placeholder="Senha"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="pl-12 pr-12 h-14 auth-input text-white placeholder:text-white/80 bg-[hsl(var(--auth-input-bg))] border-white/20 focus-visible:ring-white/40 focus-visible:ring-offset-0"
+            required
           />
-          <button
+          <LoginInputButton
             type="button"
             onClick={togglePasswordVisibility}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors duration-300"
           >
             {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-          </button>
-          {errors.password && (
-            <p className="form-error">{errors.password}</p>
-          )}
-        </div>
-      </div>
+          </LoginInputButton>
+        </LoginInputGroup>
+        {errors.password && (
+          <LoginError>{errors.password}</LoginError>
+        )}
+      </LoginFormGroup>
 
-      <Button 
+      <LoginButton 
         type="submit"
         disabled={isLoading}
-        className="w-full h-14 auth-button"
       >
         {isLoading ? (
-          <div className="flex items-center justify-center gap-2">
-            <div className="loading-spinner"></div>
+          <LoginButtonContent>
+            <LoadingSpinner />
             Entrando...
-          </div>
+          </LoginButtonContent>
         ) : (
           "Entrar"
         )}
-      </Button>
-
-    </form>
+      </LoginButton>
+    </StyledLoginForm>
   );
 };
