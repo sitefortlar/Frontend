@@ -17,6 +17,10 @@ const router = createBrowserRouter([
     path: paths.esqueciSenha,
     lazy: () => import('@/pages/esqueci-senha').then(module => ({ Component: module.default })),
   },
+  {
+    path: paths.redefinirSenha,
+    lazy: () => import('@/pages/redefinir-senha').then(module => ({ Component: module.default })),
+  },
   
   // Main layout with protected routes
   {

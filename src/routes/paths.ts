@@ -5,6 +5,7 @@ export const paths = {
   login: '/login',
   cadastro: '/cadastro',
   esqueciSenha: '/esqueci-senha',
+  redefinirSenha: '/redefinir-senha',
   
   // Protected routes
   catalog: '/catalog',

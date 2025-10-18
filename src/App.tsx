@@ -9,25 +9,25 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import { createQueryClient } from '@/config/queryClient';
 import { isDevelopment } from '@/config/environment';
 import { theme } from '@/design-system/theme';
-import { GlobalStyles } from '@/design-system/GlobalStyles';
 import router from './routes';
 
 const queryClient = createQueryClient();
 
-const App = () => (
-  <ErrorBoundary>
-    <ThemeProvider theme={theme}>
-      <GlobalStyles />
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <RouterProvider router={router} />
-          {isDevelopment && <ReactQueryDevtools initialIsOpen={false} />}
-        </TooltipProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
-  </ErrorBoundary>
-);
+const App = () => {
+  return (
+    <ErrorBoundary>
+      <ThemeProvider theme={theme}>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <RouterProvider router={router} />
+            {isDevelopment && <ReactQueryDevtools initialIsOpen={false} />}
+          </TooltipProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
+  );
+};
 
 export default App;
