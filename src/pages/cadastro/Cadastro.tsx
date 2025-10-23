@@ -2,10 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRegistrationForm } from "@/hooks/useRegistrationForm";
-import { CompanyDataForm } from "@/components/auth/CompanyDataForm";
-import { AddressForm } from "@/components/auth/AddressForm";
-import { ContactForm } from "@/components/auth/ContactForm";
-import { PasswordForm } from "@/components/auth/PasswordForm";
+import { CompanyDataForm } from "@/components/companyRegistration/CompanyDataForm";
+import { AddressForm } from "@/components/companyRegistration/AddressForm";
+import { ContactForm } from "@/components/companyRegistration/ContactForm";
+import { PasswordForm } from "@/components/companyRegistration/PasswordForm";
 import { AUTH_MESSAGES } from "@/constants/auth";
 import {
   CadastroContainer,

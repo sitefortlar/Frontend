@@ -27,10 +27,10 @@ export { Toaster as Sonner, toast } from './ui/sonner';
 
 // Auth Components
 export { LoginForm } from './auth/LoginForm';
-export { CompanyDataForm } from './auth/CompanyDataForm';
-export { AddressForm } from './auth/AddressForm';
-export { ContactForm } from './auth/ContactForm';
-export { PasswordForm } from './auth/PasswordForm';
+export { CompanyDataForm } from './companyRegistration/CompanyDataForm';
+export { AddressForm } from './companyRegistration/AddressForm';
+export { ContactForm } from './companyRegistration/ContactForm';
+export { PasswordForm } from './companyRegistration/PasswordForm';
 
 // Cart Components
 export { default as CartDrawer } from './Cart/CartDrawer';
@@ -47,8 +47,3 @@ export { default as ProductModal } from './ProductCatalog/ProductModal';
 export { CategorySidebar } from './ProductCatalog/CategorySidebar';
 export { FilterBar } from './ProductCatalog/FilterBar';
 
-// Input Components
-export { CnpjInput } from './inputs/CnpjInput';
-export { PhoneInput } from './inputs/PhoneInput';
-export { CepInput } from './inputs/CepInput';
-export { MaskedInput } from './inputs/MaskedInput';
