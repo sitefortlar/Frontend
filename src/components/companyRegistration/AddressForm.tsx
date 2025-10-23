@@ -59,11 +59,17 @@ export const AddressForm = ({
       <AuthFormContent>
         <div>
           <AuthInput
-            placeholder="CEP *"
+            placeholder="CEP (apenas números) *"
             value={cep}
-            onChange={(e) => onCepChange(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, '');
+              if (value.length <= 8) {
+                onCepChange(value);
+              }
+            }}
             required
-            maxLength={9}
+            maxLength={8}
+            inputMode="numeric"
           />
           {errors.cep && (
             <AuthError>{errors.cep}</AuthError>

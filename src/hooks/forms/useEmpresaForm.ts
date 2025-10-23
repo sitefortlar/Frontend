@@ -59,8 +59,8 @@ export const useEmpresaForm = () => {
   // Preenche campos automaticamente quando dados do CNPJ são obtidos
   useEffect(() => {
     if (cnpjData) {
-      setValue('razaoSocial', cnpjData.razaoSocial);
-      setValue('nomeFantasia', cnpjData.nomeFantasia);
+      setValue('razaoSocial', cnpjData.razao_social);
+      setValue('nomeFantasia', cnpjData.fantasia);
       setValue('logradouro', cnpjData.logradouro);
       setValue('numero', cnpjData.numero);
       setValue('complemento', cnpjData.complemento || '');

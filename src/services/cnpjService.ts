@@ -4,17 +4,18 @@ import { API_URLS } from '@/config/environment';
 
 export interface CnpjApiResponse {
   cnpj: string;
-  razaoSocial: string;
-  nomeFantasia: string;
+  razao_social: string;
+  fantasia: string;
   logradouro: string;
   numero: string;
-  complemento?: string;
+  complemento: string;
   bairro: string;
   municipio: string;
   uf: string;
   cep: string;
-  telefone?: string;
-  email?: string;
+  telefone: string | null;
+  email: string | null;
+  atividade_principal: string | null;
 }
 
 export interface CnpjServiceError {
@@ -24,15 +25,12 @@ export interface CnpjServiceError {
 
 /**
  * Serviço para consulta de dados de empresa por CNPJ
- * Usa a API ReceitaWS (gratuita) como padrão
- * Inclui validação local e integração com API externa
+ * Usa a API do backend
  */
 export class CnpjService {
   private readonly apiUrl: string;
 
   constructor(apiUrl?: string) {
-    // URL configurável via parâmetro ou configuração padrão
-    // ReceitaWS é gratuita e não requer autenticação
     this.apiUrl = apiUrl || API_URLS.CNPJ;
   }
 
@@ -53,7 +51,7 @@ export class CnpjService {
       const response = await fetch(`${this.apiUrl}/${cleanCnpj}`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
+          'accept': 'application/json',
         },
       });
 
@@ -68,12 +66,6 @@ export class CnpjService {
       }
 
       const data = await response.json();
-      
-      // ReceitaWS retorna erro quando CNPJ não é encontrado
-      if (data.status === 'ERROR') {
-        throw this.createError('NOT_FOUND', data.message || 'CNPJ não encontrado na base de dados');
-      }
-
       return this.mapApiResponse(data);
 
     } catch (error) {
@@ -85,14 +77,13 @@ export class CnpjService {
   }
 
   /**
-   * Mapeia a resposta da ReceitaWS para o formato interno
-   * ReceitaWS retorna dados em formato específico
+   * Mapeia a resposta da API para o formato interno
    */
   private mapApiResponse(data: any): CnpjApiResponse {
     return {
       cnpj: data.cnpj || '',
-      razaoSocial: data.nome || '',
-      nomeFantasia: data.fantasia || '',
+      razao_social: data.razao_social || '',
+      fantasia: data.fantasia || '',
       logradouro: data.logradouro || '',
       numero: data.numero || '',
       complemento: data.complemento || '',
@@ -100,8 +91,9 @@ export class CnpjService {
       municipio: data.municipio || '',
       uf: data.uf || '',
       cep: data.cep || '',
-      telefone: data.telefone || '',
-      email: data.email || '',
+      telefone: data.telefone,
+      email: data.email,
+      atividade_principal: data.atividade_principal,
     };
   }
 

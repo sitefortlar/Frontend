@@ -4,14 +4,10 @@ import { API_URLS } from '@/config/environment';
 export interface CepApiResponse {
   cep: string;
   logradouro: string;
-  complemento?: string;
+  complemento: string | null;
   bairro: string;
-  localidade: string;
+  cidade: string;
   uf: string;
-  ibge?: string;
-  gia?: string;
-  ddd?: string;
-  siafi?: string;
 }
 
 export interface CepServiceError {
@@ -21,13 +17,12 @@ export interface CepServiceError {
 
 /**
  * Serviço para consulta de endereço por CEP
- * Usa a API ViaCEP como padrão
+ * Usa a API do backend
  */
 export class CepService {
   private readonly apiUrl: string;
 
   constructor(apiUrl?: string) {
-    // ViaCEP é gratuito e não requer autenticação
     this.apiUrl = apiUrl || API_URLS.CEP;
   }
 
@@ -45,23 +40,21 @@ export class CepService {
     const cleanCep = cep.replace(/\D/g, '');
 
     try {
-      const response = await fetch(`${this.apiUrl}/${cleanCep}/json/`, {
+      const response = await fetch(`${this.apiUrl}/${cleanCep}`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
+          'accept': 'application/json',
         },
       });
 
       if (!response.ok) {
+        if (response.status === 404) {
+          throw this.createError('NOT_FOUND', 'CEP não encontrado');
+        }
         throw this.createError('API_ERROR', `Erro na API: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
-
-      if (data.erro) {
-        throw this.createError('NOT_FOUND', 'CEP não encontrado');
-      }
-
       return this.mapApiResponse(data);
 
     } catch (error) {
@@ -73,20 +66,16 @@ export class CepService {
   }
 
   /**
-   * Mapeia a resposta da ViaCEP para o formato interno
+   * Mapeia a resposta da API para o formato interno
    */
   private mapApiResponse(data: any): CepApiResponse {
     return {
       cep: data.cep || '',
       logradouro: data.logradouro || '',
-      complemento: data.complemento || '',
+      complemento: data.complemento,
       bairro: data.bairro || '',
-      localidade: data.localidade || '',
+      cidade: data.cidade || '',
       uf: data.uf || '',
-      ibge: data.ibge || '',
-      gia: data.gia || '',
-      ddd: data.ddd || '',
-      siafi: data.siafi || '',
     };
   }
 
