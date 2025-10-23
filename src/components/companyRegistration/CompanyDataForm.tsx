@@ -12,7 +12,7 @@ import {
   AuthInputWithIcon,
   AuthInputButton,
   AuthError
-} from "./styles";
+} from "./styles.tsx";
 
 interface CompanyDataFormProps {
   cnpj: string;
@@ -57,6 +57,7 @@ export const CompanyDataForm = ({
               value={cnpj}
               onChange={(e) => handleCnpjChange(e.target.value)}
               required
+              maxLength={18}
             />
             <AuthInputButton
               type="button"

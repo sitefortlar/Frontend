@@ -9,7 +9,7 @@ import {
   AuthInput,
   AuthSelect,
   AuthError
-} from "./styles";
+} from "./styles.tsx";
 
 interface AddressFormProps {
   cep: string;
@@ -63,6 +63,7 @@ export const AddressForm = ({
             value={cep}
             onChange={(e) => onCepChange(e.target.value)}
             required
+            maxLength={9}
           />
           {errors.cep && (
             <AuthError>{errors.cep}</AuthError>
