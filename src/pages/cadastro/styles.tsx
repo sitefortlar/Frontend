@@ -124,10 +124,9 @@ export const CadastroForm = styled.form`
 export const CadastroFooter = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-top: 2rem;
+  justify-content: flex-start;
+  margin-bottom: 1.5rem;
   animation: ${slideUp} 0.6s ease-out;
-  animation-delay: 0.5s;
   animation-fill-mode: both;
 `;
 

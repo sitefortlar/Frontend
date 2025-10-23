@@ -197,10 +197,6 @@ export const AuthPasswordGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.5rem;
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
 `;
 
 export const AuthPasswordItem = styled.div<{ isValid: boolean }>`
