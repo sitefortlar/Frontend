@@ -32,6 +32,33 @@ export interface Company {
   contatos: Contact[];
 }
 
+// Request interfaces
+export interface CompanyAddressRequest {
+  cep: string;
+  numero: string;
+  complemento?: string;
+  bairro: string;
+  cidade: string;
+  uf: string;
+  ibge: string;
+}
+
+export interface CompanyContactRequest {
+  nome: string;
+  telefone: string;
+  celular: string;
+  email: string;
+}
+
+export interface CompanyRequest {
+  cnpj: string;
+  razao_social: string;
+  nome_fantasia: string;
+  senha: string;
+  endereco: CompanyAddressRequest;
+  contato: CompanyContactRequest;
+}
+
 export const companyService = {
   async getCompanyById(id: string | number): Promise<Company> {
     try {
@@ -39,6 +66,15 @@ export const companyService = {
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Erro ao buscar empresa');
+    }
+  },
+
+  async postCompany(companyData: CompanyRequest): Promise<Company> {
+    try {
+      const response = await api.post('/companies', companyData);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Erro ao criar empresa');
     }
   }
 };

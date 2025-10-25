@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useFormValidation } from "@/hooks/useFormValidation";
-import { authService } from "@/services";
+import { authService } from "@/services/auth/auth";
 import { AUTH_MESSAGES } from "@/constants/auth";
 import {
   LoginForm as StyledLoginForm,
@@ -55,14 +55,21 @@ export const LoginForm = ({}: LoginFormProps) => {
 
       // Redirect to catalog page
       navigate('/catalog');
-    } catch (error) {
-      toast({
-        title: "Erro ao fazer login",
-        description: error instanceof Error 
-          ? error.message 
-          : AUTH_MESSAGES.LOGIN_ERROR,
-        variant: "destructive"
-      });
+    } catch (error: any) {
+      console.log('error', error);
+      if (error.status === 403) {
+        toast({
+          title: "Erro ao fazer login",
+          description: "Validação do email pendente",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Erro ao fazer login",
+          description: error.message || "Erro desconhecido",
+          variant: "destructive"
+        });
+      }
     } finally {
       setIsLoading(false);
     }

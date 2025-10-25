@@ -7,7 +7,7 @@ import {
   AuthFormContent,
   AuthInput,
   AuthError
-} from "./styles";
+} from "./styles.tsx";
 
 interface ContactFormProps {
   nomeContato: string;

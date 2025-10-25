@@ -1,4 +1,4 @@
-import { authService } from '@/services/auth';
+import { authService } from '@/services/auth/auth';
 import { companyService, Company } from '@/services/company';
 import { Product, Category } from '@/services/products';
 

@@ -1,5 +1,5 @@
-import { Search, Building } from "lucide-react";
-import { formatCNPJ } from "@/utils/validation";
+import { Search, Building, Loader2 } from "lucide-react";
+import { formatCNPJ, onlyDigits } from "@/utils/formatting";
 import {
   AuthFormCard,
   AuthFormHeader,
@@ -22,6 +22,7 @@ interface CompanyDataFormProps {
   onRazaoSocialChange: (value: string) => void;
   onFantasiaChange: (value: string) => void;
   onSearchByCnpj: () => void;
+  isLoadingCnpj?: boolean;
   errors: Record<string, string>;
 }
 
@@ -33,11 +34,21 @@ export const CompanyDataForm = ({
   onRazaoSocialChange,
   onFantasiaChange,
   onSearchByCnpj,
+  isLoadingCnpj = false,
   errors,
 }: CompanyDataFormProps) => {
   const handleCnpjChange = (value: string) => {
-    const maskedValue = formatCNPJ(value);
+    const cleanValue = onlyDigits(value);
+    const limitedValue = cleanValue.slice(0, 14);
+    const maskedValue = formatCNPJ(limitedValue);
     onCnpjChange(maskedValue);
+  };
+
+  const handleSearchByCnpj = () => {
+    const cleanCnpj = onlyDigits(cnpj);
+    if (cleanCnpj.length === 14) {
+      onSearchByCnpj();
+    }
   };
   return (
     <AuthFormCard delay="0.1s">
@@ -61,14 +72,22 @@ export const CompanyDataForm = ({
             />
             <AuthInputButton
               type="button"
-              onClick={onSearchByCnpj}
+              onClick={handleSearchByCnpj}
+              disabled={isLoadingCnpj || onlyDigits(cnpj).length !== 14}
               title="Buscar dados da empresa pelo CNPJ"
             >
-              <Search className="h-5 w-5" />
+              {isLoadingCnpj ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Search className="h-5 w-5" />
+              )}
             </AuthInputButton>
           </AuthInputGroup>
           {errors.cnpj && (
             <AuthError>{errors.cnpj}</AuthError>
+          )}
+          {isLoadingCnpj && (
+            <p className="text-blue-400 text-sm mt-1">Consultando CNPJ...</p>
           )}
         </AuthFormFullWidth>
         

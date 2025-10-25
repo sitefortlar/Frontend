@@ -1,5 +1,5 @@
 import { jwtDecode } from 'jwt-decode';
-import { api } from './api';
+import { api } from '@/services/api';
 
 export interface LoginCredentials {
   login: string;
@@ -46,7 +46,16 @@ export const authService = {
 
       return { token, user };
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || error.message || 'Erro ao fazer login');
+      // Preserve the original error with status information
+      const errorMessage = error.response?.data?.message || error.message || 'Erro ao fazer login';
+      const newError = new Error(errorMessage);
+      
+      // Add status code to the error object
+      if (error.response?.status) {
+        (newError as any).status = error.response.status;
+      }
+      
+      throw newError;
     }
   },
 

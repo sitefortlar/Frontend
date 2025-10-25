@@ -1,5 +1,6 @@
-import { FileText } from "lucide-react";
+import { FileText, Search, Loader2 } from "lucide-react";
 import { BRAZILIAN_STATES } from "@/constants/auth";
+import { formatCEP, onlyDigits } from "@/utils/formatting";
 import {
   AuthFormCard,
   AuthFormHeader,
@@ -8,7 +9,10 @@ import {
   AuthFormContent,
   AuthInput,
   AuthSelect,
-  AuthError
+  AuthError,
+  AuthInputGroup,
+  AuthInputWithIcon,
+  AuthInputButton
 } from "./styles.tsx";
 
 interface AddressFormProps {
@@ -26,6 +30,8 @@ interface AddressFormProps {
   onBairroChange: (value: string) => void;
   onCidadeChange: (value: string) => void;
   onUfChange: (value: string) => void;
+  onSearchByCep: () => void;
+  isLoadingCep?: boolean;
   errors: Record<string, string>;
 }
 
@@ -44,8 +50,23 @@ export const AddressForm = ({
   onBairroChange,
   onCidadeChange,
   onUfChange,
+  onSearchByCep,
+  isLoadingCep = false,
   errors,
 }: AddressFormProps) => {
+  const handleCepChange = (value: string) => {
+    const cleanValue = onlyDigits(value);
+    const limitedValue = cleanValue.slice(0, 8);
+    const formattedValue = formatCEP(limitedValue);
+    onCepChange(formattedValue);
+  };
+
+  const handleSearchByCep = () => {
+    const cleanCep = onlyDigits(cep);
+    if (cleanCep.length === 8) {
+      onSearchByCep();
+    }
+  };
   return (
     <AuthFormCard delay="0.2s">
       <AuthFormHeader>
@@ -58,15 +79,32 @@ export const AddressForm = ({
       </AuthFormHeader>
       <AuthFormContent>
         <div>
-          <AuthInput
-            placeholder="CEP *"
-            value={cep}
-            onChange={(e) => onCepChange(e.target.value)}
-            required
-            maxLength={9}
-          />
+          <AuthInputGroup>
+            <AuthInputWithIcon
+              placeholder="CEP *"
+              value={cep}
+              onChange={(e) => handleCepChange(e.target.value)}
+              required
+              maxLength={9}
+            />
+            <AuthInputButton
+              type="button"
+              onClick={handleSearchByCep}
+              disabled={isLoadingCep || onlyDigits(cep).length !== 8}
+              title="Buscar endereço pelo CEP"
+            >
+              {isLoadingCep ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Search className="h-5 w-5" />
+              )}
+            </AuthInputButton>
+          </AuthInputGroup>
           {errors.cep && (
             <AuthError>{errors.cep}</AuthError>
+          )}
+          {isLoadingCep && (
+            <p className="text-blue-400 text-sm mt-1">Consultando CEP...</p>
           )}
         </div>
         

@@ -13,7 +13,7 @@ import {
   AuthPasswordGrid,
   AuthPasswordItem,
   AuthPasswordIcon
-} from "./styles";
+} from "./styles.tsx";
 
 interface PasswordFormProps {
   password: string;

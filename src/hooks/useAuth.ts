@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '@/services/auth';
+import { authService } from '@/services/auth/auth';
 
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false);

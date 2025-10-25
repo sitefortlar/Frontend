@@ -24,9 +24,21 @@ import {
 const Cadastro = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { formData, errors, updateField, validateRegistration, resetForm } = useRegistrationForm();
+  const { 
+    formData, 
+    errors, 
+    isLoadingCep, 
+    isLoadingCnpj, 
+    isSubmitting,
+    updateField, 
+    validateRegistration, 
+    resetForm, 
+    searchCep, 
+    searchCnpj,
+    postCompany
+  } = useRegistrationForm();
 
-  const handleSearchByCnpj = () => {
+  const handleSearchByCnpj = async () => {
     if (!formData.cnpj) {
       toast({
         title: "CNPJ necessário",
@@ -36,13 +48,47 @@ const Cadastro = () => {
       return;
     }
     
-    toast({
-      title: "Buscando dados...",
-      description: AUTH_MESSAGES.SEARCHING_DATA,
-    });
+    try {
+      await searchCnpj(formData.cnpj);
+      toast({
+        title: "Dados encontrados!",
+        description: "Os dados da empresa foram preenchidos automaticamente.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro na busca",
+        description: "Não foi possível encontrar os dados da empresa. Verifique o CNPJ.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSearchByCep = async () => {
+    if (!formData.cep) {
+      toast({
+        title: "CEP necessário",
+        description: "Por favor, informe o CEP para buscar o endereço.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      await searchCep(formData.cep);
+      toast({
+        title: "Endereço encontrado!",
+        description: "Os dados do endereço foram preenchidos automaticamente.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro na busca",
+        description: "Não foi possível encontrar o endereço. Verifique o CEP.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateRegistration()) {
@@ -54,14 +100,24 @@ const Cadastro = () => {
       return;
     }
 
-    toast({
-      title: "Cadastro realizado!",
-      description: AUTH_MESSAGES.REGISTRATION_SUCCESS,
-    });
+    try {
+      await postCompany();
+      
+      toast({
+        title: "Cadastro realizado!",
+        description: AUTH_MESSAGES.REGISTRATION_SUCCESS,
+      });
 
-    setTimeout(() => {
-      navigate("/login");
-    }, 2000);
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+    } catch (error: any) {
+      toast({
+        title: "Erro no cadastro",
+        description: error.message || "Não foi possível criar a conta. Tente novamente.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -84,6 +140,7 @@ const Cadastro = () => {
               onRazaoSocialChange={(value) => updateField('razaoSocial', value)}
               onFantasiaChange={(value) => updateField('fantasia', value)}
               onSearchByCnpj={handleSearchByCnpj}
+              isLoadingCnpj={isLoadingCnpj}
               errors={errors}
             />
 
@@ -102,6 +159,8 @@ const Cadastro = () => {
               onBairroChange={(value) => updateField('bairro', value)}
               onCidadeChange={(value) => updateField('cidade', value)}
               onUfChange={(value) => updateField('uf', value)}
+              onSearchByCep={handleSearchByCep}
+              isLoadingCep={isLoadingCep}
               errors={errors}
             />
 
@@ -134,8 +193,9 @@ const Cadastro = () => {
               <CadastroButton 
                 type="submit" 
                 variant="primary"
+                disabled={isSubmitting}
               >
-                Criar Conta
+                {isSubmitting ? "Criando Conta..." : "Criar Conta"}
               </CadastroButton>
             </CadastroButtonGroup>
           </CadastroForm>
