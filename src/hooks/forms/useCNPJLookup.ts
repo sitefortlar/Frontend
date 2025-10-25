@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { cnpjService } from '@/services/cnpjService';
+import { CNPJService } from '@/services/utils/CNPJ';
 import { validateCNPJ } from '@/utils/validation';
 import { onlyDigits } from '@/utils/formatting';
 
@@ -35,7 +35,7 @@ export const useCNPJLookup = () => {
     refetch: refetchCNPJ,
   } = useQuery({
     queryKey: ['cnpj-lookup', cnpj],
-    queryFn: () => cnpjService.searchByCnpj(cnpj),
+    queryFn: () => CNPJService.searchByCNPJ(cnpj),
     enabled: isLookupEnabled && validateCNPJ(cnpj) && onlyDigits(cnpj).length === 14,
     staleTime: 1000 * 60 * 10, // 10 minutos
     retry: 1,

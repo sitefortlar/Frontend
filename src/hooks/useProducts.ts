@@ -1,5 +1,21 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { productsService, Product, Category, ProductsFilters, ProductsResponse } from '@/services/products';
+import type { Product, Category } from '@/services/products';
+import { products as allProducts, categories as allCategories } from '@/services/products';
+
+interface ProductsFilters {
+  page?: number;
+  limit?: number;
+  inStock?: boolean;
+  search?: string;
+  category?: string;
+}
+
+interface ProductsResponse {
+  products: Product[];
+  total: number;
+  page: number;
+  limit: number;
+}
 
 interface UseProductsOptions {
   initialFilters?: ProductsFilters;
@@ -71,9 +87,43 @@ export const useProducts = (options: UseProductsOptions = {}): UseProductsReturn
     setError(null);
 
     try {
-      const data = await productsService.getProducts(filtersToUse);
-      setProducts(data.products);
-      setResponse(data);
+      // Simulate API call with local data
+      let filteredProducts = [...allProducts];
+      
+      if (filtersToUse.search) {
+        const searchLower = filtersToUse.search.toLowerCase();
+        filteredProducts = filteredProducts.filter(p => 
+          p.name.toLowerCase().includes(searchLower)
+        );
+      }
+      
+      if (filtersToUse.category) {
+        filteredProducts = filteredProducts.filter(p => 
+          p.category === filtersToUse.category
+        );
+      }
+      
+      if (filtersToUse.inStock) {
+        filteredProducts = filteredProducts.filter(p => {
+          const hasPrices = p.prices && Object.keys(p.prices).length > 0;
+          return hasPrices;
+        });
+      }
+      
+      const page = filtersToUse.page || 1;
+      const limit = filtersToUse.limit || 20;
+      const start = (page - 1) * limit;
+      const end = start + limit;
+      
+      const paginatedProducts = filteredProducts.slice(start, end);
+      
+      setProducts(paginatedProducts);
+      setResponse({
+        products: paginatedProducts,
+        total: filteredProducts.length,
+        page,
+        limit,
+      });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar produtos';
       setError(errorMessage);
@@ -88,8 +138,7 @@ export const useProducts = (options: UseProductsOptions = {}): UseProductsReturn
   // Fetch categories function
   const fetchCategories = useCallback(async () => {
     try {
-      const data = await productsService.getCategories();
-      setCategories(data);
+      setCategories(allCategories);
     } catch (err) {
       console.error('Error fetching categories:', err);
     }

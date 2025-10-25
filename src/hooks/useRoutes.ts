@@ -9,6 +9,7 @@ export const useRoutes = () => {
       cadastro: paths.cadastro,
       esqueciSenha: paths.esqueciSenha,
       redefinirSenha: paths.redefinirSenha,
+      confirmarCadastro: paths.confirmarCadastro,
     },
     
     // Protected routes

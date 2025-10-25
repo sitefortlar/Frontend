@@ -25,6 +25,11 @@ export const routeConfig = {
       Component: lazy(() => import('@/pages/redefinir-senha')),
       title: 'Redefinir Senha - Fort-Lar',
     },
+    {
+      path: paths.confirmarCadastro,
+      Component: lazy(() => import('@/pages/confirmar-cadastro')),
+      title: 'Confirmar Cadastro - Fort-Lar',
+    },
   ],
   
   // Protected routes (wrapped in Layout)

@@ -6,6 +6,7 @@ export const paths = {
   cadastro: '/cadastro',
   esqueciSenha: '/esqueci-senha',
   redefinirSenha: '/redefinir-senha',
+  confirmarCadastro: '/confirmar-cadastro',
   
   // Protected routes
   catalog: '/catalog',

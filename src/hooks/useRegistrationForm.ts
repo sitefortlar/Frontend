@@ -112,8 +112,7 @@ export const useRegistrationForm = () => {
 
     setIsLoadingCnpj(true);
     try {
-      const cnpjService = new CNPJService();
-      const cnpjData = await cnpjService.searchByCNPJ(cleanCnpj);
+      const cnpjData = await CNPJService.searchByCNPJ(cleanCnpj);
       
       // Atualiza os campos da empresa com os dados retornados
       setFormData(prev => ({

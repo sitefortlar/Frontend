@@ -1,4 +1,4 @@
-import { authService } from '@/services/auth';
+import { authService } from '@/services/auth/auth';
 
 export const withAuthenticationLoader = async () => {
   const token = authService.getToken();

@@ -18,12 +18,14 @@ export interface CNPJApiResponse {
 
 
 export class CNPJService {
-    async searchByCNPJ(cnpj: string): Promise<CNPJApiResponse> {
-      try {
-        const response = await api.get(`/utils/cnpj/${cnpj}`);
-        return response.data;
-      } catch (error: any) {
-        throw new Error(error.response?.data?.message || error.message || 'Erro ao fazer login');
-      }
-    }   
+  static async searchByCNPJ(cnpj: string): Promise<CNPJApiResponse> {
+    try {
+      const response = await api.get(`/utils/cnpj/${cnpj}`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || error.message || 'Erro ao buscar CNPJ');
+    }
+  }   
 }
+
+export const cnpjService = new CNPJService();
