@@ -79,6 +79,7 @@ export const AddressForm = ({
       </AuthFormHeader>
       <AuthFormContent>
         <div>
+<<<<<<< HEAD
           <AuthInputGroup>
             <AuthInputWithIcon
               placeholder="CEP *"
@@ -100,6 +101,21 @@ export const AddressForm = ({
               )}
             </AuthInputButton>
           </AuthInputGroup>
+=======
+          <AuthInput
+            placeholder="CEP (apenas números) *"
+            value={cep}
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, '');
+              if (value.length <= 8) {
+                onCepChange(value);
+              }
+            }}
+            required
+            maxLength={8}
+            inputMode="numeric"
+          />
+>>>>>>> 2a226e556beaf41557b396c35a3dd26b35d028bc
           {errors.cep && (
             <AuthError>{errors.cep}</AuthError>
           )}

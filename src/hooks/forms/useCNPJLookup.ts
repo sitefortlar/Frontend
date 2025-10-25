@@ -5,17 +5,18 @@ import { validateCNPJ } from '@/utils/validation';
 import { onlyDigits } from '@/utils/formatting';
 
 export interface CNPJLookupResult {
-  razaoSocial: string;
-  nomeFantasia: string;
+  razao_social: string;
+  fantasia: string;
   logradouro: string;
   numero: string;
-  complemento?: string;
+  complemento: string;
   bairro: string;
   municipio: string;
   uf: string;
   cep: string;
-  telefone?: string;
-  email?: string;
+  telefone: string | null;
+  email: string | null;
+  atividade_principal: string | null;
 }
 
 /**

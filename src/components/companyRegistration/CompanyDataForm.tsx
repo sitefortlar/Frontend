@@ -38,6 +38,7 @@ export const CompanyDataForm = ({
   errors,
 }: CompanyDataFormProps) => {
   const handleCnpjChange = (value: string) => {
+<<<<<<< HEAD
     const cleanValue = onlyDigits(value);
     const limitedValue = cleanValue.slice(0, 14);
     const maskedValue = formatCNPJ(limitedValue);
@@ -50,6 +51,14 @@ export const CompanyDataForm = ({
       onSearchByCnpj();
     }
   };
+=======
+    const cleanValue = value.replace(/\D/g, '');
+    if (cleanValue.length <= 14) {
+      onCnpjChange(cleanValue);
+    }
+  };
+  
+>>>>>>> 2a226e556beaf41557b396c35a3dd26b35d028bc
   return (
     <AuthFormCard delay="0.1s">
       <AuthFormHeader>
@@ -64,11 +73,12 @@ export const CompanyDataForm = ({
         <AuthFormFullWidth>
           <AuthInputGroup>
             <AuthInputWithIcon
-              placeholder="CNPJ *"
+              placeholder="CNPJ (apenas números) *"
               value={cnpj}
               onChange={(e) => handleCnpjChange(e.target.value)}
               required
-              maxLength={18}
+              maxLength={14}
+              inputMode="numeric"
             />
             <AuthInputButton
               type="button"

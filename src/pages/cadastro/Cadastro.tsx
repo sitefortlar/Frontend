@@ -123,6 +123,13 @@ const Cadastro = () => {
   return (
     <CadastroContainer>
       <CadastroContent>
+        <CadastroFooter>
+          <CadastroBackLink to="/login">
+            <ArrowLeft className="h-5 w-5" />
+            Voltar ao Login
+          </CadastroBackLink>
+        </CadastroFooter>
+
         <CadastroHeader>
           <CadastroTitle>Cadastro de Cliente</CadastroTitle>
           <CadastroSubtitle>
@@ -200,13 +207,6 @@ const Cadastro = () => {
             </CadastroButtonGroup>
           </CadastroForm>
         </CadastroFormContainer>
-
-        <CadastroFooter>
-          <CadastroBackLink to="/login">
-            <ArrowLeft className="h-5 w-5" />
-            Voltar ao Login
-          </CadastroBackLink>
-        </CadastroFooter>
       </CadastroContent>
     </CadastroContainer>
   );
