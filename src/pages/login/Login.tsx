@@ -24,8 +24,13 @@ const Login = () => {
           Esqueci minha senha
         </LoginFooterSecondaryLink>
       </LoginFooterText>
+      <LoginFooterText>
+        <LoginFooterSecondaryLink to="/confirmar-cadastro">
+          Validar token do email
+        </LoginFooterSecondaryLink>
+      </LoginFooterText>
     </LoginFooter>
-  ); 
+  );
 
   return (
     <AuthLayout
