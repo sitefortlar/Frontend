@@ -2,6 +2,7 @@ import { api } from '@/services/api';
 
 export interface VerifyAccountRequest {
   token: string;
+  company_id: number;
 }
 
 export interface VerifyAccountResponse {
@@ -9,10 +10,10 @@ export interface VerifyAccountResponse {
   success: boolean;
 }
 
-export const verificationService = {
-  async verifyAccount(data: VerifyAccountRequest): Promise<VerifyAccountResponse> {
+export const emailTokenService = {
+  async verifyToken(data: VerifyAccountRequest): Promise<VerifyAccountResponse> {
     try {
-      const response = await api.post('/auth/verify-account', data);
+      const response = await api.put('/emailtoken/validate', data);
       return response.data;
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || error.message || 'Erro ao verificar conta';
@@ -26,9 +27,9 @@ export const verificationService = {
     }
   },
 
-  async resendVerificationEmail(email: string): Promise<{ message: string }> {
+  async resendEmailToken(companyId: number): Promise<{ message: string }> {
     try {
-      const response = await api.post('/auth/resend-verification', { email });
+      const response = await api.patch('/emailtoken/resend', { company_id: companyId });
       return response.data;
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || error.message || 'Erro ao reenviar e-mail de verificação';
@@ -40,5 +41,5 @@ export const verificationService = {
       
       throw newError;
     }
-  }
+  },
 };

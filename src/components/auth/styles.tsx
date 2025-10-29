@@ -346,3 +346,283 @@ export const LoadingSpinner = styled.div`
   border-radius: 50%;
   animation: ${spin} 1s linear infinite;
 `;
+
+// Confirmar Cadastro specific styles
+export const ConfirmarCadastroForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+`;
+
+export const ConfirmarCadastroFormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+`;
+
+export const ConfirmarCadastroInputGroup = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
+
+export const ConfirmarCadastroInput = styled.input`
+  width: 100%;
+  height: 3.5rem;
+  padding: 0 3rem;
+  background: hsl(var(--auth-input-bg));
+  backdrop-filter: blur(0.5rem);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.75rem;
+  color: white;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+  }
+
+  &:hover:not(:focus) {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  &:read-only {
+    background: rgba(255, 255, 255, 0.1);
+    cursor: not-allowed;
+  }
+`;
+
+export const ConfirmarCadastroInputIcon = styled.div`
+  position: absolute;
+  left: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.3s ease;
+  z-index: 1;
+
+  ${ConfirmarCadastroInputGroup}:focus-within & {
+    color: white;
+  }
+`;
+
+export const ConfirmarCadastroButton = styled.button<{ disabled?: boolean }>`
+  width: 100%;
+  height: 3.5rem;
+  background: hsl(var(--auth-button));
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover:not(:disabled) {
+    background: hsl(var(--primary-glow));
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.15);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+`;
+
+export const ConfirmarCadastroButtonContent = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+`;
+
+export const ConfirmarCadastroError = styled.p`
+  color: #f87171;
+  font-size: 0.875rem;
+  margin: 0;
+  animation: ${slideIn} 0.3s ease-out;
+`;
+
+export const ConfirmarCadastroDescription = styled.p`
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  margin: 0;
+  text-align: center;
+`;
+
+export const ConfirmarCadastroResendButton = styled.button<{ disabled?: boolean }>`
+  width: 100%;
+  height: 3rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.75rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+`;
+
+// Redefinir Senha specific styles
+export const RedefinirSenhaForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+`;
+
+export const RedefinirSenhaFormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+export const RedefinirSenhaInputGroup = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
+
+export const RedefinirSenhaInput = styled.input`
+  width: 100%;
+  height: 3.5rem;
+  padding: 0 3rem;
+  background: hsl(var(--auth-input-bg));
+  backdrop-filter: blur(0.5rem);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.75rem;
+  color: white;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+  }
+
+  &:hover:not(:focus) {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+`;
+
+export const RedefinirSenhaInputIcon = styled.div`
+  position: absolute;
+  left: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.3s ease;
+  z-index: 1;
+
+  ${RedefinirSenhaInputGroup}:focus-within & {
+    color: white;
+  }
+`;
+
+export const RedefinirSenhaButton = styled.button<{ disabled?: boolean }>`
+  width: 100%;
+  height: 3.5rem;
+  background: hsl(var(--auth-button));
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover:not(:disabled) {
+    background: hsl(var(--primary-glow));
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.15);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+`;
+
+export const RedefinirSenhaButtonContent = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+`;
+
+export const RedefinirSenhaError = styled.p`
+  color: #f87171;
+  font-size: 0.875rem;
+  margin: 0;
+  animation: ${slideIn} 0.3s ease-out;
+`;
+
+export const RedefinirSenhaPasswordValidation = styled.div`
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(0.5rem);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-top: 0.5rem;
+`;
+
+export const RedefinirSenhaPasswordTitle = styled.p`
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 0 0 0.75rem;
+`;
+
+export const RedefinirSenhaPasswordGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+`;
+
+export const RedefinirSenhaPasswordItem = styled.div<{ isValid: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  transition: color 0.3s ease;
+  color: ${({ isValid }) => isValid ? '#4ade80' : 'rgba(255, 255, 255, 0.6)'};
+`;
+
+export const RedefinirSenhaPasswordIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+`;

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { api } from "@/services/api";
+import { passwordService } from "@/services/auth/password";
 import {
   EsqueciSenhaContainer,
   FloatingElement,
@@ -45,7 +45,7 @@ const EsqueciSenha = () => {
     setIsLoading(true);
 
     try {
-      await api.post('/auth/forgot-password', { email });
+      await passwordService.forgotPassword({ email });
 
       toast({
         title: "E-mail enviado!",
@@ -58,7 +58,7 @@ const EsqueciSenha = () => {
     } catch (error: any) {
       toast({
         title: "Erro",
-        description: error.response?.data?.message || "Ocorreu um erro ao enviar o e-mail. Tente novamente.",
+        description: error.message || "Ocorreu um erro ao enviar o e-mail. Tente novamente.",
         variant: "destructive"
       });
     } finally {
