@@ -42,4 +42,20 @@ export const emailTokenService = {
       throw newError;
     }
   },
+
+  async resendEmailTokenByEmail(email: string): Promise<{ message: string }> {
+    try {
+      const response = await api.patch('/emailtoken/resend', { email });
+      return response.data;
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || 'Erro ao reenviar e-mail de verificação';
+      const newError = new Error(errorMessage);
+      
+      if (error.response?.status) {
+        (newError as any).status = error.response.status;
+      }
+      
+      throw newError;
+    }
+  },
 };
