@@ -83,19 +83,25 @@ export const ConfirmarCadastroForm = ({ tokenFromUrl, companyId }: ConfirmarCada
     try {
       if (companyId) {
         await emailTokenService.resendEmailToken(parseInt(companyId));
+        toast({
+          title: "E-mail reenviado!",
+          description: "Um novo token de verificação foi enviado para o seu e-mail.",
+        });
       } else if (email) {
-        await emailTokenService.resendEmailTokenByEmail(email);
-        setTokenSent(true);
+        const response = await emailTokenService.resendEmailTokenByEmail(email);
+        
+        toast({
+          title: "E-mail enviado!",
+          description: "Um token de verificação foi enviado para o seu e-mail.",
+        });
+        
+        // Redirecionar com os parâmetros na URL
+        navigate(`/confirmar-cadastro?token=${response.token}&companyId=${response.company_id}`);
       } else {
         setResendError("Por favor, informe o e-mail para reenviar o token.");
         setIsResending(false);
         return;
       }
-      
-      toast({
-        title: "E-mail reenviado!",
-        description: "Um novo token de verificação foi enviado para o seu e-mail.",
-      });
     } catch (error: any) {
       const errorMessage = error.message || "Erro ao reenviar e-mail de verificação.";
       setResendError(errorMessage);

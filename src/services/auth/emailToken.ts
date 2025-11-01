@@ -43,7 +43,7 @@ export const emailTokenService = {
     }
   },
 
-  async resendEmailTokenByEmail(email: string): Promise<{ message: string }> {
+  async resendEmailTokenByEmail(email: string): Promise<{ message: string; company_id: number; token: string }> {
     try {
       const response = await api.patch('/emailtoken/resend', { email });
       return response.data;
