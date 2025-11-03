@@ -43,6 +43,7 @@ export const authService = {
       localStorage.setItem('user_email', user.email);
       localStorage.setItem('user_name', user.name);
       localStorage.setItem('user_data', JSON.stringify(user));
+      // user_estate será definido quando buscar a company (no loader)
 
       return { token, user };
     } catch (error: any) {
@@ -66,6 +67,7 @@ export const authService = {
     localStorage.removeItem('user_email');
     localStorage.removeItem('user_name');
     localStorage.removeItem('user_data');
+    localStorage.removeItem('user_estate');
     localStorage.removeItem('selected_client_id');
   },
 
@@ -82,7 +84,8 @@ export const authService = {
       if (parts.length !== 3) return false;
 
       const payload = JSON.parse(atob(parts[1]));
-      const now = Date.now();
+      // JWT exp is in seconds, Date.now() is in milliseconds
+      const now = Math.floor(Date.now() / 1000);
       
       // Check if token is expired
       if (payload.exp && payload.exp < now) {
@@ -141,6 +144,18 @@ export const authService = {
       };
     } catch (error) {
       return null;
+    }
+  },
+
+  getUserEstate(): string | null {
+    return localStorage.getItem('user_estate');
+  },
+
+  setUserEstate(estate: string): void {
+    if (estate) {
+      localStorage.setItem('user_estate', estate);
+    } else {
+      localStorage.removeItem('user_estate');
     }
   }
 };

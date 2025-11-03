@@ -1,6 +1,6 @@
 export interface CartItem {
   id: string;
-  productId: string;
+  productId: number; // id_produto do backend
   name: string;
   image: string;
   size: string;

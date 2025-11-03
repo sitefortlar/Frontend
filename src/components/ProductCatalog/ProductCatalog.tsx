@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Product, Category } from '@/types/Product';
 import { ProductCard } from './ProductCard';
 import { CategorySidebar } from './CategorySidebar';
@@ -16,8 +15,10 @@ import {
   CartBadge
 } from './styles';
 
-// Importar produtos dos dados reais
-import { products as realProducts, categories as realCategories } from '@/data/products';
+interface ProductCatalogProps {
+  products: Product[];
+  categories: Category[];
+}
 
 interface ProductGridProps {
   products: Product[];
@@ -30,7 +31,7 @@ const ProductGridComponent = ({ products, priceType, onAddToCart }: ProductGridP
     <ProductGrid>
       {products.map((product) => (
         <ProductCard
-          key={product.id}
+          key={product.id_produto}
           product={product}
           priceType={priceType}
           onAddToCart={onAddToCart}
@@ -40,9 +41,7 @@ const ProductGridComponent = ({ products, priceType, onAddToCart }: ProductGridP
   );
 };
 
-export const ProductCatalog = () => {
-  const [products] = useState<Product[]>(realProducts);
-  const [categories] = useState<Category[]>(realCategories);
+export const ProductCatalog = ({ products, categories }: ProductCatalogProps) => {
   const { 
     items, 
     addToCart, 

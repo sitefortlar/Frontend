@@ -65,7 +65,7 @@ const CartSheet = ({
               <ScrollArea className="flex-1 -mx-6 px-6">
                 <div className="space-y-0">
                   {items.map((item) => {
-                    const product = allProducts.find(p => p.id === item.productId);
+                    const product = allProducts.find(p => p.id_produto === item.productId);
                     if (!product) return null;
 
                     return (

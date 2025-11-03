@@ -11,7 +11,7 @@ export const useAuth = () => {
     const checkUser = async () => {
       const token = authService.getToken();
       
-      if (token && authService.isTokenValid(token)) {
+      if (token) {
         try {
           // Usar dados do localStorage em vez de fazer requisição
           const userData = authService.getCurrentUserFromStorage();

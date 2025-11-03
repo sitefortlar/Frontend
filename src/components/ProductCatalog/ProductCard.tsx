@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Eye, Package } from 'lucide-react';
 import { Product, PriceType } from '@/types/Product';
 import { ProductModal } from './ProductModal';
+import { convertDriveUrlToImage } from '@/utils/imageUtils';
 import {
   ProductCard as StyledProductCard,
   ProductImageContainer,
@@ -31,17 +32,14 @@ interface ProductCardProps {
 export const ProductCard = ({ product, priceType, onAddToCart }: ProductCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Use different images based on product category for variety
-  const getProductImage = (productId: string) => {
-    const images = [
-      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=200&fit=crop",
-      "https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?w=300&h=200&fit=crop",
-      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop",
-      "https://images.unsplash.com/photo-1574263867128-a70d6c4d14c9?w=300&h=200&fit=crop",
-      "https://images.unsplash.com/photo-1583416750470-965b2707b8f1?w=300&h=200&fit=crop"
-    ];
-    const index = productId.charCodeAt(0) % images.length;
-    return images[index];
+  // Get product image from imagens array or fallback
+  const getProductImage = () => {
+    if (product.imagens && product.imagens.length > 0) {
+      // Converte link do Google Drive para link direto de imagem
+      return convertDriveUrlToImage(product.imagens[0]);
+    }
+    // Fallback image if no images available
+    return "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=200&fit=crop";
   };
 
   return (
@@ -49,10 +47,10 @@ export const ProductCard = ({ product, priceType, onAddToCart }: ProductCardProp
       <StyledProductCard onClick={() => setIsModalOpen(true)}>
         <ProductImageContainer>
           <ProductImage 
-            src={getProductImage(product.id)}
-            alt={product.name}
+            src={getProductImage()}
+            alt={product.nome}
           />
-          {product.isKit && (
+          {product.kits && product.kits.length > 0 && (
             <ProductBadge>
               <Package className="h-3 w-3" />
               Kit
@@ -62,63 +60,83 @@ export const ProductCard = ({ product, priceType, onAddToCart }: ProductCardProp
 
         <ProductContent>
           <div>
-            <ProductCategory>
-              {product.category.replace('-', ' ')}
-            </ProductCategory>
+            {product.categoria && (
+              <ProductCategory>
+                {product.categoria}
+              </ProductCategory>
+            )}
             <ProductName>
-              {product.name}
+              {product.nome || 'Produto sem nome'}
             </ProductName>
           </div>
 
-          <ProductPrices>
-            <ProductPriceLabel>Unidade:</ProductPriceLabel>
-            <ProductPriceGrid>
-              <ProductPriceItem>
-                <ProductPriceLabel>À vista:</ProductPriceLabel>
-                <ProductPriceValue isHighlight>
-                  R$ {product.prices.avista.toFixed(2)}
-                </ProductPriceValue>
-              </ProductPriceItem>
-              <ProductPriceItem>
-                <ProductPriceLabel>30 dias:</ProductPriceLabel>
-                <ProductPriceValue>
-                  R$ {product.prices.dias30.toFixed(2)}
-                </ProductPriceValue>
-              </ProductPriceItem>
-              <ProductPriceItem>
-                <ProductPriceLabel>90 dias:</ProductPriceLabel>
-                <ProductPriceValue>
-                  R$ {product.prices.dias90.toFixed(2)}
-                </ProductPriceValue>
-              </ProductPriceItem>
-            </ProductPriceGrid>
-          </ProductPrices>
-
-          {product.kits && product.kits.length > 0 && (
-            <ProductKits>
-              <ProductKitsLabel>Kit Popular (12 un):</ProductKitsLabel>
-              <ProductKitsGrid>
-                <ProductPriceItem>
-                  <ProductPriceValue isHighlight>
-                    R$ {product.kits.find(k => k.units === 12)?.prices.avista.toFixed(2) || 'N/A'}
-                  </ProductPriceValue>
-                </ProductPriceItem>
-                <ProductPriceItem>
-                  <ProductPriceValue>
-                    R$ {product.kits.find(k => k.units === 12)?.prices.dias30.toFixed(2) || 'N/A'}
-                  </ProductPriceValue>
-                </ProductPriceItem>
-                <ProductPriceItem>
-                  <ProductPriceValue>
-                    R$ {product.kits.find(k => k.units === 12)?.prices.dias90.toFixed(2) || 'N/A'}
-                  </ProductPriceValue>
-                </ProductPriceItem>
-              </ProductKitsGrid>
-              <ProductKitsInfo>
-                {product.kits.length} opções de kit disponíveis
-              </ProductKitsInfo>
-            </ProductKits>
+          {(product.avista !== undefined || product['30_dias'] !== undefined || product['60_dias'] !== undefined) && (
+            <ProductPrices>
+              <ProductPriceLabel>Preços:</ProductPriceLabel>
+              <ProductPriceGrid>
+                {product.avista !== undefined && (
+                  <ProductPriceItem>
+                    <ProductPriceLabel>À vista:</ProductPriceLabel>
+                    <ProductPriceValue isHighlight>
+                      R$ {product.avista.toFixed(2)}
+                    </ProductPriceValue>
+                  </ProductPriceItem>
+                )}
+                {product['30_dias'] !== undefined && (
+                  <ProductPriceItem>
+                    <ProductPriceLabel>30 dias:</ProductPriceLabel>
+                    <ProductPriceValue>
+                      R$ {product['30_dias'].toFixed(2)}
+                    </ProductPriceValue>
+                  </ProductPriceItem>
+                )}
+                {product['60_dias'] !== undefined && (
+                  <ProductPriceItem>
+                    <ProductPriceLabel>60 dias:</ProductPriceLabel>
+                    <ProductPriceValue>
+                      R$ {product['60_dias'].toFixed(2)}
+                    </ProductPriceValue>
+                  </ProductPriceItem>
+                )}
+              </ProductPriceGrid>
+            </ProductPrices>
           )}
+
+          {product.kits && product.kits.length > 0 && (() => {
+            // Mostra o primeiro kit disponível (geralmente o kit mais popular)
+            const firstKit = product.kits[0];
+            return (
+              <ProductKits>
+                <ProductKitsLabel>Kit ({firstKit.quantidade || 1} un):</ProductKitsLabel>
+                <ProductKitsGrid>
+                  {firstKit.avista !== undefined && (
+                    <ProductPriceItem>
+                      <ProductPriceValue isHighlight>
+                        R$ {firstKit.avista.toFixed(2)}
+                      </ProductPriceValue>
+                    </ProductPriceItem>
+                  )}
+                  {firstKit['30_dias'] !== undefined && (
+                    <ProductPriceItem>
+                      <ProductPriceValue>
+                        R$ {firstKit['30_dias'].toFixed(2)}
+                      </ProductPriceValue>
+                    </ProductPriceItem>
+                  )}
+                  {firstKit['60_dias'] !== undefined && (
+                    <ProductPriceItem>
+                      <ProductPriceValue>
+                        R$ {firstKit['60_dias'].toFixed(2)}
+                      </ProductPriceValue>
+                    </ProductPriceItem>
+                  )}
+                </ProductKitsGrid>
+                <ProductKitsInfo>
+                  {product.kits.length} opções de kit disponíveis
+                </ProductKitsInfo>
+              </ProductKits>
+            );
+          })()}
         </ProductContent>
       </StyledProductCard>
 

@@ -1,42 +1,39 @@
-export interface Kit {
-  id: string;
-  units: number;
-  prices: {
-    avista: number;
-    dias30: number;
-    dias90: number;
-  };
-  popular?: boolean;
-}
-
+// Backend Product structure
 export interface Product {
-  id: string;
-  name: string;
-  category: string;
-  subcategory: string;
-  description: string;
-  prices: {
-    avista: number;
-    dias30: number;
-    dias90: number;
-  };
-  sizes: string[];
-  defaultSize: string;
-  isKit: boolean;
-  images: string[];
-  icon: string;
-  kits: Kit[];
+  id_produto: number;
+  codigo: string;
+  nome: string;
+  descricao?: string;
+  quantidade?: number;
+  cod_kit?: string | null;
+  id_categoria: number;
+  id_subcategoria: number;
+  valor_base?: number;
+  ativo: boolean;
+  created_at: string;
+  updated_at: string;
+  categoria: string;
+  subcategoria: string;
+  imagens: string[];
+  avista?: number;
+  '30_dias'?: number;
+  '60_dias'?: number;
+  kits?: Product[]; // Array de produtos que são kits
 }
 
 export interface Category {
-  id: string;
-  name: string;
-  subcategories: Subcategory[];
+  id_categoria: number;
+  nome: string;
+  created_at: string;
+  updated_at: string;
+  subcategorias: Subcategory[];
 }
 
 export interface Subcategory {
-  id: string;
-  name: string;
+  id_subcategoria: number;
+  nome: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export type SortOption = 'price-high' | 'price-low';

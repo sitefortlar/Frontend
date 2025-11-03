@@ -37,17 +37,6 @@ export const useAuthGuard = (options: UseAuthGuardOptions = {}): UseAuthGuardRet
         return false;
       }
 
-      if (!authService.isTokenValid(token)) {
-        if (requireAuth) {
-          await authService.logout();
-          navigate(redirectTo, { 
-            state: { from: location.pathname },
-            replace: true 
-          });
-        }
-        return false;
-      }
-
       const userData = authService.getCurrentUserFromStorage();
       if (!userData) {
         if (requireAuth) {

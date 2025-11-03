@@ -65,6 +65,11 @@ export const companyService = {
       const response = await api.get(`/companies/${id}`);
       return response.data;
     } catch (error: any) {
+      // Preservar o erro original para permitir verificação de status HTTP no loader
+      if (error.response) {
+        const axiosError = error;
+        throw axiosError;
+      }
       throw new Error(error.response?.data?.message || 'Erro ao buscar empresa');
     }
   },

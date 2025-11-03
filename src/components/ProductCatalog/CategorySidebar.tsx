@@ -7,10 +7,10 @@ import { cn } from '@/lib/utils';
 
 interface CategorySidebarProps {
   categories: Category[];
-  selectedCategory: string | null;
-  selectedSubcategory: string | null;
-  onCategorySelect: (categoryId: string | null) => void;
-  onSubcategorySelect: (subcategoryId: string | null) => void;
+  selectedCategory: number | null;
+  selectedSubcategory: number | null;
+  onCategorySelect: (categoryId: number | null) => void;
+  onSubcategorySelect: (subcategoryId: number | null) => void;
 }
 
 export const CategorySidebar = ({
@@ -23,34 +23,32 @@ export const CategorySidebar = ({
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  const getCategoryIcon = (categoryId: string) => {
-    switch (categoryId) {
-      case 'panelas-pressao': return ChefHat;
-      case 'panelas-cacarolas': return Soup;
-      case 'caldeiroes': return Package;
-      case 'canecoes-fervedores': return Coffee;
-      case 'frigideiras': return Utensils;
-      case 'formas-assadeiras': return Package;
-      default: return Package;
-    }
+  const getCategoryIcon = (categoryId: number) => {
+    // Use category ID to determine icon, pode ajustar conforme necessário
+    const iconMap: Record<number, any> = {
+      2: ChefHat, // LINHA PANELA DE PRESSÃO
+      // Adicione mais mapeamentos conforme necessário
+    };
+    return iconMap[categoryId] || Package;
   };
 
-  const toggleCategory = (categoryId: string) => {
+  const toggleCategory = (categoryId: number) => {
+    const categoryIdStr = String(categoryId);
     const newExpanded = new Set(expandedCategories);
-    if (newExpanded.has(categoryId)) {
-      newExpanded.delete(categoryId);
+    if (newExpanded.has(categoryIdStr)) {
+      newExpanded.delete(categoryIdStr);
     } else {
-      newExpanded.add(categoryId);
+      newExpanded.add(categoryIdStr);
     }
     setExpandedCategories(newExpanded);
   };
 
-  const handleCategoryClick = (categoryId: string) => {
+  const handleCategoryClick = (categoryId: number) => {
     // Apenas expandir/retrair categoria sem selecionar
     toggleCategory(categoryId);
   };
 
-  const handleCategorySelect = (categoryId: string) => {
+  const handleCategorySelect = (categoryId: number) => {
     // Selecionar categoria
     if (selectedCategory === categoryId) {
       onCategorySelect(null);
@@ -60,12 +58,12 @@ export const CategorySidebar = ({
       onSubcategorySelect(null);
       // Expandir categoria quando selecionada
       const newExpanded = new Set(expandedCategories);
-      newExpanded.add(categoryId);
+      newExpanded.add(String(categoryId));
       setExpandedCategories(newExpanded);
     }
   };
 
-  const handleSubcategorySelect = (subcategoryId: string) => {
+  const handleSubcategorySelect = (subcategoryId: number) => {
     if (selectedSubcategory === subcategoryId) {
       onSubcategorySelect(null);
     } else {
@@ -101,46 +99,46 @@ export const CategorySidebar = ({
           </Button>
 
           {categories.map((category) => (
-            <div key={category.id} className="space-y-1">
+            <div key={category.id_categoria} className="space-y-1">
               <Button
                 variant="ghost"
                 className={cn(
                   "w-full justify-between text-left h-auto p-3 text-sidebar-foreground hover:bg-sidebar-accent/20",
-                  selectedCategory === category.id && "bg-sidebar-primary hover:bg-sidebar-primary/80 text-sidebar-primary-foreground"
+                  selectedCategory === category.id_categoria && "bg-sidebar-primary hover:bg-sidebar-primary/80 text-sidebar-primary-foreground"
                 )}
                 onClick={() => {
-                  handleCategorySelect(category.id);
-                  handleCategoryClick(category.id);
+                  handleCategorySelect(category.id_categoria);
+                  handleCategoryClick(category.id_categoria);
                 }}
               >
                 <div className="flex items-center gap-2">
                   {(() => {
-                    const IconComponent = getCategoryIcon(category.id);
+                    const IconComponent = getCategoryIcon(category.id_categoria);
                     return <IconComponent className="h-4 w-4" />;
                   })()}
-                  <span className="font-medium">{category.name}</span>
+                  <span className="font-medium">{category.nome}</span>
                 </div>
-                {expandedCategories.has(category.id) ? (
+                {expandedCategories.has(String(category.id_categoria)) ? (
                   <ChevronDown className="h-4 w-4" />
                 ) : (
                   <ChevronRight className="h-4 w-4" />
                 )}
               </Button>
 
-              {expandedCategories.has(category.id) && (
+              {expandedCategories.has(String(category.id_categoria)) && (
                 <div className="ml-4 space-y-1 animate-fade-in">
-                  {category.subcategories.map((subcategory) => (
+                  {category.subcategorias.map((subcategory) => (
                     <Button
-                      key={subcategory.id}
+                      key={subcategory.id_subcategoria}
                       variant="ghost"
                       size="sm"
                       className={cn(
                         "w-full justify-start text-left h-auto p-2 pl-4 text-sidebar-foreground/70 hover:bg-sidebar-accent/20",
-                        selectedSubcategory === subcategory.id && "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/80"
+                        selectedSubcategory === subcategory.id_subcategoria && "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/80"
                       )}
-                      onClick={() => handleSubcategorySelect(subcategory.id)}
+                      onClick={() => handleSubcategorySelect(subcategory.id_subcategoria)}
                     >
-                      {subcategory.name}
+                      {subcategory.nome}
                     </Button>
                   ))}
                 </div>

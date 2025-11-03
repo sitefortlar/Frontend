@@ -1,5 +1,7 @@
+import { useLoaderData } from 'react-router-dom';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 import ProductCatalog from '@/components/ProductCatalog/ProductCatalog';
+import type { CatalogLoaderData } from './loader';
 import {
   CatalogContainer,
   FloatingElement,
@@ -18,9 +20,10 @@ import {
 
 const CatalogPage = () => {
   const { isAuthenticated, isLoading } = useAuthGuard();
+  const loaderData = useLoaderData() as CatalogLoaderData | undefined;
 
   // Show loading state
-  if (isLoading) {
+  if (isLoading || !loaderData) {
     return (
       <CatalogContainer>
         <FloatingElement top="10%" right="10%" width="8rem" height="8rem" />
@@ -67,7 +70,12 @@ const CatalogPage = () => {
       <FloatingElement bottom="10%" left="5%" width="6rem" height="6rem" delay="3s" />
       
       <CatalogContent>
-        <ProductCatalog />
+        {loaderData && (
+          <ProductCatalog 
+            products={loaderData.products}
+            categories={loaderData.categories}
+          />
+        )}
       </CatalogContent>
     </CatalogContainer>
   );
