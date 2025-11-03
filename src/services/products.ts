@@ -1,10 +1,7 @@
 import { api } from './api';
 
 // Re-export types from the types directory
-export type { Product, Category, Subcategory, Kit, SortOption, PriceType } from '@/types/Product';
-
-// Re-export data from the data directory (mock data for development)
-export { products, categories, productLines } from '@/data/products';
+export type { Product, Category, Subcategory, SortOption, PriceType } from '@/types/Product';
 
 export interface ProductFilters {
   id_category?: string | number;

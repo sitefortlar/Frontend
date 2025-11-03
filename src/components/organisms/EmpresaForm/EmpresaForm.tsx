@@ -84,8 +84,8 @@ export const EmpresaForm: React.FC = () => {
       const data = await cnpjService.searchByCnpj(cnpj)
       
       // Preenche os campos automaticamente
-      form.setValue('razaoSocial', data.razaoSocial)
-      form.setValue('nomeFantasia', data.nomeFantasia)
+      form.setValue('razaoSocial', data.razao_social)
+      form.setValue('nomeFantasia', data.fantasia)
       form.setValue('logradouro', data.logradouro)
       form.setValue('numero', data.numero)
       form.setValue('complemento', data.complemento || '')
@@ -116,7 +116,7 @@ export const EmpresaForm: React.FC = () => {
       // Preenche os campos de endereço
       form.setValue('logradouro', data.logradouro)
       form.setValue('bairro', data.bairro)
-      form.setValue('cidade', data.localidade)
+      form.setValue('cidade', data.cidade)
       form.setValue('uf', data.uf)
       
       setSuccess('Endereço carregado com sucesso!')
