@@ -31,8 +31,14 @@ export const CartFooter = ({
   };
 
   const handleRealizarPedido = () => {
-    // Aqui você pode adicionar a lógica de envio do pedido por email
+    // Mostra o modal de sucesso
     setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    // Limpa o carrinho após fechar o modal
+    onClearCart();
   };
 
   return (
@@ -87,7 +93,7 @@ export const CartFooter = ({
         </div>
       </div>
 
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
         <DialogContent className="bg-background">
           <DialogHeader>
             <DialogTitle className="text-2xl">Pedido Enviado com Sucesso!</DialogTitle>
@@ -95,7 +101,7 @@ export const CartFooter = ({
               Seu pedido foi enviado por email. Em breve entraremos em contato com você.
             </DialogDescription>
           </DialogHeader>
-          <Button onClick={() => setIsModalOpen(false)} className="h-12 text-base font-semibold">
+          <Button onClick={handleCloseModal} className="h-12 text-base font-semibold">
             Fechar
           </Button>
         </DialogContent>
