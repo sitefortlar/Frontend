@@ -7,7 +7,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ShoppingCart } from 'lucide-react';
-import { CartItem, CheckoutData } from '@/types/Cart';
+import { CartItem } from '@/types/Cart';
 import { PriceType, Product } from '@/types/Product';
 import { useToast } from '@/hooks/use-toast';
 import { CartHeader } from './CartHeader';
@@ -22,7 +22,6 @@ interface CartSheetProps {
   onUpdateQuantity: (itemId: string, quantity: number) => void;
   onUpdatePriceType: (itemId: string, priceType: PriceType, product: Product) => void;
   getTotalPrice: number;
-  generateWhatsAppMessage: (data: CheckoutData) => string;
   onClearCart: () => void;
   onUpdateAllItemsPriceType?: (priceType: PriceType, allProducts: Product[]) => void;
   allProducts?: Product[];
@@ -36,7 +35,6 @@ const CartSheet = ({
   onUpdateQuantity,
   onUpdatePriceType,
   getTotalPrice,
-  generateWhatsAppMessage,
   onClearCart,
   onUpdateAllItemsPriceType,
   allProducts = [],
@@ -85,7 +83,8 @@ const CartSheet = ({
               <CartFooter
                 totalPrice={getTotalPrice}
                 onClearCart={onClearCart}
-                onGenerateWhatsAppMessage={generateWhatsAppMessage}
+                onUpdateAllItemsPriceType={onUpdateAllItemsPriceType}
+                allProducts={allProducts}
               />
             </>
           )}

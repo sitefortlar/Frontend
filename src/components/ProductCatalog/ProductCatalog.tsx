@@ -52,7 +52,6 @@ export const ProductCatalog = ({ products, categories }: ProductCatalogProps) =>
     getTotalPrice,
     getItemCount,
     clearCart, 
-    generateWhatsAppMessage, 
     isDrawerOpen, 
     setIsDrawerOpen 
   } = useCart();
@@ -109,7 +108,6 @@ export const ProductCatalog = ({ products, categories }: ProductCatalogProps) =>
         onUpdateAllItemsPriceType={updateAllItemsPriceType}
         allProducts={products}
         getTotalPrice={getTotalPrice}
-        generateWhatsAppMessage={generateWhatsAppMessage}
         onClearCart={clearCart}
       />
     </ProductCatalogContainer>
