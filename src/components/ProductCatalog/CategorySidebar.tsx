@@ -1,7 +1,19 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ChevronDown, ChevronRight, Menu, X, Package, Utensils, ChefHat, Coffee, Soup } from 'lucide-react';
+import { 
+  ChevronDown, 
+  ChevronRight, 
+  Menu, 
+  X, 
+  Gauge,
+  CookingPot,
+  ChefHat,
+  Coffee,
+  Flame,
+  CakeSlice,
+  UtensilsCrossed
+} from 'lucide-react';
 import { Category } from '@/types/Product';
 import { cn } from '@/lib/utils';
 
@@ -23,13 +35,25 @@ export const CategorySidebar = ({
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  const getCategoryIcon = (categoryId: number) => {
-    // Use category ID to determine icon, pode ajustar conforme necessário
-    const iconMap: Record<number, any> = {
-      2: ChefHat, // LINHA PANELA DE PRESSÃO
-      // Adicione mais mapeamentos conforme necessário
-    };
-    return iconMap[categoryId] || Package;
+  const getCategoryIcon = (categoryName: string) => {
+    const name = categoryName.toLowerCase();
+    
+    // Mapeamento baseado no nome da categoria
+    if (name.includes('pressão') || name.includes('pressao')) {
+      return Gauge;
+    } else if (name.includes('panela') || name.includes('caçarola') || name.includes('cacarola')) {
+      return CookingPot;
+    } else if (name.includes('caldeirão') || name.includes('caldeirao') || name.includes('caldeiroes')) {
+      return ChefHat;
+    } else if (name.includes('canecão') || name.includes('canecao') || name.includes('fervedor')) {
+      return Coffee;
+    } else if (name.includes('frigideira')) {
+      return UtensilsCrossed;
+    } else if (name.includes('forma') || name.includes('assadeira')) {
+      return CakeSlice;
+    }
+    
+    return Flame; // Ícone padrão
   };
 
   const toggleCategory = (categoryId: number) => {
@@ -113,7 +137,7 @@ export const CategorySidebar = ({
               >
                 <div className="flex items-center gap-2">
                   {(() => {
-                    const IconComponent = getCategoryIcon(category.id_categoria);
+                    const IconComponent = getCategoryIcon(category.nome);
                     return <IconComponent className="h-4 w-4" />;
                   })()}
                   <span className="font-medium">{category.nome}</span>
