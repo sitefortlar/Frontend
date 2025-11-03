@@ -47,7 +47,6 @@ export const ProductCatalog = ({ products, categories }: ProductCatalogProps) =>
     addToCart, 
     removeFromCart, 
     updateQuantity, 
-    updatePriceType, 
     updateAllItemsPriceType,
     getTotalPrice,
     getItemCount,
@@ -104,7 +103,6 @@ export const ProductCatalog = ({ products, categories }: ProductCatalogProps) =>
         items={items}
         onRemoveItem={removeFromCart}
         onUpdateQuantity={updateQuantity}
-        onUpdatePriceType={updatePriceType}
         onUpdateAllItemsPriceType={updateAllItemsPriceType}
         allProducts={products}
         getTotalPrice={getTotalPrice}

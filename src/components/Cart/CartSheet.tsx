@@ -20,7 +20,6 @@ interface CartSheetProps {
   items: CartItem[];
   onRemoveItem: (itemId: string) => void;
   onUpdateQuantity: (itemId: string, quantity: number) => void;
-  onUpdatePriceType: (itemId: string, priceType: PriceType, product: Product) => void;
   getTotalPrice: number;
   onClearCart: () => void;
   onUpdateAllItemsPriceType?: (priceType: PriceType, allProducts: Product[]) => void;
@@ -33,7 +32,6 @@ const CartSheet = ({
   items,
   onRemoveItem,
   onUpdateQuantity,
-  onUpdatePriceType,
   getTotalPrice,
   onClearCart,
   onUpdateAllItemsPriceType,
@@ -72,7 +70,6 @@ const CartSheet = ({
                         product={product!}
                         onRemove={onRemoveItem}
                         onUpdateQuantity={onUpdateQuantity}
-                        onUpdatePriceType={onUpdatePriceType}
                       />
                     );
                   })}
