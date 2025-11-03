@@ -43,10 +43,10 @@ const CartSheet = ({
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:max-w-lg">
+      <SheetContent className="w-full sm:max-w-lg flex flex-col">
         <CartHeader onClose={onClose} itemCount={items.length} />
 
-        <div className="flex flex-col h-[calc(100vh-80px)]">
+        <div className="flex flex-col flex-1 overflow-hidden">
           {items.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center py-12">
               <ShoppingCart className="h-12 w-12 text-muted-foreground mb-4" />
@@ -60,7 +60,7 @@ const CartSheet = ({
             </div>
           ) : (
             <>
-              <ScrollArea className="flex-1 -mx-6 px-6 min-h-0">
+              <ScrollArea className="flex-1 -mx-6 px-6">
                 <div className="space-y-4 py-4">
                   {items.map((item) => {
                     const product = allProducts.find(p => p.id_produto === item.productId);
@@ -79,7 +79,7 @@ const CartSheet = ({
                 </div>
               </ScrollArea>
 
-              <div className="mt-auto">
+              <div className="mt-auto -mx-6 px-6">
                 <CartFooter
                   totalPrice={getTotalPrice}
                   onClearCart={onClearCart}
