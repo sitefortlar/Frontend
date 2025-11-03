@@ -6,7 +6,7 @@ import {
   ChevronRight, 
   Menu, 
   X, 
-  Gauge,
+  Cloud,
   CookingPot,
   ChefHat,
   Coffee,
@@ -24,7 +24,8 @@ import {
   Droplets,
   GlassWater,
   Refrigerator,
-  Beer
+  Beer,
+  Sparkles
 } from 'lucide-react';
 import { Category } from '@/types/Product';
 import { cn } from '@/lib/utils';
@@ -52,7 +53,7 @@ export const CategorySidebar = ({
     
     // Mapeamento específico baseado no nome da categoria
     if (name.includes('pressão') || name.includes('pressao')) {
-      return Gauge;
+      return Cloud; // Fumaça/vapor para panela de pressão
     } else if (name.includes('caldeirão') || name.includes('caldeirao') || name.includes('caldeiroes')) {
       return Soup;
     } else if (name.includes('jarra')) {
@@ -70,7 +71,7 @@ export const CategorySidebar = ({
     } else if (name.includes('depósito') || name.includes('deposito') || name.includes('alimento')) {
       return Archive;
     } else if (name.includes('pipoqueira')) {
-      return Flame;
+      return Sparkles; // Pipoca estourando/faiscando
     } else if (name.includes('latão') || name.includes('latao') || name.includes('leite')) {
       return Milk;
     } else if (name.includes('espagueteira') || name.includes('macarrão') || name.includes('macarrao')) {
