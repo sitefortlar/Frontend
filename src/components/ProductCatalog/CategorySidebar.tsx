@@ -12,7 +12,19 @@ import {
   Coffee,
   Flame,
   CakeSlice,
-  UtensilsCrossed
+  UtensilsCrossed,
+  Soup,
+  Package,
+  Container,
+  Filter,
+  ShoppingBag,
+  Archive,
+  Milk,
+  Wheat,
+  Droplets,
+  GlassWater,
+  Refrigerator,
+  Beer
 } from 'lucide-react';
 import { Category } from '@/types/Product';
 import { cn } from '@/lib/utils';
@@ -38,22 +50,52 @@ export const CategorySidebar = ({
   const getCategoryIcon = (categoryName: string) => {
     const name = categoryName.toLowerCase();
     
-    // Mapeamento baseado no nome da categoria
+    // Mapeamento específico baseado no nome da categoria
     if (name.includes('pressão') || name.includes('pressao')) {
       return Gauge;
+    } else if (name.includes('caldeirão') || name.includes('caldeirao') || name.includes('caldeiroes')) {
+      return Soup;
+    } else if (name.includes('jarra')) {
+      return Coffee;
+    } else if (name.includes('marmita')) {
+      return Container;
+    } else if (name.includes('concha')) {
+      return Soup;
+    } else if (name.includes('filtra') || name.includes('óleo') || name.includes('oleo')) {
+      return Filter;
+    } else if (name.includes('feirinha') || name.includes('kit')) {
+      return ShoppingBag;
+    } else if (name.includes('bacia') || name.includes('balde')) {
+      return Container;
+    } else if (name.includes('depósito') || name.includes('deposito') || name.includes('alimento')) {
+      return Archive;
+    } else if (name.includes('pipoqueira')) {
+      return Flame;
+    } else if (name.includes('latão') || name.includes('latao') || name.includes('leite')) {
+      return Milk;
+    } else if (name.includes('espagueteira') || name.includes('macarrão') || name.includes('macarrao')) {
+      return Wheat;
+    } else if (name.includes('moringa')) {
+      return Droplets;
+    } else if (name.includes('wok')) {
+      return UtensilsCrossed;
+    } else if (name.includes('cuscuzeira')) {
+      return ChefHat;
+    } else if (name.includes('blue')) {
+      return Refrigerator;
+    } else if (name.includes('copo')) {
+      return GlassWater;
     } else if (name.includes('panela') || name.includes('caçarola') || name.includes('cacarola')) {
       return CookingPot;
-    } else if (name.includes('caldeirão') || name.includes('caldeirao') || name.includes('caldeiroes')) {
-      return ChefHat;
-    } else if (name.includes('canecão') || name.includes('canecao') || name.includes('fervedor')) {
-      return Coffee;
     } else if (name.includes('frigideira')) {
       return UtensilsCrossed;
     } else if (name.includes('forma') || name.includes('assadeira')) {
       return CakeSlice;
+    } else if (name.includes('canecão') || name.includes('canecao') || name.includes('fervedor')) {
+      return Coffee;
     }
     
-    return Flame; // Ícone padrão
+    return CookingPot; // Ícone padrão
   };
 
   const toggleCategory = (categoryId: number) => {

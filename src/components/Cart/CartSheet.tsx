@@ -41,7 +41,7 @@ const CartSheet = ({
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:max-w-lg flex flex-col">
+      <SheetContent className="w-full sm:max-w-lg flex flex-col [&>button]:hidden">
         <CartHeader onClose={onClose} itemCount={items.length} />
 
         <div className="flex flex-col flex-1 overflow-hidden">
