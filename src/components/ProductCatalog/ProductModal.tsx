@@ -69,24 +69,9 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
             {/* Product info */}
             <div className="bg-muted/30 rounded-lg p-4">
               <h4 className="font-semibold mb-2">Informações do Produto</h4>
-              {product.categoria && (
-                <p className="text-sm text-muted-foreground mb-2">
-                  Categoria: {product.categoria}
-                </p>
-              )}
-              {product.subcategoria && (
-                <p className="text-sm text-muted-foreground mb-2">
-                  Subcategoria: {product.subcategoria}
-                </p>
-              )}
-              {product.codigo && (
-                <p className="text-sm text-muted-foreground mb-2">
-                  Código: {product.codigo}
-                </p>
-              )}
               {product.descricao && (
                 <p className="text-sm text-muted-foreground">
-                  Descrição: {product.descricao}
+                  {product.descricao}
                 </p>
               )}
             </div>
