@@ -46,7 +46,7 @@ const CartSheet = ({
       <SheetContent className="w-full sm:max-w-lg">
         <CartHeader onClose={onClose} itemCount={items.length} />
 
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-[calc(100vh-80px)]">
           {items.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center py-12">
               <ShoppingCart className="h-12 w-12 text-muted-foreground mb-4" />
@@ -60,17 +60,16 @@ const CartSheet = ({
             </div>
           ) : (
             <>
-              <ScrollArea className="flex-1 -mx-6 px-6">
-                <div className="space-y-0">
+              <ScrollArea className="flex-1 -mx-6 px-6 min-h-0">
+                <div className="space-y-4 py-4">
                   {items.map((item) => {
                     const product = allProducts.find(p => p.id_produto === item.productId);
-                    if (!product) return null;
-
+                    
                     return (
                       <CartItemComponent
                         key={item.id}
                         item={item}
-                        product={product}
+                        product={product!}
                         onRemove={onRemoveItem}
                         onUpdateQuantity={onUpdateQuantity}
                         onUpdatePriceType={onUpdatePriceType}
@@ -80,12 +79,14 @@ const CartSheet = ({
                 </div>
               </ScrollArea>
 
-              <CartFooter
-                totalPrice={getTotalPrice}
-                onClearCart={onClearCart}
-                onUpdateAllItemsPriceType={onUpdateAllItemsPriceType}
-                allProducts={allProducts}
-              />
+              <div className="mt-auto">
+                <CartFooter
+                  totalPrice={getTotalPrice}
+                  onClearCart={onClearCart}
+                  onUpdateAllItemsPriceType={onUpdateAllItemsPriceType}
+                  allProducts={allProducts}
+                />
+              </div>
             </>
           )}
         </div>
