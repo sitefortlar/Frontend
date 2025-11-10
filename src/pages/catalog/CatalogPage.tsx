@@ -74,6 +74,7 @@ const CatalogPage = () => {
           <ProductCatalog 
             products={loaderData.products}
             categories={loaderData.categories}
+            companyId={loaderData.user?.company?.id_empresa}
           />
         )}
       </CatalogContent>

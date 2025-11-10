@@ -18,6 +18,7 @@ import {
 interface ProductCatalogProps {
   products: Product[];
   categories: Category[];
+  companyId?: number;
 }
 
 interface ProductGridProps {
@@ -41,7 +42,7 @@ const ProductGridComponent = ({ products, priceType, onAddToCart }: ProductGridP
   );
 };
 
-export const ProductCatalog = ({ products, categories }: ProductCatalogProps) => {
+export const ProductCatalog = ({ products, categories, companyId }: ProductCatalogProps) => {
   const { 
     items, 
     addToCart, 
@@ -106,6 +107,7 @@ export const ProductCatalog = ({ products, categories }: ProductCatalogProps) =>
         onUpdateAllItemsPriceType={updateAllItemsPriceType}
         allProducts={products}
         getTotalPrice={getTotalPrice}
+        companyId={companyId || 0}
         onClearCart={clearCart}
       />
     </ProductCatalogContainer>

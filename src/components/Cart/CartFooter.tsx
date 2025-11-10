@@ -4,24 +4,34 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ShoppingCart, Trash2 } from 'lucide-react';
-import { PriceType } from '@/types/Product';
+import { ShoppingCart, Trash2, Loader2 } from 'lucide-react';
+import { PriceType, Product } from '@/types/Product';
+import { CartItem } from '@/types/Cart';
+import { orderService } from '@/services/order/OrderService';
+import type { SendOrderEmailRequest } from '@/services/order/OrderService';
+import { useToast } from '@/hooks/use-toast';
 
 interface CartFooterProps {
   totalPrice: number;
+  items: CartItem[];
+  allProducts: Product[];
+  companyId: number;
   onClearCart: () => void;
-  onUpdateAllItemsPriceType?: (priceType: PriceType, allProducts: any[]) => void;
-  allProducts?: any[];
+  onUpdateAllItemsPriceType?: (priceType: PriceType, allProducts: Product[]) => void;
 }
 
 export const CartFooter = ({ 
   totalPrice, 
+  items,
+  allProducts,
+  companyId,
   onClearCart,
   onUpdateAllItemsPriceType,
-  allProducts = []
 }: CartFooterProps) => {
+  const { toast } = useToast();
   const [paymentType, setPaymentType] = useState<PriceType>('avista');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handlePaymentTypeChange = (value: PriceType) => {
     setPaymentType(value);
@@ -30,9 +40,86 @@ export const CartFooter = ({
     }
   };
 
-  const handleRealizarPedido = () => {
-    // Mostra o modal de sucesso
-    setIsModalOpen(true);
+  // Função para mapear paymentType do frontend para o formato do backend
+  const mapPaymentTypeToBackend = (paymentType: PriceType): "avista" | "30_dias" | "60_dias" => {
+    switch (paymentType) {
+      case 'avista':
+        return 'avista';
+      case 'dias30':
+        return '30_dias';
+      case 'dias90':
+        return '60_dias'; // dias90 no frontend mapeia para 60_dias no backend
+      default:
+        return 'avista';
+    }
+  };
+
+  const handleRealizarPedido = async () => {
+    if (items.length === 0) {
+      toast({
+        title: "Carrinho vazio",
+        description: "Adicione produtos ao carrinho antes de finalizar o pedido.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!companyId || companyId === 0) {
+      toast({
+        title: "Erro de configuração",
+        description: "Não foi possível identificar a empresa. Por favor, faça login novamente.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Mapear items do carrinho para OrderItemRequest
+      const orderItems: SendOrderEmailRequest['itens'] = items.map((item) => {
+        // Encontrar o produto completo para obter código, categoria e subcategoria
+        const product = allProducts.find(p => p.id_produto === item.productId);
+        
+        return {
+          id_produto: item.productId,
+          codigo: product?.codigo || '',
+          nome: item.name,
+          quantidade_pedida: item.quantity,
+          valor_unitario: item.price,
+          valor_total: item.price * item.quantity,
+          categoria: product?.categoria,
+          subcategoria: product?.subcategoria,
+        };
+      });
+
+      const orderRequest: SendOrderEmailRequest = {
+        company_id: companyId,
+        forma_pagamento: mapPaymentTypeToBackend(paymentType),
+        itens: orderItems,
+      };
+
+      const response = await orderService.sendOrderEmail(orderRequest);
+
+      // Mostrar modal de sucesso
+      setIsModalOpen(true);
+      
+      toast({
+        title: "Pedido enviado com sucesso!",
+        description: `Email enviado para ${response.email_enviado}`,
+      });
+
+    } catch (error: any) {
+      console.error('Erro ao enviar pedido:', error);
+      
+      toast({
+        title: "Erro ao enviar pedido",
+        description: error.message || "Ocorreu um erro ao enviar o pedido. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCloseModal = () => {
@@ -60,6 +147,7 @@ export const CartFooter = ({
             <Select
               value={paymentType}
               onValueChange={handlePaymentTypeChange}
+              disabled={isLoading}
             >
               <SelectTrigger className="w-40 bg-background">
                 <SelectValue />
@@ -78,15 +166,26 @@ export const CartFooter = ({
             onClick={handleRealizarPedido}
             className="flex-1 h-12 text-base font-semibold"
             size="lg"
+            disabled={isLoading || items.length === 0}
           >
-            <ShoppingCart className="h-5 w-5 mr-2" />
-            Realizar Pedido
+            {isLoading ? (
+              <>
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                Enviando...
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                Realizar Pedido
+              </>
+            )}
           </Button>
           <Button
             variant="outline"
             onClick={onClearCart}
             className="h-12 w-12 p-0"
             size="icon"
+            disabled={isLoading}
           >
             <Trash2 className="h-5 w-5" />
           </Button>

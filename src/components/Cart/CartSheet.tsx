@@ -21,6 +21,7 @@ interface CartSheetProps {
   onRemoveItem: (itemId: string) => void;
   onUpdateQuantity: (itemId: string, quantity: number) => void;
   getTotalPrice: number;
+  companyId: number;
   onClearCart: () => void;
   onUpdateAllItemsPriceType?: (priceType: PriceType, allProducts: Product[]) => void;
   allProducts?: Product[];
@@ -33,6 +34,7 @@ const CartSheet = ({
   onRemoveItem,
   onUpdateQuantity,
   getTotalPrice,
+  companyId,
   onClearCart,
   onUpdateAllItemsPriceType,
   allProducts = [],
@@ -79,9 +81,11 @@ const CartSheet = ({
               <div className="mt-auto -mx-6 px-6">
                 <CartFooter
                   totalPrice={getTotalPrice}
+                  items={items}
+                  allProducts={allProducts}
+                  companyId={companyId}
                   onClearCart={onClearCart}
                   onUpdateAllItemsPriceType={onUpdateAllItemsPriceType}
-                  allProducts={allProducts}
                 />
               </div>
             </>

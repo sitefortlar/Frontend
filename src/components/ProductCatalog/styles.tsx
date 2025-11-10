@@ -105,7 +105,7 @@ export const ProductImageContainer = styled.div`
   width: 100%;
   height: 12rem;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  background: white;
 `;
 
 export const ProductImage = styled.img`
@@ -123,8 +123,7 @@ export const ProductBadge = styled.div`
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(1rem);
+  background: #ef4444;
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 0.5rem;
   padding: 0.25rem 0.5rem;
@@ -234,7 +233,7 @@ export const CartButton = styled.button`
   right: 1.5rem;
   width: 4rem;
   height: 4rem;
-  background: hsl(var(--primary));
+  background: #ef4444;
   color: white;
   border: none;
   border-radius: 50%;
@@ -247,7 +246,7 @@ export const CartButton = styled.button`
   justify-content: center;
 
   &:hover {
-    background: hsl(var(--primary) / 0.9);
+    background: #dc2626;
     transform: scale(1.05);
     box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.15);
   }
