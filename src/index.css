@@ -1,0 +1,324 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* New Design System with Custom Palette
+All colors MUST be HSL.
+Font: Inter
+Primary: #0A455C (197 72% 20%)
+Dark: #10171D (206 29% 9%)
+Light: #BBD5E5 (207 46% 80%)
+White: #FDFFFF (180 100% 99%)
+*/
+
+@layer components {
+  /* Auth Components */
+  .auth-input {
+    @apply bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/70 focus:border-white/40 hover:border-white/30 transition-all duration-300;
+  }
+  
+  .auth-input::placeholder {
+    @apply text-white/70;
+  }
+  
+  .auth-input:focus {
+    @apply text-white;
+  }
+  
+  .auth-button {
+    @apply bg-[hsl(var(--auth-button))] hover:bg-[hsl(var(--primary-glow))] text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+  }
+  
+  .auth-form-bg {
+    @apply bg-[hsl(var(--auth-form-bg))] backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl;
+  }
+  
+  /* Glass Effects */
+  .glass-card {
+    @apply hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border-0;
+  }
+  
+  .glass-input {
+    @apply bg-gradient-to-br from-white/10 to-white/5 rounded-lg backdrop-blur-sm;
+  }
+  
+  /* Product Components */
+  .product-card {
+    @apply hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border-0 cursor-pointer;
+  }
+  
+  .product-image {
+    @apply w-full h-full object-cover transition-transform duration-300;
+  }
+  
+  .product-badge {
+    @apply absolute top-2 left-2 bg-primary text-primary-foreground;
+  }
+  
+  /* Price Display */
+  .price-avista {
+    @apply text-green-600 font-bold;
+  }
+  
+  .price-other {
+    @apply text-muted-foreground font-semibold;
+  }
+  
+  /* Loading States */
+  .loading-spinner {
+    @apply w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin;
+  }
+  
+  .loading-overlay {
+    @apply min-h-screen flex items-center justify-center bg-background;
+  }
+  
+  /* Form Elements */
+  .form-error {
+    @apply text-red-400 text-sm mt-1;
+  }
+  
+  .form-group {
+    @apply relative;
+  }
+  
+  .form-icon {
+    @apply absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/70 transition-colors duration-300;
+  }
+  
+  /* Cart Components */
+  .cart-item {
+    @apply flex items-center space-x-4 p-4 border-b border-border/20 last:border-b-0;
+  }
+  
+  .cart-quantity {
+    @apply flex items-center space-x-2;
+  }
+  
+  .cart-total {
+    @apply text-2xl font-bold text-primary;
+  }
+  
+  /* Animations */
+  .fade-in {
+    @apply animate-fade-in;
+  }
+  
+  .fade-in-scale {
+    @apply animate-fade-in-scale;
+  }
+  
+  .slide-up {
+    @apply animate-slide-up;
+  }
+  
+  .float {
+    @apply animate-float;
+  }
+}
+
+@layer base {
+  :root {
+    /* Main application background - Off-white */
+    --background: 40 20% 97%;
+    --foreground: 210 100% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 100% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 100% 10%;
+
+    /* Primary blue from reference image */
+    --primary: 210 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 210 100% 65%;
+
+    /* Secondary */
+    --secondary: 210 20% 90%;
+    --secondary-foreground: 210 100% 10%;
+
+    --muted: 210 20% 95%;
+    --muted-foreground: 210 20% 40%;
+
+    /* Accent */
+    --accent: 210 100% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 120 100% 40%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 210 20% 85%;
+    --input: 210 20% 90%;
+    --ring: 210 100% 50%;
+
+    /* Login/Auth page colors - Blue gradient from reference */
+    --auth-bg-start: 200 100% 15%;
+    --auth-bg-end: 210 100% 40%;
+    --auth-form-bg: 205 70% 20% / 0.4;
+    --auth-input-bg: 210 50% 25% / 0.3;
+    --auth-button: 210 100% 50%;
+
+    /* Glass morphism effects for auth pages */
+    --glass-bg: 205 70% 20% / 0.15;
+    --glass-border: 210 100% 80% / 0.2;
+    --glass-shadow: 0 8px 32px 0 hsla(210, 100%, 10%, 0.3);
+
+    /* Sidebar gradient - Blue gradient matching login */
+    --gradient-sidebar: linear-gradient(180deg, hsl(200 100% 15%) 0%, hsl(210 100% 40%) 100%);
+    
+    /* Auth page gradient */
+    --gradient-auth: linear-gradient(180deg, hsl(200 100% 15%) 0%, hsl(210 100% 40%) 100%);
+
+    /* Other gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(210 100% 50%) 0%, hsl(220 100% 55%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(40 20% 97%) 0%, hsl(40 15% 94%) 100%);
+    --gradient-glass: linear-gradient(135deg, hsla(205, 70%, 20%, 0.3) 0%, hsla(210, 60%, 25%, 0.25) 100%);
+
+    /* Shadows */
+    --shadow-soft: 0 2px 8px -2px hsl(210 20% 20% / 0.08);
+    --shadow-medium: 0 4px 16px -4px hsl(210 20% 20% / 0.12);
+    --shadow-glass: 0 8px 32px -8px hsl(210 100% 10% / 0.3);
+    --shadow-elevated: 0 16px 64px -12px hsl(210 20% 20% / 0.2);
+
+    /* Smooth animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --transition-glass: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --radius: 0.75rem;
+
+    /* Sidebar styling with blue gradient */
+    --sidebar-background: 200 100% 15%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 210 100% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 60% 25%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 210 50% 20%;
+    --sidebar-ring: 210 100% 60%;
+
+    /* Legacy fort-blue variables for compatibility */
+    --fort-blue: 200 100% 15%;
+    --fort-blue-light: 210 100% 40%;
+    --fort-blue-dark: 200 100% 12%;
+    --fort-input: 210 50% 25%;
+    --fort-input-border: 210 50% 30%;
+
+
+    /* Modern spacing and sizing */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2rem;
+    --space-xl: 3rem;
+
+    /* Border radius modern */
+    --radius-sm: 0.75rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.5rem;
+    --radius-xl: 2rem;
+  }
+
+  .dark {
+    /* Dark mode */
+    --background: 210 100% 5%;
+    --foreground: 0 0% 100%;
+    
+    --card: 210 50% 10%;
+    --card-foreground: 0 0% 100%;
+    
+    --popover: 210 50% 10%;
+    --popover-foreground: 0 0% 100%;
+    
+    --primary: 210 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 210 30% 20%;
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: 210 30% 20%;
+    --muted-foreground: 210 20% 70%;
+    
+    --accent: 210 100% 45%;
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 210 30% 25%;
+    --input: 210 30% 20%;
+    --ring: 210 100% 50%;
+    
+    /* Dark glass morphism */
+    --glass-bg: 210 50% 10% / 0.85;
+    --glass-border: 210 100% 60% / 0.1;
+    --glass-shadow: 0 8px 32px 0 hsla(0, 0%, 0%, 0.4);
+    
+    --sidebar-background: 200 100% 15%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 210 100% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 60% 25%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 210 50% 20%;
+    --sidebar-ring: 210 100% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-inter;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Glass morphism utility classes */
+  .glass {
+    background: hsl(var(--glass-bg));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow: var(--shadow-glass);
+  }
+
+  .glass-light {
+    background: hsl(var(--glass-bg));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow: var(--shadow-soft);
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary));
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary-glow));
+  }
+}
