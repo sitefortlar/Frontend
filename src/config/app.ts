@@ -5,7 +5,7 @@ export const APP_CONFIG = {
   
   // API Configuration
   api: {
-    baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
+    baseUrl: import.meta.env.VITE_API_URL || 'https://backend-zuzf.onrender.com/api',
     timeout: 10000,
   },
   

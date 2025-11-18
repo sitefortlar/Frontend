@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosError, AxiosResponse } from 'axios';
 import { baseUrl, paths } from '../routes/paths';
 
-const root: string = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8088/api';
+const root: string = import.meta.env.VITE_API_URL || 'https://backend-zuzf.onrender.com/api';
 
 export const api: AxiosInstance = axios.create({
   baseURL: root
