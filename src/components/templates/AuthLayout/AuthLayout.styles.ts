@@ -46,15 +46,16 @@ export const AuthLogo = styled.div<{width: string; height: string}>`
   ${({width, height}) => css`
     width: ${width};
     height: ${height};
-    margin: 0 0 1rem 8rem;
+    margin: 0 auto 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
     
     img {
       width: 100%;
-      height: 100%;
-      color: white;
+      height: auto;
+      object-fit: contain;
+      max-width: 100%;
     }
   `}
 `;

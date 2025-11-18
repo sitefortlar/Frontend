@@ -21,7 +21,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
   return (
     <AuthContainer>
       <AuthHeader>
-          <AuthLogo width="40rem" height="100%">
+          <AuthLogo width="20rem" height="auto">
             <img src={fortLarLogo} alt="Fort-Lar Logo" />
           </AuthLogo>
       </AuthHeader>

@@ -37,7 +37,7 @@ const getEnvVar = (key: string, defaultValue: string): string => {
  * Configuração do ambiente
  */
 export const config: EnvironmentConfig = {
-  API_BASE_URL: getEnvVar('API_BASE_URL', 'http://127.0.0.1:8088'),
+  API_BASE_URL: getEnvVar('API_BASE_URL', 'https://backend-zuzf.onrender.com'),
   NODE_ENV: getEnvVar('NODE_ENV', 'development'),
 };
 
