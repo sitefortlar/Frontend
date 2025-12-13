@@ -12,6 +12,13 @@ export const paths = {
   catalog: '/catalog',
   importProdutos: '/import-produtos',
   
+  // Admin routes
+  admin: {
+    produtos: '/admin/produtos',
+    descontos: '/admin/descontos',
+    cupons: '/admin/cupons',
+  },
+  
   // Error routes
   notFound: '/404',
 } as const;

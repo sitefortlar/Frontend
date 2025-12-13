@@ -1,6 +1,7 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
 import { paths, baseUrl } from './paths';
 import Layout from '@/components/Layout';
+import { AdminRoute } from '@/components/AdminRoute';
 
 const router = createBrowserRouter([
   // Public routes
@@ -38,6 +39,37 @@ const router = createBrowserRouter([
       {
         path: paths.importProdutos,
         lazy: () => import('@/pages/import-produtos').then(module => ({ Component: module.default })),
+      },
+      // Admin routes
+      {
+        path: paths.admin.produtos,
+        lazy: () => import('@/pages/admin/produtos').then(module => ({
+          Component: () => (
+            <AdminRoute>
+              <module.default />
+            </AdminRoute>
+          ),
+        })),
+      },
+      {
+        path: paths.admin.descontos,
+        lazy: () => import('@/pages/admin/descontos').then(module => ({
+          Component: () => (
+            <AdminRoute>
+              <module.default />
+            </AdminRoute>
+          ),
+        })),
+      },
+      {
+        path: paths.admin.cupons,
+        lazy: () => import('@/pages/admin/cupons').then(module => ({
+          Component: () => (
+            <AdminRoute>
+              <module.default />
+            </AdminRoute>
+          ),
+        })),
       },
     ],
   },

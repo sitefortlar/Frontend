@@ -4,6 +4,7 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useFormValidation } from "@/hooks/useFormValidation";
 import { authService } from "@/services/auth/auth";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { AUTH_MESSAGES } from "@/constants/auth";
 import {
   LoginForm as StyledLoginForm,
@@ -29,6 +30,7 @@ export const LoginForm = ({}: LoginFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { validateForm, errors, clearErrors } = useFormValidation();
+  const { refreshUser } = useAuthContext();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +49,9 @@ export const LoginForm = ({}: LoginFormProps) => {
 
     try {
       const response = await authService.login({ login, password });
+      
+      // Atualizar o contexto de autenticação com os dados do usuário
+      await refreshUser();
       
       toast({
         title: "Login realizado",
