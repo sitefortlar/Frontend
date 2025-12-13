@@ -1,5 +1,7 @@
 import { useLoaderData } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
+import { useAuthContext } from '@/contexts/AuthContext';
 import ProductCatalog from '@/components/ProductCatalog/ProductCatalog';
 import type { CatalogLoaderData } from './loader';
 import {
@@ -20,7 +22,15 @@ import {
 
 const CatalogPage = () => {
   const { isAuthenticated, isLoading } = useAuthGuard();
+  const { refreshUser } = useAuthContext();
   const loaderData = useLoaderData() as CatalogLoaderData | undefined;
+
+  // Atualizar o contexto de autenticação quando os dados do loader estiverem disponíveis
+  useEffect(() => {
+    if (loaderData?.user?.company) {
+      refreshUser();
+    }
+  }, [loaderData, refreshUser]);
 
   // Show loading state
   if (isLoading || !loaderData) {

@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { paths } from '@/routes/paths';
 import { 
   ChevronDown, 
   ChevronRight, 
@@ -25,7 +28,10 @@ import {
   GlassWater,
   Refrigerator,
   Beer,
-  Sparkles
+  Sparkles,
+  Tag,
+  Ticket,
+  Shield
 } from 'lucide-react';
 import { Category } from '@/types/Product';
 import { cn } from '@/lib/utils';
@@ -47,6 +53,13 @@ export const CategorySidebar = ({
 }: CategorySidebarProps) => {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { isAdmin, isLoading: authLoading } = useAuthContext();
+  const location = useLocation();
+
+  const isActive = (path: string) => location.pathname === path;
+  
+  // Não renderizar seção admin se ainda estiver carregando ou não for admin
+  const shouldShowAdminSection = !authLoading && isAdmin;
 
   const getCategoryIcon = (categoryName: string) => {
     const name = categoryName.toLowerCase();
@@ -213,6 +226,60 @@ export const CategorySidebar = ({
             </div>
           ))}
         </div>
+
+        {/* Seção Administrativa - Apenas para admins */}
+        {shouldShowAdminSection && (
+          <>
+            <div className="my-4 border-t border-sidebar-border"></div>
+            <div className="px-2 py-2">
+              <div className="flex items-center gap-2 mb-2 px-2">
+                <Shield className="h-4 w-4 text-sidebar-primary" />
+                <span className="text-sm font-semibold text-sidebar-foreground">Administração</span>
+              </div>
+              <div className="space-y-1">
+                <Link to={paths.admin.produtos}>
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start text-left h-auto p-3 text-sidebar-foreground hover:bg-sidebar-accent/20",
+                      isActive(paths.admin.produtos) && "bg-sidebar-primary hover:bg-sidebar-primary/80 text-sidebar-primary-foreground"
+                    )}
+                    onClick={() => setIsMobileOpen(false)}
+                  >
+                    <Package className="h-4 w-4 mr-2" />
+                    <span className="font-medium">Produtos</span>
+                  </Button>
+                </Link>
+                <Link to={paths.admin.descontos}>
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start text-left h-auto p-3 text-sidebar-foreground hover:bg-sidebar-accent/20",
+                      isActive(paths.admin.descontos) && "bg-sidebar-primary hover:bg-sidebar-primary/80 text-sidebar-primary-foreground"
+                    )}
+                    onClick={() => setIsMobileOpen(false)}
+                  >
+                    <Tag className="h-4 w-4 mr-2" />
+                    <span className="font-medium">Descontos por Região</span>
+                  </Button>
+                </Link>
+                <Link to={paths.admin.cupons}>
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start text-left h-auto p-3 text-sidebar-foreground hover:bg-sidebar-accent/20",
+                      isActive(paths.admin.cupons) && "bg-sidebar-primary hover:bg-sidebar-primary/80 text-sidebar-primary-foreground"
+                    )}
+                    onClick={() => setIsMobileOpen(false)}
+                  >
+                    <Ticket className="h-4 w-4 mr-2" />
+                    <span className="font-medium">Cupons</span>
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </>
+        )}
       </ScrollArea>
     </div>
   );

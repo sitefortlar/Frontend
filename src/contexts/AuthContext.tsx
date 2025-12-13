@@ -7,6 +7,7 @@ export interface User {
   email: string;
   name: string;
   perfil?: string;
+  role?: string;
   company?: Company;
 }
 
@@ -45,25 +46,36 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return;
       }
 
+      // Obter role diretamente do token (mais confiável)
+      const roleFromToken = authService.getRoleFromToken();
+      
       const userData = authService.getCurrentUserFromStorage();
       if (!userData) {
         setUser(null);
         return;
       }
 
-      // Buscar dados da empresa para obter o perfil
+      // Usar role do token (prioritário) ou do localStorage
+      const userRole = roleFromToken || userData.role || userData.perfil;
+      const userPerfil = userRole; // Mapear role para perfil
+
+      // Buscar dados da empresa (opcional, para outras informações)
+      let company: Company | undefined;
       try {
-        const company = await companyService.getCompanyById(userData.id);
-        const userWithProfile: User = {
-          ...userData,
-          perfil: company.perfil,
-          company,
-        };
-        setUser(userWithProfile);
+        company = await companyService.getCompanyById(userData.id);
       } catch (error) {
-        // Se falhar ao buscar empresa, usar dados básicos
-        setUser(userData as User);
+        console.warn('Could not load company data:', error);
+        // Não é crítico se falhar, continuamos com os dados do token
       }
+
+      const userWithProfile: User = {
+        ...userData,
+        perfil: userPerfil, // Usar role do token como perfil
+        role: userRole,
+        company,
+      };
+      
+      setUser(userWithProfile);
     } catch (error) {
       console.error('Error refreshing user:', error);
       setUser(null);
@@ -86,7 +98,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const isAuthenticated = !!user;
-  const isAdmin = user?.perfil === 'admin';
+  const isAdmin = user?.perfil === 'admin' || user?.role === 'admin';
 
   return (
     <AuthContext.Provider

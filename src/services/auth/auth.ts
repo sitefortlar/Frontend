@@ -31,10 +31,13 @@ export const authService = {
       const decodedToken = jwtDecode<any>(token);
 
       // Extrair dados do usuário do token decodificado
+      // O token agora tem: sub, email, role, iat, exp
       const user = {
-        id: decodedToken.id || decodedToken.userId || decodedToken.sub,
+        id: decodedToken.sub || decodedToken.id || decodedToken.userId,
         email: decodedToken.email || decodedToken.login || credentials.login,
-        name: decodedToken.name || decodedToken.username || credentials.login.split('@')[0]
+        name: decodedToken.name || decodedToken.username || credentials.login.split('@')[0],
+        role: decodedToken.role || null, // Extrair role do token
+        perfil: decodedToken.role || null // Mapear role para perfil
       };
 
       // Save token and user data to localStorage
@@ -42,6 +45,10 @@ export const authService = {
       localStorage.setItem('user_id', user.id);
       localStorage.setItem('user_email', user.email);
       localStorage.setItem('user_name', user.name);
+      if (user.role) {
+        localStorage.setItem('user_role', user.role);
+        localStorage.setItem('user_perfil', user.perfil);
+      }
       localStorage.setItem('user_data', JSON.stringify(user));
       // user_estate será definido quando buscar a company (no loader)
 
@@ -67,6 +74,8 @@ export const authService = {
     localStorage.removeItem('user_email');
     localStorage.removeItem('user_name');
     localStorage.removeItem('user_data');
+    localStorage.removeItem('user_role');
+    localStorage.removeItem('user_perfil');
     localStorage.removeItem('user_estate');
     localStorage.removeItem('selected_client_id');
   },
@@ -133,15 +142,42 @@ export const authService = {
       // Retorna os dados do usuário do localStorage
       const userData = localStorage.getItem('user_data');
       if (userData) {
-        return JSON.parse(userData);
+        const parsed = JSON.parse(userData);
+        // Garantir que role/perfil estejam presentes
+        if (!parsed.role && !parsed.perfil) {
+          const role = localStorage.getItem('user_role');
+          const perfil = localStorage.getItem('user_perfil');
+          if (role) {
+            parsed.role = role;
+            parsed.perfil = perfil || role;
+          }
+        }
+        return parsed;
       }
       
       // Se não tiver dados completos, retorna dados básicos
+      const role = localStorage.getItem('user_role');
+      const perfil = localStorage.getItem('user_perfil');
       return {
         id: userId,
         email: localStorage.getItem('user_email') || '',
-        name: localStorage.getItem('user_name') || ''
+        name: localStorage.getItem('user_name') || '',
+        role: role || null,
+        perfil: perfil || role || null
       };
+    } catch (error) {
+      return null;
+    }
+  },
+
+  // Método para decodificar o token e obter o role atual
+  getRoleFromToken(): string | null {
+    try {
+      const token = this.getToken();
+      if (!token) return null;
+      
+      const decodedToken = jwtDecode<any>(token);
+      return decodedToken.role || null;
     } catch (error) {
       return null;
     }
