@@ -33,7 +33,10 @@ const ConfirmarCadastro = () => {
         <ConfirmarCadastroHeader>
           <ConfirmarCadastroTitle>Confirme seu cadastro</ConfirmarCadastroTitle>
           <ConfirmarCadastroSubtitle>
-            Obrigado por se cadastrar! Para ativar sua conta, informe o token de validação abaixo:
+            {tokenFromUrl
+              ? "Obrigado por se cadastrar! Seu token foi identificado automaticamente. Clique em 'Confirmar cadastro' para ativar sua conta."
+              : "Obrigado por se cadastrar! Para ativar sua conta, informe seu e-mail para receber o token de validação ou insira o token manualmente."
+            }
           </ConfirmarCadastroSubtitle>
         </ConfirmarCadastroHeader>
 

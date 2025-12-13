@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { emailTokenService } from "@/services/auth/emailToken";
-import { CheckCircle, RotateCcw } from "lucide-react";
+import { CheckCircle, RotateCcw, Key, Mail } from "lucide-react";
 import {
   ConfirmarCadastroForm as StyledForm,
   ConfirmarCadastroFormGroup,
@@ -30,12 +30,36 @@ export const ConfirmarCadastroForm = ({ tokenFromUrl, companyId }: ConfirmarCada
   const [error, setError] = useState("");
   const [resendError, setResendError] = useState("");
   const [tokenSent, setTokenSent] = useState(false);
+  const [isManualMode, setIsManualMode] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Modo: se veio com token/companyId na URL ou se precisa solicitar
-  const hasUrlParams = !!(tokenFromUrl && companyId);
-  const needsEmailInput = !hasUrlParams && !tokenSent;
+  // Atualiza o token quando tokenFromUrl mudar (apenas se não estiver em modo manual)
+  useEffect(() => {
+    if (tokenFromUrl && !isManualMode) {
+      setToken(tokenFromUrl);
+    }
+  }, [tokenFromUrl, isManualMode]);
+
+  // Determina se há token na URL
+  const hasTokenInUrl = !!tokenFromUrl;
+  
+  // Determina se o campo de token deve ser somente leitura
+  const isTokenReadOnly = hasTokenInUrl && !isManualMode;
+  
+  // Determina se deve mostrar o campo de e-mail (quando não há token na URL e não está em modo manual)
+  const shouldShowEmailInput = !hasTokenInUrl && !isManualMode && !tokenSent;
+
+  // Alterna para modo manual
+  const handleSwitchToManualMode = () => {
+    setIsManualMode(true);
+    // Limpa o token se veio da URL para permitir inserção manual
+    if (hasTokenInUrl) {
+      setToken("");
+    }
+    setError("");
+    setResendError("");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,8 +71,11 @@ export const ConfirmarCadastroForm = ({ tokenFromUrl, companyId }: ConfirmarCada
     }
 
     setIsLoading(true);
+    
+    // Se não tem companyId, tenta verificar apenas com o token
     if (!companyId) {
-      setError("ID da empresa não encontrado. Não é possível verificar o token.");
+      setError("ID da empresa não encontrado. Por favor, solicite um novo token através do e-mail.");
+      setIsLoading(false);
       return;
     }
 
@@ -76,7 +103,7 @@ export const ConfirmarCadastroForm = ({ tokenFromUrl, companyId }: ConfirmarCada
     }
   };
 
-  const handleResendToken = async () => {
+  const handleSendTokenByEmail = async () => {
     setIsResending(true);
     setResendError("");
 
@@ -84,8 +111,8 @@ export const ConfirmarCadastroForm = ({ tokenFromUrl, companyId }: ConfirmarCada
       if (companyId) {
         await emailTokenService.resendEmailToken(parseInt(companyId));
         toast({
-          title: "E-mail reenviado!",
-          description: "Um novo token de verificação foi enviado para o seu e-mail.",
+          title: "E-mail enviado!",
+          description: "Um token de verificação foi enviado para o seu e-mail.",
         });
       } else if (email) {
         const response = await emailTokenService.resendEmailTokenByEmail(email);
@@ -98,12 +125,12 @@ export const ConfirmarCadastroForm = ({ tokenFromUrl, companyId }: ConfirmarCada
         // Redirecionar com os parâmetros na URL
         navigate(`/confirmar-cadastro?token=${response.token}&companyId=${response.company_id}`);
       } else {
-        setResendError("Por favor, informe o e-mail para reenviar o token.");
+        setResendError("Por favor, informe o e-mail para enviar o token.");
         setIsResending(false);
         return;
       }
     } catch (error: any) {
-      const errorMessage = error.message || "Erro ao reenviar e-mail de verificação.";
+      const errorMessage = error.message || "Erro ao enviar e-mail de verificação.";
       setResendError(errorMessage);
       toast({
         title: "Erro",
@@ -116,13 +143,13 @@ export const ConfirmarCadastroForm = ({ tokenFromUrl, companyId }: ConfirmarCada
   };
 
   return (
-    <StyledForm onSubmit={needsEmailInput ? (e) => { e.preventDefault(); handleResendToken(); } : handleSubmit}>
+    <StyledForm onSubmit={shouldShowEmailInput ? (e) => { e.preventDefault(); handleSendTokenByEmail(); } : handleSubmit}>
       <ConfirmarCadastroFormGroup>
-        {needsEmailInput ? (
+        {shouldShowEmailInput ? (
           <>
             <ConfirmarCadastroInputGroup>
               <ConfirmarCadastroInputIcon>
-                <CheckCircle className="h-4 w-4" />
+                <Mail className="h-4 w-4" />
               </ConfirmarCadastroInputIcon>
               <ConfirmarCadastroInput
                 type="email"
@@ -138,7 +165,7 @@ export const ConfirmarCadastroForm = ({ tokenFromUrl, companyId }: ConfirmarCada
             )}
             
             <ConfirmarCadastroDescription>
-              Informe seu e-mail para receber o token de validação
+              Informe seu e-mail para receber o token de validação por e-mail
             </ConfirmarCadastroDescription>
 
             <ConfirmarCadastroButton type="submit" disabled={isResending}>
@@ -150,25 +177,36 @@ export const ConfirmarCadastroForm = ({ tokenFromUrl, companyId }: ConfirmarCada
                   </>
                 ) : (
                   <>
-                    <RotateCcw className="h-4 w-4" />
-                    Enviar Token
+                    <Mail className="h-4 w-4" />
+                    Enviar token por e-mail
                   </>
                 )}
               </ConfirmarCadastroButtonContent>
             </ConfirmarCadastroButton>
+
+            {/* Botão secundário para alternar para modo manual */}
+            <ConfirmarCadastroResendButton 
+              type="button" 
+              onClick={handleSwitchToManualMode}
+            >
+              <ConfirmarCadastroButtonContent>
+                <Key className="h-4 w-4" />
+                Clique aqui se já possuir o token
+              </ConfirmarCadastroButtonContent>
+            </ConfirmarCadastroResendButton>
           </>
         ) : (
           <>
             <ConfirmarCadastroInputGroup>
               <ConfirmarCadastroInputIcon>
-                <CheckCircle className="h-4 w-4" />
+                <Key className="h-4 w-4" />
               </ConfirmarCadastroInputIcon>
               <ConfirmarCadastroInput
                 type="text"
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
                 placeholder="Token de validação"
-                readOnly={!!tokenFromUrl}
+                readOnly={isTokenReadOnly}
                 required
               />
             </ConfirmarCadastroInputGroup>
@@ -182,11 +220,9 @@ export const ConfirmarCadastroForm = ({ tokenFromUrl, companyId }: ConfirmarCada
             )}
             
             <ConfirmarCadastroDescription>
-              {tokenFromUrl 
-                ? "Token detectado automaticamente da URL"
-                : tokenSent 
-                  ? "Digite o token recebido no e-mail"
-                  : "Cole aqui o token recebido no e-mail"
+              {isTokenReadOnly
+                ? "Token identificado automaticamente pelo link. Clique em 'Confirmar cadastro' para continuar."
+                : "Digite o token recebido no e-mail"
               }
             </ConfirmarCadastroDescription>
 
@@ -198,30 +234,49 @@ export const ConfirmarCadastroForm = ({ tokenFromUrl, companyId }: ConfirmarCada
                     Verificando...
                   </>
                 ) : (
-                  "Verificar Conta"
+                  <>
+                    <CheckCircle className="h-4 w-4" />
+                    Confirmar cadastro
+                  </>
                 )}
               </ConfirmarCadastroButtonContent>
             </ConfirmarCadastroButton>
 
-            <ConfirmarCadastroResendButton 
-              type="button" 
-              onClick={handleResendToken}
-              disabled={isResending}
-            >
-              <ConfirmarCadastroButtonContent>
-                {isResending ? (
-                  <>
-                    <LoadingSpinner />
-                    Reenviando...
-                  </>
-                ) : (
-                  <>
-                    <RotateCcw className="h-4 w-4" />
-                    Reenviar Token
-                  </>
-                )}
-              </ConfirmarCadastroButtonContent>
-            </ConfirmarCadastroResendButton>
+            {/* Botão secundário para alternar para modo manual (quando token veio da URL) */}
+            {isTokenReadOnly && (
+              <ConfirmarCadastroResendButton 
+                type="button" 
+                onClick={handleSwitchToManualMode}
+              >
+                <ConfirmarCadastroButtonContent>
+                  <Key className="h-4 w-4" />
+                  Clique aqui se já possuir o token
+                </ConfirmarCadastroButtonContent>
+              </ConfirmarCadastroResendButton>
+            )}
+
+            {/* Botão para reenviar token (quando não está em modo automático) */}
+            {!isTokenReadOnly && companyId && (
+              <ConfirmarCadastroResendButton 
+                type="button" 
+                onClick={handleSendTokenByEmail}
+                disabled={isResending}
+              >
+                <ConfirmarCadastroButtonContent>
+                  {isResending ? (
+                    <>
+                      <LoadingSpinner />
+                      Reenviando...
+                    </>
+                  ) : (
+                    <>
+                      <RotateCcw className="h-4 w-4" />
+                      Reenviar token por e-mail
+                    </>
+                  )}
+                </ConfirmarCadastroButtonContent>
+              </ConfirmarCadastroResendButton>
+            )}
           </>
         )}
       </ConfirmarCadastroFormGroup>
