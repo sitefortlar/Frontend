@@ -212,6 +212,47 @@ export class ProductService extends BaseService {
       averagePrice: number;
     }>('/stats');
   }
+
+  /**
+   * Faz upload de arquivo CSV ou Excel para importar produtos
+   * O upload substitui completamente todos os produtos existentes
+   * 
+   * @param file Arquivo CSV ou Excel (.csv, .xls, .xlsx)
+   * @returns Promise<void>
+   */
+  async upload(file: File): Promise<void> {
+    // Validar tipo de arquivo
+    const allowedTypes = [
+      'text/csv',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ];
+    const allowedExtensions = ['.csv', '.xls', '.xlsx'];
+    
+    const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+    const isValidType = allowedTypes.includes(file.type) || allowedExtensions.includes(fileExtension);
+    
+    if (!isValidType) {
+      throw new Error('Tipo de arquivo inválido. Apenas arquivos CSV ou Excel (.csv, .xls, .xlsx) são permitidos.');
+    }
+
+    // Criar FormData para multipart/form-data
+    const formData = new FormData();
+    formData.append('file', file);
+
+    // Fazer upload - axios detecta automaticamente multipart/form-data quando FormData é usado
+    // O endpoint é /product (não /products) conforme especificação da API
+    try {
+      await this.client.post('/product', formData);
+    } catch (error: any) {
+      // Preservar o erro original
+      if (error.response) {
+        const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Erro ao fazer upload do arquivo';
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  }
 }
 
 /**
