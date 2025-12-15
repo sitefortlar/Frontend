@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { authService } from '@/services/auth/auth';
 import { companyService, Company } from '@/services/company';
 
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     try {
       const token = authService.getToken();
       if (!token) {
@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error('Error refreshing user:', error);
       setUser(null);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
 
     initAuth();
-  }, []);
+  }, [refreshUser]);
 
   const logout = async () => {
     await authService.logout();

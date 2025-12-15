@@ -1,5 +1,5 @@
 import { useLoaderData } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 import { useAuthContext } from '@/contexts/AuthContext';
 import ProductCatalog from '@/components/ProductCatalog/ProductCatalog';
@@ -22,15 +22,27 @@ import {
 
 const CatalogPage = () => {
   const { isAuthenticated, isLoading } = useAuthGuard();
-  const { refreshUser } = useAuthContext();
+  const { refreshUser, user: contextUser } = useAuthContext();
   const loaderData = useLoaderData() as CatalogLoaderData | undefined;
+  const hasRefreshedRef = useRef(false);
 
   // Atualizar o contexto de autenticação quando os dados do loader estiverem disponíveis
+  // Usar uma referência para evitar chamadas repetidas
   useEffect(() => {
-    if (loaderData?.user?.company) {
-      refreshUser();
+    // Só atualizar uma vez quando os dados do loader estiverem disponíveis
+    // e se o contexto ainda não tiver os dados da empresa
+    if (loaderData?.user?.company && !hasRefreshedRef.current) {
+      const companyId = loaderData.user.company.id_empresa;
+      const contextCompanyId = contextUser?.company?.id_empresa;
+      
+      // Só atualizar se o contexto não tiver os dados da empresa ou se for uma empresa diferente
+      if (!contextCompanyId || contextCompanyId !== companyId) {
+        hasRefreshedRef.current = true;
+        refreshUser();
+      }
     }
-  }, [loaderData, refreshUser]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaderData?.user?.company?.id_empresa, refreshUser]);
 
   // Show loading state
   if (isLoading || !loaderData) {
