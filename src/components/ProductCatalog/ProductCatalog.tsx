@@ -178,7 +178,9 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
           : {
               user_estate: userEstate,
               categoria: filters.categoriaId ?? undefined,
-              subcategoria: filters.subcategoriaId ?? undefined,
+              ...(filters.subcategoriaId !== null && filters.subcategoriaId !== undefined 
+                ? { subcategoria: filters.subcategoriaId } 
+                : {}),
             },
         { signal: controller.signal }
       )
