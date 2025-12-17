@@ -7,12 +7,14 @@ interface FilterBarProps {
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
   productCount: number;
+  isUpdating?: boolean;
 }
 
 export const FilterBar = ({
   sortBy,
   onSortChange,
   productCount,
+  isUpdating = false,
 }: FilterBarProps) => {
   return (
     <div className="bg-card border border-border rounded-lg p-4 shadow-soft">
@@ -24,6 +26,12 @@ export const FilterBar = ({
             <Badge variant="secondary" className="ml-2">
               {productCount} produto{productCount !== 1 ? 's' : ''}
             </Badge>
+          )}
+          {isUpdating && (
+            <span className="ml-2 inline-flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="h-3 w-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              Atualizando...
+            </span>
           )}
         </div>
 

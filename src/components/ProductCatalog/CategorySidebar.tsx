@@ -137,7 +137,19 @@ export const CategorySidebar = ({
     });
   }, [selectedCategory]);
 
-  const handleSubcategorySelect = (subcategoryId: number) => {
+  const handleSubcategorySelect = (parentCategoryId: number, subcategoryId: number) => {
+    // Sempre garantir que a categoria pai acompanhe a subcategoria selecionada
+    if (selectedCategory !== parentCategoryId) {
+      onCategorySelect(parentCategoryId);
+      onSubcategorySelect(null); // limpar antes de setar a nova (evita combinação inconsistente)
+      // Expandir categoria pai
+      setExpandedCategories((prev) => {
+        const next = new Set(prev);
+        next.add(String(parentCategoryId));
+        return next;
+      });
+    }
+
     if (selectedSubcategory === subcategoryId) {
       onSubcategorySelect(null);
     } else {
@@ -157,6 +169,24 @@ export const CategorySidebar = ({
 
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-2">
+          {/* Categoria especial: Todos os Produtos (carrega apenas por estado) */}
+          {!isLoadingCategories && (
+            <Button
+              variant={selectedCategory === null ? "default" : "ghost"}
+              className={cn(
+                "w-full justify-start text-left h-auto p-3 text-sidebar-foreground hover:bg-sidebar-accent/20",
+                selectedCategory === null && "bg-sidebar-primary hover:bg-sidebar-primary/80 text-sidebar-primary-foreground"
+              )}
+              onClick={() => {
+                onCategorySelect(null);
+                onSubcategorySelect(null);
+                setIsMobileOpen(false);
+              }}
+            >
+              Todos os Produtos
+            </Button>
+          )}
+
           {/* Estado de loading: manter layout e evitar tela vazia */}
           {isLoadingCategories && categories.length === 0 && (
             <div className="space-y-2">
@@ -208,7 +238,7 @@ export const CategorySidebar = ({
                         "w-full justify-start text-left h-auto p-2 pl-4 text-sidebar-foreground/70 hover:bg-sidebar-accent/20",
                         selectedSubcategory === subcategory.id_subcategoria && "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/80"
                       )}
-                      onClick={() => handleSubcategorySelect(subcategory.id_subcategoria)}
+                      onClick={() => handleSubcategorySelect(category.id_categoria, subcategory.id_subcategoria)}
                     >
                       {subcategory.nome}
                     </Button>

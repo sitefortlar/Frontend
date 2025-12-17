@@ -64,6 +64,10 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
 
+  // Para não sobrescrever a escolha do usuário (ex.: "Todos os Produtos")
+  const hasUserInteractedRef = useRef(false);
+  const hasLoadedOnceRef = useRef(false);
+
   const [filters, setFilters] = useState<{
     categoriaId: number | null;
     subcategoriaId: number | null;
@@ -94,11 +98,14 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
       setCatalogCategories(categories);
       setIsLoadingCategories(false);
       setCategoriesError(null);
-      setFilters((prev) => ({
-        ...prev,
-        categoriaId: prev.categoriaId ?? categories[0].id_categoria,
-        subcategoriaId: null,
-      }));
+      // Só define default (primeira categoria) se o usuário ainda não interagiu
+      if (!hasUserInteractedRef.current) {
+        setFilters((prev) => ({
+          ...prev,
+          categoriaId: categories[0].id_categoria,
+          subcategoriaId: null,
+        }));
+      }
     }
   }, [categories]);
 
@@ -119,11 +126,14 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
       .then((cats) => {
         setCatalogCategories(cats);
         if (cats?.length) {
-          setFilters((prev) => ({
-            ...prev,
-            categoriaId: cats[0].id_categoria,
-            subcategoriaId: null,
-          }));
+          // Default: primeira categoria (não iniciar em "Todos"), se usuário não interagiu
+          if (!hasUserInteractedRef.current) {
+            setFilters((prev) => ({
+              ...prev,
+              categoriaId: cats[0].id_categoria,
+              subcategoriaId: null,
+            }));
+          }
         } else {
           setCategoriesError('Nenhuma categoria disponível no momento.');
           setIsLoadingProducts(false);
@@ -141,24 +151,12 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
     return () => controller.abort();
   }, [categories]);
 
-  // Garantir estado inicial: primeira categoria selecionada (quando categorias chegam)
-  useEffect(() => {
-    if (filters.categoriaId == null && catalogCategories?.length) {
-      setFilters((prev) => ({
-        ...prev,
-        categoriaId: catalogCategories[0].id_categoria,
-        subcategoriaId: null,
-      }));
-    }
-  }, [catalogCategories, filters.categoriaId]);
-
   // Buscar produtos sempre que categoria/subcategoria mudar (com cancelamento)
   const abortRef = useRef<AbortController | null>(null);
   useEffect(() => {
-    // Sem categoria selecionada, não buscar (regra: não iniciar em "Todos")
-    if (!filters.categoriaId) {
-      return;
-    }
+    const isAllProducts = filters.categoriaId === null;
+    // Não iniciar em "Todos": se ainda não houve interação do usuário e categoria é null, não buscar
+    if (!hasUserInteractedRef.current && isAllProducts) return;
 
     const userEstate = authService.getUserEstate();
 
@@ -172,14 +170,17 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
 
     productService
       .getProducts(
-        {
-          user_estate: userEstate,
-          categoria: filters.categoriaId ?? undefined,
-          subcategoria: filters.subcategoriaId ?? undefined,
-        },
+        isAllProducts
+          ? { user_estate: userEstate } // "Todos os Produtos": apenas estado
+          : {
+              user_estate: userEstate,
+              categoria: filters.categoriaId ?? undefined,
+              subcategoria: filters.subcategoriaId ?? undefined,
+            },
         { signal: controller.signal }
       )
       .then((next) => {
+        hasLoadedOnceRef.current = true;
         setDisplayProducts(next);
         setProductCache((prev) => {
           const copy = new Map(prev);
@@ -191,7 +192,10 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
         // Abort não deve ser tratado como erro para o usuário
         if (err?.name === 'CanceledError' || err?.code === 'ERR_CANCELED') return;
         setProductsError(err?.message || 'Não foi possível carregar os produtos agora.');
-        setDisplayProducts([]);
+        // Só "zera" a lista se estivermos no loader completo (primeiro load ou "Todos os Produtos")
+        if (!hasLoadedOnceRef.current || isAllProducts) {
+          setDisplayProducts([]);
+        }
       })
       .finally(() => {
         if (!controller.signal.aborted) setIsLoadingProducts(false);
@@ -224,6 +228,7 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
         selectedSubcategory={filters.subcategoriaId}
         isLoadingCategories={isLoadingCategories}
         onCategorySelect={(categoriaId) => {
+          hasUserInteractedRef.current = true;
           setFilters((prev) => ({
             ...prev,
             categoriaId,
@@ -231,6 +236,7 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
           }));
         }}
         onSubcategorySelect={(subcategoriaId) => {
+          hasUserInteractedRef.current = true;
           setFilters((prev) => ({
             ...prev,
             subcategoriaId,
@@ -244,6 +250,10 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
             sortBy={filters.sortBy}
             onSortChange={(sortBy) => setFilters((prev) => ({ ...prev, sortBy }))}
             productCount={sortedProducts.length}
+            isUpdating={
+              // Loader completo apenas no primeiro carregamento ou em "Todos os Produtos"
+              isLoadingProducts && hasLoadedOnceRef.current && filters.categoriaId !== null
+            }
           />
         </ProductCatalogHeader>
 
@@ -253,7 +263,8 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
           </div>
         )}
 
-        {!categoriesError && isLoadingProducts && (
+        {/* Loader completo apenas no primeiro carregamento OU na categoria "Todos os Produtos" */}
+        {!categoriesError && isLoadingProducts && (!hasLoadedOnceRef.current || filters.categoriaId === null) && (
           <>
             <div className="py-10 text-center">
               <div className="mx-auto w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
@@ -293,7 +304,10 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
           </div>
         )}
 
-        {!categoriesError && !isLoadingProducts && !productsError && (
+        {/* Para categorias normais: mantém a lista visível mesmo durante refresh (sem loader completo) */}
+        {!categoriesError &&
+          (!isLoadingProducts || (hasLoadedOnceRef.current && filters.categoriaId !== null)) &&
+          !productsError && (
           <ProductGridComponent
             products={sortedProducts}
             priceType={filters.priceType}
