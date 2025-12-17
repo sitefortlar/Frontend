@@ -7,7 +7,7 @@ export interface CategoryFilters {
 }
 
 export const categoryService = {
-  async getCategories(filters?: CategoryFilters): Promise<Category[]> {
+  async getCategories(filters?: CategoryFilters, options?: { signal?: AbortSignal }): Promise<Category[]> {
     try {
       const params: Record<string, any> = {};
       
@@ -18,7 +18,7 @@ export const categoryService = {
         params.id_subcategory = filters.id_subcategory;
       }
 
-      const response = await api.get('/category', { params });
+      const response = await api.get('/category', { params, signal: options?.signal });
       return response.data;
     } catch (error: any) {
       // Preservar o erro original para permitir verificação de status HTTP no loader

@@ -4,6 +4,11 @@ import { api } from './api';
 export type { Product, Category, Subcategory, SortOption, PriceType } from '@/types/Product';
 
 export interface ProductFilters {
+  // Nomes recomendados (backend)
+  categoria?: string | number;
+  subcategoria?: string | number;
+
+  // Compatibilidade (código legado)
   id_category?: string | number;
   id_subcategory?: string | number;
   order_price?: 'ASC' | 'DESC';
@@ -12,15 +17,24 @@ export interface ProductFilters {
 }
 
 export const productService = {
-  async getProducts(filters?: ProductFilters): Promise<import('@/types/Product').Product[]> {
+  async getProducts(
+    filters?: ProductFilters,
+    options?: { signal?: AbortSignal }
+  ): Promise<import('@/types/Product').Product[]> {
     try {
       const params: Record<string, any> = {};
       
-      if (filters?.id_category !== undefined) {
-        params.id_category = filters.id_category;
+      const categoria = filters?.categoria ?? filters?.id_category;
+      const subcategoria = filters?.subcategoria ?? filters?.id_subcategory;
+
+      if (categoria !== undefined && categoria !== null) {
+        // envia ambos para compatibilidade com possíveis nomes do backend
+        params.categoria = categoria;
+        params.id_category = categoria;
       }
-      if (filters?.id_subcategory !== undefined) {
-        params.id_subcategory = filters.id_subcategory;
+      if (subcategoria !== undefined && subcategoria !== null) {
+        params.subcategoria = subcategoria;
+        params.id_subcategory = subcategoria;
       }
       if (filters?.order_price) {
         params.order_price = filters.order_price;
@@ -32,7 +46,7 @@ export const productService = {
         params.estado = filters.user_estate;
       }
 
-      const response = await api.get('/product/', { params });
+      const response = await api.get('/product', { params, signal: options?.signal });
       return response.data;
     } catch (error: any) {
       // Preservar o erro original para permitir verificação de status HTTP no loader

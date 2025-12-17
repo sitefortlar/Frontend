@@ -42,7 +42,13 @@ export const catalogLoader = async (): Promise<CatalogLoaderData> => {
 
   try {
     // 3. Validar autenticação através do get da company - se falhar (token inválido), redireciona
-    const company = await companyService.getCompanyById(user.id);
+    const [company, categories] = await Promise.all([
+      companyService.getCompanyById(user.id),
+      categoryService.getCategories().catch((error) => {
+        console.error('Error loading categories:', error);
+        return [] as Category[];
+      }),
+    ]);
     console.log('company', company);
     
     // 4. Extrair e salvar user_estate do primeiro endereço da company
@@ -55,17 +61,17 @@ export const catalogLoader = async (): Promise<CatalogLoaderData> => {
       console.log('user_estate saved:', userEstate);
     }
     
-    // 5. Buscar produtos e categorias em paralelo (passando user_estate para produtos)
-    const [products, categories] = await Promise.all([
-      productService.getProducts({ user_estate: userEstate }).catch((error) => {
-        console.error('Error loading products:', error);
-        return [] as Product[];
-      }),
-      categoryService.getCategories().catch((error) => {
-        console.error('Error loading categories:', error);
-        return [] as Category[];
-      }),
-    ]);
+    // 5. Estado inicial: selecionar a primeira categoria e buscar produtos filtrados por ela
+    const defaultCategoryId = categories?.[0]?.id_categoria ?? null;
+    const products = await productService.getProducts(
+      {
+        user_estate: userEstate,
+        categoria: defaultCategoryId ?? undefined,
+      },
+    ).catch((error) => {
+      console.error('Error loading products:', error);
+      return [] as Product[];
+    });
     
     const result = {
       products,

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -35,11 +35,13 @@ import {
 } from 'lucide-react';
 import { Category } from '@/types/Product';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface CategorySidebarProps {
   categories: Category[];
   selectedCategory: number | null;
   selectedSubcategory: number | null;
+  isLoadingCategories?: boolean;
   onCategorySelect: (categoryId: number | null) => void;
   onSubcategorySelect: (subcategoryId: number | null) => void;
 }
@@ -48,6 +50,7 @@ export const CategorySidebar = ({
   categories,
   selectedCategory,
   selectedSubcategory,
+  isLoadingCategories = false,
   onCategorySelect,
   onSubcategorySelect,
 }: CategorySidebarProps) => {
@@ -115,7 +118,8 @@ export const CategorySidebar = ({
   const toggleCategory = (categoryId: number) => {
     const categoryIdStr = String(categoryId);
     const newExpanded = new Set(expandedCategories);
-    if (newExpanded.has(categoryIdStr)) {
+    // Não permitir recolher a categoria ativa (ela deve manter subcategorias visíveis)
+    if (newExpanded.has(categoryIdStr) && selectedCategory !== categoryId) {
       newExpanded.delete(categoryIdStr);
     } else {
       newExpanded.add(categoryIdStr);
@@ -123,25 +127,15 @@ export const CategorySidebar = ({
     setExpandedCategories(newExpanded);
   };
 
-  const handleCategoryClick = (categoryId: number) => {
-    // Apenas expandir/retrair categoria sem selecionar
-    toggleCategory(categoryId);
-  };
-
-  const handleCategorySelect = (categoryId: number) => {
-    // Selecionar categoria
-    if (selectedCategory === categoryId) {
-      onCategorySelect(null);
-      onSubcategorySelect(null);
-    } else {
-      onCategorySelect(categoryId);
-      onSubcategorySelect(null);
-      // Expandir categoria quando selecionada
-      const newExpanded = new Set(expandedCategories);
-      newExpanded.add(String(categoryId));
-      setExpandedCategories(newExpanded);
-    }
-  };
+  // Garantir que a categoria ativa esteja sempre expandida
+  useEffect(() => {
+    if (selectedCategory == null) return;
+    setExpandedCategories((prev) => {
+      const next = new Set(prev);
+      next.add(String(selectedCategory));
+      return next;
+    });
+  }, [selectedCategory]);
 
   const handleSubcategorySelect = (subcategoryId: number) => {
     if (selectedSubcategory === subcategoryId) {
@@ -163,22 +157,18 @@ export const CategorySidebar = ({
 
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-2">
-          <Button
-            variant={selectedCategory === null ? "default" : "ghost"}
-            className={cn(
-              "w-full justify-start text-left h-auto p-3 text-sidebar-foreground hover:bg-sidebar-accent/20",
-              selectedCategory === null && "bg-sidebar-primary hover:bg-sidebar-primary/80 text-sidebar-primary-foreground"
-            )}
-            onClick={() => {
-              onCategorySelect(null);
-              onSubcategorySelect(null);
-              setIsMobileOpen(false);
-            }}
-          >
-            Todos os Produtos
-          </Button>
+          {/* Estado de loading: manter layout e evitar tela vazia */}
+          {isLoadingCategories && categories.length === 0 && (
+            <div className="space-y-2">
+              {Array.from({ length: 8 }).map((_, idx) => (
+                <div key={idx} className="w-full rounded-lg p-3 bg-sidebar-accent/10">
+                  <Skeleton className="h-4 w-3/4 bg-white/20" />
+                </div>
+              ))}
+            </div>
+          )}
 
-          {categories.map((category) => (
+          {!isLoadingCategories && categories.map((category) => (
             <div key={category.id_categoria} className="space-y-1">
               <Button
                 variant="ghost"
@@ -187,8 +177,10 @@ export const CategorySidebar = ({
                   selectedCategory === category.id_categoria && "bg-sidebar-primary hover:bg-sidebar-primary/80 text-sidebar-primary-foreground"
                 )}
                 onClick={() => {
-                  handleCategorySelect(category.id_categoria);
-                  handleCategoryClick(category.id_categoria);
+                  onCategorySelect(category.id_categoria);
+                  onSubcategorySelect(null); // limpar subcategoria ao trocar de categoria
+                  toggleCategory(category.id_categoria);
+                  setIsMobileOpen(false);
                 }}
               >
                 <div className="flex items-center gap-2">
