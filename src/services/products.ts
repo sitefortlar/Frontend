@@ -16,6 +16,25 @@ export interface ProductFilters {
   user_estate?: string | null;
 }
 
+export interface CartPriceItemResponse {
+  id_produto: number;
+  found: boolean;
+  codigo?: string | null;
+  nome?: string | null;
+  ativo?: boolean | null;
+  valor_base?: number | null;
+  preco?: number | null;
+  error?: string | null;
+}
+
+export interface CartPricesResponse {
+  estado_request: string;
+  estado_calculo: string;
+  prazo: number;
+  multiplier: number;
+  items: CartPriceItemResponse[];
+}
+
 export const productService = {
   async getProducts(
     filters?: ProductFilters,
@@ -104,5 +123,20 @@ export const productService = {
       }
       throw error;
     }
+  },
+
+  async getCartPrices(
+    params: { estado: string; prazo: number; ids: Array<string | number> },
+    options?: { signal?: AbortSignal }
+  ): Promise<CartPricesResponse> {
+    const qs = new URLSearchParams();
+    qs.set('estado', params.estado);
+    qs.set('prazo', String(params.prazo));
+    params.ids.forEach((id) => qs.append('ids', String(id)));
+
+    const response = await api.get(`/product/cart/prices?${qs.toString()}`, {
+      signal: options?.signal,
+    });
+    return response.data;
   },
 };

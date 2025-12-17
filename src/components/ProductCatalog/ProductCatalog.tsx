@@ -52,7 +52,10 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
     addToCart, 
     removeFromCart, 
     updateQuantity, 
-    updateAllItemsPriceType,
+    paymentType,
+    setPaymentType,
+    isPricingLoading,
+    pricingError,
     getTotalPrice,
     getItemCount,
     clearCart, 
@@ -332,7 +335,10 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
         items={items}
         onRemoveItem={removeFromCart}
         onUpdateQuantity={updateQuantity}
-        onUpdateAllItemsPriceType={updateAllItemsPriceType}
+        paymentType={paymentType}
+        onPaymentTypeChange={setPaymentType}
+        isPricingLoading={isPricingLoading}
+        pricingError={pricingError}
         allProducts={Array.from(productCache.values())}
         getTotalPrice={getTotalPrice}
         companyId={companyId || 0}

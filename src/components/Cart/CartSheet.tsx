@@ -23,7 +23,10 @@ interface CartSheetProps {
   getTotalPrice: number;
   companyId: number;
   onClearCart: () => void;
-  onUpdateAllItemsPriceType?: (priceType: PriceType, allProducts: Product[]) => void;
+  paymentType: PriceType;
+  onPaymentTypeChange: (value: PriceType) => void;
+  isPricingLoading?: boolean;
+  pricingError?: string | null;
   allProducts?: Product[];
 }
 
@@ -36,7 +39,10 @@ const CartSheet = ({
   getTotalPrice,
   companyId,
   onClearCart,
-  onUpdateAllItemsPriceType,
+  paymentType,
+  onPaymentTypeChange,
+  isPricingLoading = false,
+  pricingError = null,
   allProducts = [],
 }: CartSheetProps) => {
   const { toast } = useToast();
@@ -85,7 +91,10 @@ const CartSheet = ({
                   allProducts={allProducts}
                   companyId={companyId}
                   onClearCart={onClearCart}
-                  onUpdateAllItemsPriceType={onUpdateAllItemsPriceType}
+                  paymentType={paymentType}
+                  onPaymentTypeChange={onPaymentTypeChange}
+                  isPricingLoading={isPricingLoading}
+                  pricingError={pricingError}
                 />
               </div>
             </>

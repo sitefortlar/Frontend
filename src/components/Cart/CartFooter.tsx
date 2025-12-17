@@ -17,7 +17,10 @@ interface CartFooterProps {
   allProducts: Product[];
   companyId: number;
   onClearCart: () => void;
-  onUpdateAllItemsPriceType?: (priceType: PriceType, allProducts: Product[]) => void;
+  paymentType: PriceType;
+  onPaymentTypeChange: (value: PriceType) => void;
+  isPricingLoading?: boolean;
+  pricingError?: string | null;
 }
 
 export const CartFooter = ({ 
@@ -26,19 +29,14 @@ export const CartFooter = ({
   allProducts,
   companyId,
   onClearCart,
-  onUpdateAllItemsPriceType,
+  paymentType,
+  onPaymentTypeChange,
+  isPricingLoading = false,
+  pricingError = null,
 }: CartFooterProps) => {
   const { toast } = useToast();
-  const [paymentType, setPaymentType] = useState<PriceType>('avista');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  const handlePaymentTypeChange = (value: PriceType) => {
-    setPaymentType(value);
-    if (onUpdateAllItemsPriceType) {
-      onUpdateAllItemsPriceType(value, allProducts);
-    }
-  };
 
   // Função para mapear paymentType do frontend para o formato do backend
   const mapPaymentTypeToBackend = (paymentType: PriceType): "avista" | "30_dias" | "60_dias" => {
@@ -135,6 +133,11 @@ export const CartFooter = ({
           <div className="text-2xl font-bold text-primary">
             Total: R$ {totalPrice.toFixed(2)}
           </div>
+          {pricingError && (
+            <div className="mt-2 text-xs text-muted-foreground">
+              {pricingError}
+            </div>
+          )}
         </div>
 
         <Separator />
@@ -146,8 +149,8 @@ export const CartFooter = ({
             </Label>
             <Select
               value={paymentType}
-              onValueChange={handlePaymentTypeChange}
-              disabled={isLoading}
+              onValueChange={onPaymentTypeChange}
+              disabled={isLoading || isPricingLoading}
             >
               <SelectTrigger className="w-40 bg-background">
                 <SelectValue />
@@ -166,7 +169,7 @@ export const CartFooter = ({
             onClick={handleRealizarPedido}
             className="flex-1 h-12 text-base font-semibold"
             size="lg"
-            disabled={isLoading || items.length === 0}
+            disabled={isLoading || isPricingLoading || items.length === 0}
           >
             {isLoading ? (
               <>
@@ -176,7 +179,7 @@ export const CartFooter = ({
             ) : (
               <>
                 <ShoppingCart className="h-5 w-5 mr-2" />
-                Realizar Pedido
+                {isPricingLoading ? 'Calculando preços...' : 'Realizar Pedido'}
               </>
             )}
           </Button>
