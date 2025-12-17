@@ -10,6 +10,7 @@ import { productService } from '@/services/products';
 import { authService } from '@/services/auth/auth';
 import { categoryService } from '@/services/categories';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAuthContext } from '@/contexts/AuthContext';
 import {
   ProductCatalogContainer,
   ProductCatalogContent,
@@ -62,6 +63,8 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
     isDrawerOpen, 
     setIsDrawerOpen 
   } = useCart();
+  
+  const { user } = useAuthContext();
 
   const [catalogCategories, setCatalogCategories] = useState<Category[]>(categories ?? []);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
@@ -161,7 +164,21 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
     // Não iniciar em "Todos": se ainda não houve interação do usuário e categoria é null, não buscar
     if (!hasUserInteractedRef.current && isAllProducts) return;
 
-    const userEstate = authService.getUserEstate();
+    // Obter estado do usuário: primeiro do localStorage, depois da company do contexto
+    let userEstate = authService.getUserEstate();
+    if (!userEstate && user?.company?.enderecos && user.company.enderecos.length > 0) {
+      userEstate = user.company.enderecos[0].uf;
+      // Salvar no localStorage para próximas requisições
+      if (userEstate) {
+        authService.setUserEstate(userEstate);
+      }
+    }
+    
+    // Se ainda não tiver estado, não fazer requisição (backend exige estado)
+    if (!userEstate) {
+      console.warn('Estado do usuário não encontrado. Aguardando carregamento...');
+      return;
+    }
 
     // cancelar requisição anterior se usuário clicar rápido
     abortRef.current?.abort();
@@ -209,7 +226,7 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
     return () => {
       controller.abort();
     };
-  }, [filters.categoriaId, filters.subcategoriaId]);
+  }, [filters.categoriaId, filters.subcategoriaId, user]);
 
   const sortedProducts = useMemo(() => {
     const list = (displayProducts ?? []).filter((p) => p != null);

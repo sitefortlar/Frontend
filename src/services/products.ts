@@ -61,7 +61,8 @@ export const productService = {
       if (filters?.limit !== undefined && filters?.limit !== null) {
         params.limit = filters.limit;
       }
-      if (filters?.user_estate) {
+      // Estado é obrigatório - sempre enviar se user_estate estiver presente no filtro
+      if (filters?.user_estate !== undefined && filters?.user_estate !== null) {
         params.estado = filters.user_estate;
       }
 
