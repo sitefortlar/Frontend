@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { CartItem, CheckoutData } from '@/types/Cart';
+import { CartItem, CheckoutData, KitCartItem, UnitProductCartItem } from '@/types/Cart';
 import { Product, PriceType } from '@/types/Product';
 import { convertDriveUrlToImage } from '@/utils/imageUtils';
 import { authService } from '@/services/auth/auth';
@@ -34,7 +34,11 @@ export const useCart = () => {
 
     setItems(prev => {
       const existingItemIndex = prev.findIndex(
-        item => item.productId === product.id_produto && item.size === size && item.name === product.nome
+        item => item.type === 'UNITARIO' && 
+                'productId' in item && 
+                item.productId === product.id_produto && 
+                item.size === size && 
+                item.name === product.nome
       );
 
       if (existingItemIndex >= 0) {
@@ -44,9 +48,11 @@ export const useCart = () => {
             : item
         );
       } else {
-        const newItem: CartItem = {
+        const newItem: UnitProductCartItem = {
+          type: 'UNITARIO',
           id: `${product.id_produto}-${size}-${Date.now()}`,
           productId: product.id_produto,
+          codigo_produto: product.codigo || '',
           name: product.nome || 'Produto sem nome',
           image: product.imagens && product.imagens.length > 0 
             ? convertDriveUrlToImage(product.imagens[0])
@@ -62,6 +68,49 @@ export const useCart = () => {
     });
     setIsDrawerOpen(true);
   }, [getPrice, paymentType]);
+
+  const addKitToCart = useCallback((kit: Product, quantity: number, priceType: PriceType) => {
+    // Validate kit has required fields
+    if (!kit || !kit.id_produto || !kit.nome || !kit.codigo) {
+      console.error('Invalid kit:', kit);
+      return;
+    }
+
+    setItems(prev => {
+      const existingItemIndex = prev.findIndex(
+        item => item.type === 'KIT' && 
+                'id_kit' in item && 
+                item.id_kit === kit.id_produto && 
+                item.codigo_kit === kit.codigo &&
+                item.priceType === priceType
+      );
+
+      if (existingItemIndex >= 0) {
+        return prev.map((item, index) => 
+          index === existingItemIndex 
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        );
+      } else {
+        const newItem: KitCartItem = {
+          type: 'KIT',
+          id: `kit-${kit.id_produto}-${kit.codigo}-${Date.now()}`,
+          id_kit: kit.id_produto,
+          codigo_kit: kit.codigo,
+          quantidade_kit: kit.quantidade || 1,
+          name: kit.nome || 'Kit sem nome',
+          image: kit.imagens && kit.imagens.length > 0 
+            ? convertDriveUrlToImage(kit.imagens[0])
+            : "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=64&h=64&fit=crop",
+          priceType: priceType,
+          price: getPrice(kit, priceType),
+          quantity,
+        };
+        return [...prev, newItem];
+      }
+    });
+    setIsDrawerOpen(true);
+  }, [getPrice]);
 
   const removeFromCart = useCallback((itemId: string) => {
     setItems(prev => prev.filter(item => item.id !== itemId));
@@ -114,13 +163,21 @@ export const useCart = () => {
   }, []);
 
   const idsKey = useMemo(() => {
-    const ids = Array.from(new Set(items.map(i => i.productId))).sort((a, b) => a - b);
+    const ids = Array.from(new Set(
+      items.map(i => i.type === 'UNITARIO' && 'productId' in i ? i.productId : 
+                     i.type === 'KIT' && 'id_kit' in i ? i.id_kit : null)
+        .filter((id): id is number => id !== null)
+    )).sort((a, b) => a - b);
     return ids.join(',');
   }, [items]);
 
   const pricingAbortRef = useRef<AbortController | null>(null);
   useEffect(() => {
-    const ids = Array.from(new Set(items.map(i => i.productId)));
+    const ids = Array.from(new Set(
+      items.map(i => i.type === 'UNITARIO' && 'productId' in i ? i.productId : 
+                     i.type === 'KIT' && 'id_kit' in i ? i.id_kit : null)
+        .filter((id): id is number => id !== null)
+    ));
     if (ids.length === 0) {
       setPricingError(null);
       setIsPricingLoading(false);
@@ -156,7 +213,12 @@ export const useCart = () => {
 
       setItems(prev =>
         prev.map(item => {
-          const nextPrice = priceById.get(item.productId);
+          let nextPrice: number | undefined;
+          if (item.type === 'UNITARIO' && 'productId' in item) {
+            nextPrice = priceById.get(item.productId);
+          } else if (item.type === 'KIT' && 'id_kit' in item) {
+            nextPrice = priceById.get(item.id_kit);
+          }
           return {
             ...item,
             priceType: paymentType,
@@ -202,7 +264,12 @@ export const useCart = () => {
     message += `*PRODUTOS:*\n`;
     items.forEach((item, index) => {
       message += `${index + 1}. ${item.name}\n`;
-      message += `   Tamanho: ${item.size}\n`;
+      if (item.type === 'UNITARIO' && 'size' in item) {
+        message += `   Tamanho: ${item.size}\n`;
+      } else if (item.type === 'KIT' && 'quantidade_kit' in item) {
+        message += `   Kit: ${item.quantidade_kit} unidades\n`;
+        message += `   Código do Kit: ${item.codigo_kit}\n`;
+      }
       message += `   Quantidade: ${item.quantity}\n`;
       message += `   Preço unitário: R$ ${item.price.toFixed(2)}\n`;
       message += `   Subtotal: R$ ${(item.price * item.quantity).toFixed(2)}\n\n`;
@@ -223,6 +290,7 @@ export const useCart = () => {
     isPricingLoading,
     pricingError,
     addToCart,
+    addKitToCart,
     removeFromCart,
     updateQuantity,
     updatePriceType,

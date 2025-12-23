@@ -27,9 +27,10 @@ interface ProductCardProps {
   product: Product;
   priceType: PriceType;
   onAddToCart?: (product: Product, size: string, priceType: PriceType, quantity?: number) => void;
+  onAddKitToCart?: (kit: Product, quantity: number, priceType: PriceType) => void;
 }
 
-export const ProductCard = ({ product, priceType, onAddToCart }: ProductCardProps) => {
+export const ProductCard = ({ product, priceType, onAddToCart, onAddKitToCart }: ProductCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Get product image from imagens array or fallback
@@ -146,6 +147,7 @@ export const ProductCard = ({ product, priceType, onAddToCart }: ProductCardProp
         onClose={() => setIsModalOpen(false)}
         priceType={priceType}
         onAddToCart={onAddToCart}
+        onAddKitToCart={onAddKitToCart}
       />
     </>
   );

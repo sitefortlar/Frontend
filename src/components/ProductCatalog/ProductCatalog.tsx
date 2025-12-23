@@ -30,9 +30,10 @@ interface ProductGridProps {
   products: Product[];
   priceType: 'avista' | 'dias30' | 'dias90';
   onAddToCart?: (product: Product, size: string, priceType: 'avista' | 'dias30' | 'dias90', quantity?: number) => void;
+  onAddKitToCart?: (kit: Product, quantity: number, priceType: 'avista' | 'dias30' | 'dias90') => void;
 }
 
-const ProductGridComponent = ({ products, priceType, onAddToCart }: ProductGridProps) => {
+const ProductGridComponent = ({ products, priceType, onAddToCart, onAddKitToCart }: ProductGridProps) => {
   return (
     <ProductGrid>
       {products.map((product) => (
@@ -41,6 +42,7 @@ const ProductGridComponent = ({ products, priceType, onAddToCart }: ProductGridP
           product={product}
           priceType={priceType}
           onAddToCart={onAddToCart}
+          onAddKitToCart={onAddKitToCart}
         />
       ))}
     </ProductGrid>
@@ -50,7 +52,8 @@ const ProductGridComponent = ({ products, priceType, onAddToCart }: ProductGridP
 export const ProductCatalog = ({ products, categories, companyId }: ProductCatalogProps) => {
   const { 
     items, 
-    addToCart, 
+    addToCart,
+    addKitToCart,
     removeFromCart, 
     updateQuantity, 
     paymentType,
@@ -334,6 +337,7 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
             products={sortedProducts}
             priceType={filters.priceType}
             onAddToCart={addToCart}
+            onAddKitToCart={addKitToCart}
           />
         )}
       </ProductCatalogContent>

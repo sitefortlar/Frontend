@@ -42,7 +42,21 @@ export const CartItem = ({
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
               <h3 className="font-medium text-sm leading-tight">{item.name}</h3>
-              {item.size && <p className="text-xs text-muted-foreground mt-1">Tamanho: {item.size}</p>}
+              {item.type === 'UNITARIO' && 'size' in item && item.size && (
+                <p className="text-xs text-muted-foreground mt-1">Tamanho: {item.size}</p>
+              )}
+              {item.type === 'KIT' && 'quantidade_kit' in item && (
+                <div className="mt-1 space-y-0.5">
+                  <p className="text-xs text-muted-foreground">
+                    Kit: {item.quantidade_kit} unidades
+                  </p>
+                  {'codigo_kit' in item && item.codigo_kit && (
+                    <p className="text-xs text-muted-foreground">
+                      Cód: {item.codigo_kit}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
             
             <div className="text-right flex-shrink-0">
@@ -50,7 +64,7 @@ export const CartItem = ({
                 R$ {(item.price * item.quantity).toFixed(2)}
               </div>
               <div className="text-xs text-muted-foreground whitespace-nowrap">
-                R$ {item.price.toFixed(2)} cada
+                R$ {item.price.toFixed(2)} {item.type === 'KIT' ? 'por kit' : 'cada'}
               </div>
             </div>
           </div>
