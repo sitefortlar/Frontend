@@ -6,6 +6,8 @@ import { useCart } from '@/hooks/useCart';
 import { useProductFilters } from '@/hooks/useProductFilters';
 import { ShoppingCart } from 'lucide-react';
 import CartSheet from '@/components/Cart/CartSheet';
+import { AdminSettingsButton } from './AdminSettingsButton';
+import { useAuthContext } from '@/contexts/AuthContext';
 import {
   ProductCatalogContainer,
   ProductCatalogContent,
@@ -62,6 +64,8 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
     updateFilter,
   } = useProductFilters(products);
 
+  const { isAdmin } = useAuthContext();
+
   return (
     <ProductCatalogContainer>
       <CategorySidebar
@@ -87,6 +91,9 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
           onAddToCart={addToCart}
         />
       </ProductCatalogContent>
+
+      {/* Admin Settings Button - Only visible for admin users */}
+      {isAdmin && <AdminSettingsButton />}
 
       {/* Cart Button */}
       <CartButton onClick={() => setIsDrawerOpen(true)}>

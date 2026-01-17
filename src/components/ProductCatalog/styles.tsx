@@ -267,3 +267,28 @@ export const CartBadge = styled.div`
   font-size: 0.75rem;
   font-weight: 600;
 `;
+
+export const AdminSettingsButton = styled.button`
+  position: fixed;
+  bottom: 6rem;
+  right: 1.5rem;
+  width: 4rem;
+  height: 4rem;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: #dc2626;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.15);
+  }
+`;
