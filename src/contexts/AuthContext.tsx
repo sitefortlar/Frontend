@@ -45,9 +45,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser(null);
         return;
       }
-
-      // Obter role diretamente do token (mais confiável)
-      const roleFromToken = authService.getRoleFromToken();
       
       const userData = authService.getCurrentUserFromStorage();
       if (!userData) {
@@ -55,23 +52,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return;
       }
 
-      // Usar role do token (prioritário) ou do localStorage
-      const userRole = roleFromToken || userData.role || userData.perfil;
-      const userPerfil = userRole; // Mapear role para perfil
-
-      // Buscar dados da empresa (opcional, para outras informações)
+      // Buscar dados da empresa para obter o perfil
       let company: Company | undefined;
+      let userPerfil: string | undefined;
+      
       try {
         company = await companyService.getCompanyById(userData.id);
+        // O perfil vem da empresa, não do usuário
+        userPerfil = company?.perfil;
       } catch (error) {
         console.warn('Could not load company data:', error);
-        // Não é crítico se falhar, continuamos com os dados do token
+        // Se falhar, tentar usar perfil do localStorage ou userData
+        userPerfil = userData.perfil || userData.role;
       }
 
       const userWithProfile: User = {
         ...userData,
-        perfil: userPerfil, // Usar role do token como perfil
-        role: userRole,
+        perfil: userPerfil, // Perfil da empresa ou do localStorage
+        role: userPerfil, // Usar perfil como role também
         company,
       };
       
