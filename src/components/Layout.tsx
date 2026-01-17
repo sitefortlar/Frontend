@@ -1,10 +1,13 @@
 import { Outlet } from 'react-router-dom';
+import { CouponProvider } from '@/contexts/CouponContext';
 
 const Layout = () => {
   return (
-    <div className="min-h-screen">
-      <Outlet />
-    </div>
+    <CouponProvider>
+      <div className="min-h-screen">
+        <Outlet />
+      </div>
+    </CouponProvider>
   );
 };
 

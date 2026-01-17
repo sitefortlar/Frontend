@@ -21,6 +21,7 @@ export interface SendOrderEmailRequest {
   company_id: number;
   forma_pagamento: "avista" | "30_dias" | "60_dias";
   itens: OrderItemRequest[];
+  id_cupom?: number; // ID do cupom aplicado (opcional)
 }
 
 /**

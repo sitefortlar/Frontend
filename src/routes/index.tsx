@@ -39,6 +39,10 @@ const router = createBrowserRouter([
         path: paths.importProdutos,
         lazy: () => import('@/pages/import-produtos').then(module => ({ Component: module.default })),
       },
+      {
+        path: paths.couponManagement,
+        lazy: () => import('@/pages/coupon-management').then(module => ({ Component: module.default })),
+      },
     ],
   },
   

@@ -11,6 +11,7 @@ export const paths = {
   // Protected routes
   catalog: '/catalog',
   importProdutos: '/import-produtos',
+  couponManagement: '/coupon-management',
   
   // Error routes
   notFound: '/404',

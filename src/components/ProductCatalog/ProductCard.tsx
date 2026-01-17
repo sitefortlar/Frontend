@@ -109,24 +109,24 @@ export const ProductCard = ({ product, priceType, onAddToCart }: ProductCardProp
               <ProductKits>
                 <ProductKitsLabel>Kit ({firstKit.quantidade || 1} un):</ProductKitsLabel>
                 <ProductKitsGrid>
-                  {firstKit.avista !== undefined && (
+                  {firstKit.valor_total_avista !== undefined && (
                     <ProductPriceItem>
                       <ProductPriceValue isHighlight>
-                        R$ {firstKit.avista.toFixed(2)}
+                        R$ {firstKit.valor_total_avista.toFixed(2)}
                       </ProductPriceValue>
                     </ProductPriceItem>
                   )}
-                  {firstKit['30_dias'] !== undefined && (
+                  {firstKit.valor_total_30 !== undefined && (
                     <ProductPriceItem>
                       <ProductPriceValue>
-                        R$ {firstKit['30_dias'].toFixed(2)}
+                        R$ {firstKit.valor_total_30.toFixed(2)}
                       </ProductPriceValue>
                     </ProductPriceItem>
                   )}
-                  {firstKit['60_dias'] !== undefined && (
+                  {firstKit.valor_total_60 !== undefined && (
                     <ProductPriceItem>
                       <ProductPriceValue>
-                        R$ {firstKit['60_dias'].toFixed(2)}
+                        R$ {firstKit.valor_total_60.toFixed(2)}
                       </ProductPriceValue>
                     </ProductPriceItem>
                   )}

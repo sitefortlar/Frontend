@@ -10,6 +10,8 @@ import { CartItem } from '@/types/Cart';
 import { orderService } from '@/services/order/OrderService';
 import type { SendOrderEmailRequest } from '@/services/order/OrderService';
 import { useToast } from '@/hooks/use-toast';
+import { useCouponContext } from '@/contexts/CouponContext';
+import { CouponSection } from './CouponSection';
 
 interface CartFooterProps {
   totalPrice: number;
@@ -29,9 +31,14 @@ export const CartFooter = ({
   onUpdateAllItemsPriceType,
 }: CartFooterProps) => {
   const { toast } = useToast();
+  const { appliedCoupon, calculateDiscount } = useCouponContext();
   const [paymentType, setPaymentType] = useState<PriceType>('avista');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Calcular desconto e total final
+  const discount = calculateDiscount(totalPrice);
+  const finalTotal = totalPrice - discount;
 
   const handlePaymentTypeChange = (value: PriceType) => {
     setPaymentType(value);
@@ -97,6 +104,8 @@ export const CartFooter = ({
         company_id: companyId,
         forma_pagamento: mapPaymentTypeToBackend(paymentType),
         itens: orderItems,
+        // Incluir id_cupom se houver cupom aplicado
+        ...(appliedCoupon && { id_cupom: appliedCoupon.id_cupom }),
       };
 
       const response = await orderService.sendOrderEmail(orderRequest);
@@ -131,9 +140,32 @@ export const CartFooter = ({
   return (
     <>
       <div className="border-t border-border/20 pt-4 pb-4 space-y-4 bg-background">
-        <div className="text-center">
-          <div className="text-2xl font-bold text-primary">
-            Total: R$ {totalPrice.toFixed(2)}
+        {/* Seção de Cupom */}
+        <CouponSection disabled={isLoading} />
+
+        {/* Resumo de Valores */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Subtotal:</span>
+            <span className="font-medium">R$ {totalPrice.toFixed(2)}</span>
+          </div>
+          
+          {discount > 0 && (
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Desconto:</span>
+              <span className="font-medium text-green-600 dark:text-green-400">
+                -R$ {discount.toFixed(2)}
+              </span>
+            </div>
+          )}
+          
+          <Separator />
+          
+          <div className="flex items-center justify-between">
+            <span className="text-lg font-semibold">Total:</span>
+            <span className="text-2xl font-bold text-primary">
+              R$ {finalTotal.toFixed(2)}
+            </span>
           </div>
         </div>
 

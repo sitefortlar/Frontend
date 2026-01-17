@@ -18,7 +18,22 @@ export interface Product {
   avista?: number;
   '30_dias'?: number;
   '60_dias'?: number;
-  kits?: Product[]; // Array de produtos que são kits
+  kits?: Kit[]; // Array de kits disponíveis para este produto
+}
+
+// Kit structure from API
+export interface Kit {
+  id_produto: number;
+  codigo: string;
+  cod_kit: string;
+  quantidade: number; // Quantidade de itens por kit
+  valor_base_total?: number;
+  valor_total_avista: number; // Valor total do kit à vista
+  valor_total_30: number; // Valor total do kit em 30 dias
+  valor_total_60: number; // Valor total do kit em 60 dias
+  nome?: string;
+  descricao?: string;
+  imagens?: string[];
 }
 
 export interface Category {
