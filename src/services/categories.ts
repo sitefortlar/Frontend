@@ -1,9 +1,12 @@
 import { api } from './api';
 import type { Category } from '@/types/Product';
+import type { ListCategoriesParams } from '@/types/pagination';
 
-export interface CategoryFilters {
+export interface CategoryFilters extends Partial<ListCategoriesParams> {
   id_category?: string | number;
   id_subcategory?: string | number;
+  skip?: number;
+  limit?: number;
 }
 
 export const categoryService = {
@@ -17,6 +20,10 @@ export const categoryService = {
       if (filters?.id_subcategory) {
         params.id_subcategory = filters.id_subcategory;
       }
+
+      // Paginação (valores padrão se não fornecidos)
+      params.skip = filters?.skip ?? 0;
+      params.limit = filters?.limit ?? 100;
 
       const response = await api.get('/category', { params });
       return response.data;

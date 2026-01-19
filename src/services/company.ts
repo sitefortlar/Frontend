@@ -1,4 +1,5 @@
 import { api } from './api';
+import type { ListCompaniesParams, ListContactsParams, ListAddressesParams } from '@/types/pagination';
 
 export interface Address {
   id_endereco: number;
@@ -80,6 +81,102 @@ export const companyService = {
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Erro ao criar empresa');
+    }
+  },
+
+  /**
+   * Lista empresas com paginação
+   */
+  async listCompanies(params?: ListCompaniesParams): Promise<Company[]> {
+    try {
+      const queryParams: Record<string, any> = {};
+      
+      if (params?.active_only !== undefined) {
+        queryParams.active_only = params.active_only;
+      }
+      if (params?.vendedor_id) {
+        queryParams.vendedor_id = params.vendedor_id;
+      }
+      if (params?.search_name) {
+        queryParams.search_name = params.search_name;
+      }
+      
+      // Paginação (valores padrão se não fornecidos)
+      queryParams.skip = params?.skip ?? 0;
+      queryParams.limit = params?.limit ?? 100;
+      
+      const response = await api.get('/companies', { params: queryParams });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Erro ao listar empresas');
+    }
+  },
+
+  /**
+   * Lista contatos com paginação
+   */
+  async listContacts(params?: ListContactsParams): Promise<Contact[]> {
+    try {
+      const queryParams: Record<string, any> = {};
+      
+      if (params?.empresa_id) {
+        queryParams.empresa_id = params.empresa_id;
+      }
+      if (params?.search_name) {
+        queryParams.search_name = params.search_name;
+      }
+      if (params?.email) {
+        queryParams.email = params.email;
+      }
+      if (params?.phone) {
+        queryParams.phone = params.phone;
+      }
+      
+      // Paginação
+      queryParams.skip = params?.skip ?? 0;
+      queryParams.limit = params?.limit ?? 100;
+      
+      const response = await api.get('/contatos', { params: queryParams });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Erro ao listar contatos');
+    }
+  },
+
+  /**
+   * Lista endereços com paginação
+   */
+  async listAddresses(params?: ListAddressesParams): Promise<Address[]> {
+    try {
+      const queryParams: Record<string, any> = {};
+      
+      if (params?.empresa_id) {
+        queryParams.empresa_id = params.empresa_id;
+      }
+      if (params?.cep) {
+        queryParams.cep = params.cep;
+      }
+      if (params?.cidade) {
+        queryParams.cidade = params.cidade;
+      }
+      if (params?.uf) {
+        queryParams.uf = params.uf;
+      }
+      if (params?.ibge) {
+        queryParams.ibge = params.ibge;
+      }
+      if (params?.search_address) {
+        queryParams.search_address = params.search_address;
+      }
+      
+      // Paginação
+      queryParams.skip = params?.skip ?? 0;
+      queryParams.limit = params?.limit ?? 100;
+      
+      const response = await api.get('/enderecos', { params: queryParams });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Erro ao listar endereços');
     }
   }
 };

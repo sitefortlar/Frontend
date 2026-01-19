@@ -3,6 +3,7 @@ export * from './Product';
 export * from './Cart';
 export * from './Auth';
 export * from './Coupon';
+export * from './pagination';
 
 // Common utility types
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;

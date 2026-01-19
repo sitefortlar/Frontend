@@ -1,14 +1,16 @@
 import { api } from './api';
+import type { ListProductsParams } from '@/types/pagination';
 
 // Re-export types from the types directory
 export type { Product, Category, Subcategory, SortOption, PriceType } from '@/types/Product';
 
-export interface ProductFilters {
+export interface ProductFilters extends Partial<ListProductsParams> {
   id_category?: string | number;
   id_subcategory?: string | number;
   order_price?: 'ASC' | 'DESC';
   limit?: number | null;
   user_estate?: string | null;
+  skip?: number;
 }
 
 export const productService = {
@@ -25,11 +27,32 @@ export const productService = {
       if (filters?.order_price) {
         params.order_price = filters.order_price;
       }
-      if (filters?.limit !== undefined && filters?.limit !== null) {
-        params.limit = filters.limit;
-      }
       if (filters?.user_estate) {
         params.estado = filters.user_estate;
+      }
+      if (filters?.active_only !== undefined) {
+        params.active_only = filters.active_only;
+      }
+      if (filters?.include_kits !== undefined) {
+        params.include_kits = filters.include_kits;
+      }
+      if (filters?.search_name) {
+        params.search_name = filters.search_name;
+      }
+      if (filters?.min_price !== undefined) {
+        params.min_price = filters.min_price;
+      }
+      if (filters?.max_price !== undefined) {
+        params.max_price = filters.max_price;
+      }
+      
+      // Paginação (valores padrão se não fornecidos)
+      params.skip = filters?.skip ?? 0;
+      if (filters?.limit !== undefined && filters?.limit !== null) {
+        params.limit = filters.limit;
+      } else {
+        // Limite padrão de 100 se não especificado
+        params.limit = 100;
       }
 
       const response = await api.get('/product/', { params });

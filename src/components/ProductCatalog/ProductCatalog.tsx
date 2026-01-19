@@ -1,13 +1,16 @@
+import { useState, useMemo } from 'react';
 import { Product, Category } from '@/types/Product';
 import { ProductCard } from './ProductCard';
 import { CategorySidebar } from './CategorySidebar';
 import { FilterBar } from './FilterBar';
 import { useCart } from '@/hooks/useCart';
-import { useProductFilters } from '@/hooks/useProductFilters';
+import { useProducts } from '@/hooks/useProducts';
+import { Pagination } from '@/components/Pagination';
 import { ShoppingCart, Loader2 } from 'lucide-react';
 import CartSheet from '@/components/Cart/CartSheet';
 import { AdminSettingsButton } from './AdminSettingsButton';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { authService } from '@/services/auth/auth';
 import {
   ProductCatalogContainer,
   ProductCatalogContent,
@@ -18,9 +21,10 @@ import {
 } from './styles';
 
 interface ProductCatalogProps {
-  products: Product[];
+  products?: Product[]; // Opcional para compatibilidade com loader
   categories: Category[];
   companyId?: number;
+  usePagination?: boolean; // Flag para habilitar paginação (padrão: true)
 }
 
 interface ProductGridProps {
@@ -44,7 +48,12 @@ const ProductGridComponent = ({ products, priceType, onAddToCart }: ProductGridP
   );
 };
 
-export const ProductCatalog = ({ products, categories, companyId }: ProductCatalogProps) => {
+export const ProductCatalog = ({ 
+  products: initialProducts, 
+  categories, 
+  companyId,
+  usePagination: enablePagination = true 
+}: ProductCatalogProps) => {
   const { 
     items, 
     addToCart, 
@@ -58,16 +67,95 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
     setIsDrawerOpen 
   } = useCart();
 
-  const {
-    filters,
-    filteredProducts,
-    updateFilter,
-  } = useProductFilters(products);
-
   const { isAdmin } = useAuthContext();
+  
+  // Estado para filtros locais
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<number | null>(null);
+  const [sortBy, setSortBy] = useState<'price-high' | 'price-low'>('price-low');
+  const [priceType, setPriceType] = useState<'avista' | 'dias30' | 'dias90'>('avista');
 
-  // Show loading state when products are empty (initial load)
-  if (!products || products.length === 0) {
+  // Obter user_estate do localStorage
+  const userEstate = authService.getUserEstate() || '';
+
+  // Usar hook de paginação se habilitado e não houver produtos iniciais
+  const shouldUsePagination = enablePagination && (!initialProducts || initialProducts.length === 0);
+  
+  // Hook de paginação - só será usado se shouldUsePagination for true
+  const paginationResult = useProducts({
+    estado: userEstate,
+    id_category: selectedCategory || undefined,
+    id_subcategory: selectedSubcategory || undefined,
+    order_price: sortBy === 'price-high' ? 'DESC' : 'ASC',
+    active_only: true,
+    initialPageSize: 100,
+  });
+
+  // Usar produtos paginados ou produtos iniciais
+  const products = shouldUsePagination 
+    ? paginationResult.products 
+    : (initialProducts || []);
+  
+  // Extrair valores de paginação apenas se necessário
+  const productsLoading = shouldUsePagination ? paginationResult.loading : false;
+  const productsError = shouldUsePagination ? paginationResult.error : null;
+  const page = shouldUsePagination ? paginationResult.page : 1;
+  const pageSize = shouldUsePagination ? paginationResult.pageSize : 100;
+  const setPage = shouldUsePagination ? paginationResult.setPage : () => {};
+  const setPageSize = shouldUsePagination ? paginationResult.setPageSize : () => {};
+  const totalItems = shouldUsePagination ? paginationResult.totalItems : undefined;
+
+  // Aplicar filtros locais (para ordenação por preço que não está no backend)
+  const filteredProducts = useMemo(() => {
+    let filtered = products.filter(product => product != null);
+
+    // Se não estiver usando paginação, aplicar filtros de categoria localmente
+    if (!shouldUsePagination) {
+      if (selectedCategory) {
+        filtered = filtered.filter(product => 
+          product.id_categoria === selectedCategory
+        );
+      }
+
+      if (selectedSubcategory) {
+        filtered = filtered.filter(product => 
+          product.id_subcategoria === selectedSubcategory
+        );
+      }
+    }
+
+    // Ordenação local por preço (pode ser sobrescrita pelo backend se order_price for usado)
+    const sorted = [...filtered];
+    sorted.sort((a, b) => {
+      const getPrice = (product: Product) => {
+        if (priceType === 'avista') {
+          return product.avista || product.valor_base || 0;
+        } else if (priceType === 'dias30') {
+          return product['30_dias'] || product.valor_base || 0;
+        } else if (priceType === 'dias90') {
+          return product['60_dias'] || product.valor_base || 0;
+        }
+        return product.avista || product.valor_base || 0;
+      };
+
+      const priceA = getPrice(a);
+      const priceB = getPrice(b);
+
+      if (sortBy === 'price-high') {
+        return priceB - priceA;
+      } else {
+        return priceA - priceB;
+      }
+    });
+
+    return sorted;
+  }, [products, selectedCategory, selectedSubcategory, sortBy, priceType, shouldUsePagination]);
+
+  // Calcular total de páginas se tivermos totalItems
+  const totalPages = totalItems ? Math.ceil(totalItems / pageSize) : undefined;
+
+  // Show loading state
+  if (shouldUsePagination && productsLoading) {
     return (
       <ProductCatalogContainer>
         <div className="flex items-center justify-center min-h-[400px]">
@@ -80,21 +168,45 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
     );
   }
 
+  // Show error state
+  if (shouldUsePagination && productsError) {
+    return (
+      <ProductCatalogContainer>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center space-y-4">
+            <p className="text-red-500 text-lg">Erro ao carregar produtos</p>
+            <p className="text-muted-foreground text-sm">{productsError}</p>
+          </div>
+        </div>
+      </ProductCatalogContainer>
+    );
+  }
+
   return (
     <ProductCatalogContainer>
       <CategorySidebar
         categories={categories}
-        selectedCategory={filters.selectedCategory}
-        selectedSubcategory={filters.selectedSubcategory}
-        onCategorySelect={(category) => updateFilter('selectedCategory', category)}
-        onSubcategorySelect={(subcategory) => updateFilter('selectedSubcategory', subcategory)}
+        selectedCategory={selectedCategory}
+        selectedSubcategory={selectedSubcategory}
+        onCategorySelect={(category) => {
+          setSelectedCategory(category);
+          if (shouldUsePagination) {
+            setPage(1); // Resetar para primeira página ao mudar categoria
+          }
+        }}
+        onSubcategorySelect={(subcategory) => {
+          setSelectedSubcategory(subcategory);
+          if (shouldUsePagination) {
+            setPage(1); // Resetar para primeira página ao mudar subcategoria
+          }
+        }}
       />
       
       <ProductCatalogContent>
         <ProductCatalogHeader>
           <FilterBar
-            sortBy={filters.sortBy}
-            onSortChange={(sortBy) => updateFilter('sortBy', sortBy)}
+            sortBy={sortBy}
+            onSortChange={(newSortBy) => setSortBy(newSortBy)}
             productCount={filteredProducts.length}
           />
         </ProductCatalogHeader>
@@ -107,11 +219,28 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
             </div>
           </div>
         ) : (
-          <ProductGridComponent
-            products={filteredProducts}
-            priceType={filters.priceType}
-            onAddToCart={addToCart}
-          />
+          <>
+            <ProductGridComponent
+              products={filteredProducts}
+              priceType={priceType}
+              onAddToCart={addToCart}
+            />
+            
+            {shouldUsePagination && (
+              <div className="mt-6">
+                <Pagination
+                  currentPage={page}
+                  totalPages={totalPages}
+                  pageSize={pageSize}
+                  onPageChange={setPage}
+                  onPageSizeChange={setPageSize}
+                  totalItems={totalItems}
+                  showPageSizeSelector={true}
+                  pageSizeOptions={[25, 50, 100, 200]}
+                />
+              </div>
+            )}
+          </>
         )}
       </ProductCatalogContent>
 
