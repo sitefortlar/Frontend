@@ -52,7 +52,7 @@ export const ProductCatalogContent = styled.div`
 `;
 
 export const ProductCatalogHeader = styled.div`
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(1rem);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -63,12 +63,33 @@ export const ProductCatalogHeader = styled.div`
 
 export const ProductGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-  padding: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
   animation: ${fadeInScale} 0.6s ease-out;
   width: 100%;
   box-sizing: border-box;
+  
+  /* Limitar número máximo de colunas para melhor legibilidade */
+  @media (min-width: 1920px) {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+  }
+  
+  @media (min-width: 1600px) and (max-width: 1919px) {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+  
+  @media (min-width: 1200px) and (max-width: 1599px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+  
+  @media (min-width: 768px) and (max-width: 1199px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
 `;
 
 export const ProductCard = styled.div`
@@ -92,15 +113,19 @@ export const ProductCard = styled.div`
 export const ProductImageContainer = styled.div`
   position: relative;
   width: 100%;
-  height: 12rem;
+  height: 14rem;
   overflow: hidden;
   background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const ProductImage = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 0.5rem;
   transition: transform 0.3s ease;
 
   ${ProductCard}:hover & {
@@ -126,10 +151,11 @@ export const ProductBadge = styled.div`
 `;
 
 export const ProductContent = styled.div`
-  padding: 1rem;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.875rem;
+  min-height: 180px;
 `;
 
 export const ProductCategory = styled.div`
@@ -148,15 +174,16 @@ export const ProductCategory = styled.div`
 
 export const ProductName = styled.h3`
   color: white;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.5;
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   transition: color 0.3s ease;
+  min-height: 2.85rem;
 
   ${ProductCard}:hover & {
     color: hsl(var(--primary-glow));
@@ -178,7 +205,7 @@ export const ProductPriceLabel = styled.div`
 export const ProductPriceGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
+  gap: 0.375rem;
 `;
 
 export const ProductPriceItem = styled.div`
@@ -187,8 +214,9 @@ export const ProductPriceItem = styled.div`
 
 export const ProductPriceValue = styled.div<{ isHighlight?: boolean }>`
   color: ${({ isHighlight }) => isHighlight ? '#4ade80' : 'white'};
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: ${({ isHighlight }) => isHighlight ? '600' : '500'};
+  word-break: break-word;
 `;
 
 export const ProductKits = styled.div`

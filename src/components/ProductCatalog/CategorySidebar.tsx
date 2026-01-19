@@ -232,7 +232,7 @@ export const CategorySidebar = ({
       </div>
 
       {/* Desktop: Sidebar integrado ao layout flex */}
-      <div className="hidden lg:block w-80 flex-shrink-0 h-full min-h-screen relative z-40 shadow-xl">
+      <div className="hidden lg:block w-72 flex-shrink-0 h-full min-h-screen relative z-40 shadow-xl">
         {sidebarContent}
       </div>
 
@@ -243,7 +243,7 @@ export const CategorySidebar = ({
             className="absolute inset-0 bg-black/50"
             onClick={() => setIsMobileOpen(false)}
           />
-          <div className="absolute left-0 top-0 h-full w-80 max-w-[85vw] shadow-xl animate-slide-in">
+          <div className="absolute left-0 top-0 h-full w-72 max-w-[85vw] shadow-xl animate-slide-in">
             <div className="absolute right-4 top-4 z-10">
               <Button
                 variant="ghost"

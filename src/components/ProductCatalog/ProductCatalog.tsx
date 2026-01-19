@@ -171,10 +171,10 @@ export const ProductCatalog = ({
   if (shouldUsePagination && productsLoading) {
     return (
       <ProductCatalogContainer>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center space-y-4">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            <p className="text-muted-foreground">Carregando produtos...</p>
+        <div className="flex items-center justify-center min-h-screen w-full">
+          <div className="flex flex-col items-center space-y-6">
+            <Loader2 className="h-12 w-12 animate-spin text-white" />
+            <p className="text-white text-lg font-medium">Carregando produtos...</p>
           </div>
         </div>
       </ProductCatalogContainer>
@@ -185,10 +185,10 @@ export const ProductCatalog = ({
   if (shouldUsePagination && productsError) {
     return (
       <ProductCatalogContainer>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center space-y-4">
-            <p className="text-red-500 text-lg">Erro ao carregar produtos</p>
-            <p className="text-muted-foreground text-sm">{productsError}</p>
+        <div className="flex items-center justify-center min-h-screen w-full">
+          <div className="flex flex-col items-center space-y-6">
+            <p className="text-red-400 text-xl font-semibold">Erro ao carregar produtos</p>
+            <p className="text-white/80 text-sm max-w-md text-center">{productsError}</p>
           </div>
         </div>
       </ProductCatalogContainer>
