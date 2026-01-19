@@ -18,6 +18,11 @@ export const productService = {
     try {
       const params: Record<string, any> = {};
       
+      // estado é obrigatório pela API - usar estado ou user_estate (para compatibilidade)
+      // ProductFilters extends Partial<ListProductsParams>, então estado pode estar presente
+      const estado = (filters as Partial<ListProductsParams>)?.estado ?? filters?.user_estate ?? '';
+      params.estado = estado;
+      
       if (filters?.id_category !== undefined) {
         params.id_category = filters.id_category;
       }
@@ -26,9 +31,6 @@ export const productService = {
       }
       if (filters?.order_price) {
         params.order_price = filters.order_price;
-      }
-      if (filters?.user_estate) {
-        params.estado = filters.user_estate;
       }
       if (filters?.active_only !== undefined) {
         params.active_only = filters.active_only;

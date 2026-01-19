@@ -1,11 +1,60 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { CartItem, CheckoutData } from '@/types/Cart';
 import { Product, PriceType } from '@/types/Product';
 import { convertDriveUrlToImage } from '@/utils/imageUtils';
 
+const CART_STORAGE_KEY = 'fortlar_cart_items';
+const CART_DRAWER_STORAGE_KEY = 'fortlar_cart_drawer_open';
+
+// Função para carregar itens do localStorage
+const loadCartFromStorage = (): CartItem[] => {
+  try {
+    const stored = localStorage.getItem(CART_STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.error('Erro ao carregar carrinho do localStorage:', error);
+  }
+  return [];
+};
+
+// Função para salvar itens no localStorage
+const saveCartToStorage = (items: CartItem[]) => {
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  } catch (error) {
+    console.error('Erro ao salvar carrinho no localStorage:', error);
+  }
+};
+
 export const useCart = () => {
-  const [items, setItems] = useState<CartItem[]>([]);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  // Carregar itens do localStorage na inicialização
+  const [items, setItems] = useState<CartItem[]>(() => loadCartFromStorage());
+  
+  // Carregar estado do drawer do localStorage
+  const [isDrawerOpen, setIsDrawerOpen] = useState(() => {
+    try {
+      const stored = localStorage.getItem(CART_DRAWER_STORAGE_KEY);
+      return stored === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  // Salvar itens no localStorage sempre que mudarem
+  useEffect(() => {
+    saveCartToStorage(items);
+  }, [items]);
+
+  // Salvar estado do drawer no localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(CART_DRAWER_STORAGE_KEY, String(isDrawerOpen));
+    } catch (error) {
+      console.error('Erro ao salvar estado do drawer:', error);
+    }
+  }, [isDrawerOpen]);
 
   // Helper function to get price from product
   const getPrice = useCallback((prod: Product, pt: PriceType): number => {
@@ -204,6 +253,11 @@ export const useCart = () => {
 
   const clearCart = useCallback(() => {
     setItems([]);
+    try {
+      localStorage.removeItem(CART_STORAGE_KEY);
+    } catch (error) {
+      console.error('Erro ao limpar carrinho do localStorage:', error);
+    }
   }, []);
 
   const generateWhatsAppMessage = useCallback((checkoutData: CheckoutData) => {
