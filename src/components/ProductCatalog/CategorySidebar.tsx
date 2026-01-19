@@ -140,7 +140,7 @@ export const CategorySidebar = ({
   };
 
   const sidebarContent = (
-    <div className="h-full flex flex-col" style={{ background: 'var(--gradient-sidebar)' }}>
+    <div className="h-screen flex flex-col" style={{ background: 'var(--gradient-sidebar)' }}>
       <div className="p-6 border-b border-sidebar-border flex-shrink-0">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-sidebar-primary mb-2">FORTLAR</h1>
@@ -148,7 +148,7 @@ export const CategorySidebar = ({
         </div>
       </div>
 
-      <ScrollArea className="flex-1 p-4 overflow-y-auto">
+      <ScrollArea className="flex-1 p-4 overflow-y-auto h-full">
         <div className="space-y-2">
           <Button
             variant={selectedCategory === null ? "default" : "ghost"}
@@ -232,7 +232,7 @@ export const CategorySidebar = ({
       </div>
 
       {/* Desktop: Sidebar integrado ao layout flex */}
-      <div className="hidden lg:block w-72 flex-shrink-0 h-full min-h-screen relative z-40 shadow-xl">
+      <div className="hidden lg:block w-72 flex-shrink-0 h-screen fixed left-0 top-0 relative z-40 shadow-xl">
         {sidebarContent}
       </div>
 

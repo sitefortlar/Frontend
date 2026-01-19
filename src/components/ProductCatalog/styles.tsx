@@ -38,6 +38,10 @@ export const ProductCatalogContainer = styled.div`
   display: flex;
   flex-direction: row;
   /* Background removido - já está no CatalogContainer pai */
+  
+  @media (min-width: 1024px) {
+    padding-left: 18rem; /* Compensar sidebar fixa de 72 (18rem) */
+  }
 `;
 
 export const ProductCatalogContent = styled.div`
@@ -49,6 +53,7 @@ export const ProductCatalogContent = styled.div`
   min-width: 0; /* Permite que o flex item encolha abaixo do tamanho do conteúdo */
   display: flex;
   flex-direction: column;
+  width: 100%;
 `;
 
 export const ProductCatalogHeader = styled.div`
@@ -98,13 +103,17 @@ export const ProductCard = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 1rem;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   cursor: pointer;
   animation: ${fadeInScale} 0.6s ease-out;
   animation-fill-mode: both;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  max-height: 500px;
 
   &:hover {
-    transform: translateY(-5px) scale(1.02);
+    transform: translateY(-5px);
     box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
     border-color: rgba(255, 255, 255, 0.3);
   }
@@ -114,11 +123,14 @@ export const ProductImageContainer = styled.div`
   position: relative;
   width: 100%;
   height: 14rem;
+  min-height: 14rem;
+  max-height: 14rem;
   overflow: hidden;
   background: white;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 `;
 
 export const ProductImage = styled.img`
@@ -127,6 +139,8 @@ export const ProductImage = styled.img`
   object-fit: contain;
   padding: 0.5rem;
   transition: transform 0.3s ease;
+  max-width: 100%;
+  max-height: 100%;
 
   ${ProductCard}:hover & {
     transform: scale(1.05);
@@ -155,7 +169,9 @@ export const ProductContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
-  min-height: 180px;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
 `;
 
 export const ProductCategory = styled.div`
@@ -184,6 +200,8 @@ export const ProductName = styled.h3`
   overflow: hidden;
   transition: color 0.3s ease;
   min-height: 2.85rem;
+  max-height: 2.85rem;
+  flex-shrink: 0;
 
   ${ProductCard}:hover & {
     color: hsl(var(--primary-glow));
