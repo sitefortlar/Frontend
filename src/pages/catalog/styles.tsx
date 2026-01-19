@@ -176,8 +176,9 @@ export const CatalogErrorButton = styled.button`
 
 export const CatalogContent = styled.div`
   width: 100%;
+  min-height: 100vh;
   position: relative;
   z-index: 10;
   animation: ${fadeInScale} 0.6s ease-out;
-  /* Não definir min-height ou height aqui - deixa o ProductCatalogContainer controlar */
+  overflow-x: hidden;
 `;

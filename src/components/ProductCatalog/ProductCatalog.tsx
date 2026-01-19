@@ -225,10 +225,10 @@ export const ProductCatalog = ({
         </ProductCatalogHeader>
         
         {filteredProducts.length === 0 ? (
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="flex flex-col items-center space-y-4">
-              <p className="text-muted-foreground text-lg">Nenhum produto encontrado</p>
-              <p className="text-muted-foreground text-sm">Tente ajustar os filtros</p>
+          <div className="flex items-center justify-center min-h-[60vh] w-full py-12">
+            <div className="flex flex-col items-center space-y-4 text-center px-4">
+              <p className="text-white text-lg font-medium">Nenhum produto encontrado</p>
+              <p className="text-white/70 text-sm">Tente ajustar os filtros ou selecione outra categoria</p>
             </div>
           </div>
         ) : (

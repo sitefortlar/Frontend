@@ -35,8 +35,7 @@ export const ProductCatalogContainer = styled.div`
   min-height: 100vh;
   width: 100%;
   position: relative;
-  display: flex;
-  flex-direction: row;
+  display: block;
   /* Background removido - já está no CatalogContainer pai */
   
   @media (min-width: 1024px) {
@@ -45,55 +44,67 @@ export const ProductCatalogContainer = styled.div`
 `;
 
 export const ProductCatalogContent = styled.div`
-  flex: 1;
   min-height: 100vh;
   position: relative;
   z-index: 10;
   overflow-x: hidden;
-  min-width: 0; /* Permite que o flex item encolha abaixo do tamanho do conteúdo */
   display: flex;
   flex-direction: column;
   width: 100%;
+  background: transparent;
 `;
 
 export const ProductCatalogHeader = styled.div`
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.25rem;
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(1rem);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   width: 100%;
   box-sizing: border-box;
   flex-shrink: 0;
+  
+  @media (min-width: 1024px) {
+    padding: 1.25rem 1.5rem;
+  }
 `;
+<｜tool▁calls▁begin｜><｜tool▁call▁begin｜>
+read_file
 
 export const ProductGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1.25rem;
-  padding: 1.25rem 1.5rem;
+  gap: 1rem;
+  padding: 1rem;
   animation: ${fadeInScale} 0.6s ease-out;
   width: 100%;
   box-sizing: border-box;
   
-  /* Limitar número máximo de colunas para melhor legibilidade */
-  @media (min-width: 1920px) {
-    grid-template-columns: repeat(5, 1fr);
-    gap: 1.5rem;
+  /* Mobile First - 1 coluna */
+  grid-template-columns: 1fr;
+  
+  /* Tablet - 2 colunas */
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 1rem 1.25rem;
   }
   
-  @media (min-width: 1600px) and (max-width: 1919px) {
+  /* Desktop pequeno - 3 colunas */
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    padding: 1.25rem 1.5rem;
+  }
+  
+  /* Desktop médio - 4 colunas */
+  @media (min-width: 1600px) {
     grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
   }
   
-  @media (min-width: 1200px) and (max-width: 1599px) {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-  }
-  
-  @media (min-width: 768px) and (max-width: 1199px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.25rem;
+  /* Desktop grande - 5 colunas */
+  @media (min-width: 1920px) {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
   }
 `;
 
@@ -111,6 +122,7 @@ export const ProductCard = styled.div`
   display: flex;
   flex-direction: column;
   max-height: 500px;
+  width: 100%;
 
   &:hover {
     transform: translateY(-5px);
@@ -122,15 +134,21 @@ export const ProductCard = styled.div`
 export const ProductImageContainer = styled.div`
   position: relative;
   width: 100%;
-  height: 14rem;
-  min-height: 14rem;
-  max-height: 14rem;
+  height: 12rem;
+  min-height: 12rem;
+  max-height: 12rem;
   overflow: hidden;
   background: white;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  
+  @media (min-width: 1024px) {
+    height: 14rem;
+    min-height: 14rem;
+    max-height: 14rem;
+  }
 `;
 
 export const ProductImage = styled.img`
@@ -264,10 +282,10 @@ export const ProductKitsInfo = styled.div`
 
 export const CartButton = styled.button`
   position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  width: 4rem;
-  height: 4rem;
+  bottom: 1rem;
+  right: 1rem;
+  width: 3.5rem;
+  height: 3.5rem;
   background: #ef4444;
   color: white;
   border: none;
@@ -279,6 +297,13 @@ export const CartButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media (min-width: 1024px) {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 4rem;
+    height: 4rem;
+  }
 
   &:hover {
     background: #dc2626;
@@ -305,10 +330,10 @@ export const CartBadge = styled.div`
 
 export const AdminSettingsButton = styled.button`
   position: fixed;
-  bottom: 6rem;
-  right: 1.5rem;
-  width: 4rem;
-  height: 4rem;
+  bottom: 5rem;
+  right: 1rem;
+  width: 3.5rem;
+  height: 3.5rem;
   background: #ef4444;
   color: white;
   border: none;
@@ -320,6 +345,13 @@ export const AdminSettingsButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media (min-width: 1024px) {
+    bottom: 6rem;
+    right: 1.5rem;
+    width: 4rem;
+    height: 4rem;
+  }
 
   &:hover {
     background: #dc2626;
