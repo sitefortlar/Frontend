@@ -38,13 +38,14 @@ const float = keyframes`
 
 export const CatalogContainer = styled.div`
   min-height: 100vh;
+  width: 100%;
   background: linear-gradient(
     135deg,
     hsl(var(--auth-bg-start)) 0%,
     hsl(var(--auth-bg-end)) 100%
   );
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden; /* Apenas overflow horizontal, não vertical */
 
   /* Background pattern */
   &::before {
@@ -174,8 +175,9 @@ export const CatalogErrorButton = styled.button`
 `;
 
 export const CatalogContent = styled.div`
-  min-height: 100vh;
+  width: 100%;
   position: relative;
   z-index: 10;
   animation: ${fadeInScale} 0.6s ease-out;
+  /* Não definir min-height ou height aqui - deixa o ProductCatalogContainer controlar */
 `;

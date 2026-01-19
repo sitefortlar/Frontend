@@ -4,7 +4,7 @@ import type { ListProductsParams } from '@/types/pagination';
 // Re-export types from the types directory
 export type { Product, Category, Subcategory, SortOption, PriceType } from '@/types/Product';
 
-export interface ProductFilters extends Partial<ListProductsParams> {
+export interface ProductFilters extends Omit<Partial<ListProductsParams>, 'id_category' | 'id_subcategory'> {
   id_category?: string | number;
   id_subcategory?: string | number;
   order_price?: 'ASC' | 'DESC';
@@ -57,7 +57,7 @@ export const productService = {
         params.limit = 100;
       }
 
-      const response = await api.get('/product/', { params });
+      const response = await api.get('/product', { params });
       return response.data;
     } catch (error: any) {
       // Preservar o erro original para permitir verificação de status HTTP no loader

@@ -10,6 +10,7 @@ interface UseProductsParams extends Omit<ListProductsParams, 'skip' | 'limit'> {
   initialPage?: number;
   initialPageSize?: number;
   debounceSearch?: number;
+  enabled?: boolean; // Flag para habilitar/desabilitar requisições
 }
 
 interface UseProductsReturn {
@@ -53,6 +54,7 @@ export function useProducts(params: UseProductsParams): UseProductsReturn {
     initialPage = 1,
     initialPageSize = 100,
     debounceSearch = 500,
+    enabled = true,
     ...searchParams
   } = params;
 
@@ -71,6 +73,11 @@ export function useProducts(params: UseProductsParams): UseProductsReturn {
   );
 
   const fetchProducts = useCallback(async () => {
+    // Não fazer requisição se o hook estiver desabilitado
+    if (!enabled) {
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -103,6 +110,7 @@ export function useProducts(params: UseProductsParams): UseProductsReturn {
       setLoading(false);
     }
   }, [
+    enabled,
     skip,
     limit,
     searchParams.estado,
@@ -117,13 +125,19 @@ export function useProducts(params: UseProductsParams): UseProductsReturn {
   ]);
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    if (enabled) {
+      fetchProducts();
+    }
+  }, [enabled, fetchProducts]);
 
   // Resetar paginação quando os filtros mudarem (exceto search_name que é debounced)
+  // Só resetar se o hook estiver habilitado
   useEffect(() => {
-    resetPagination();
+    if (enabled) {
+      resetPagination();
+    }
   }, [
+    enabled,
     searchParams.estado,
     searchParams.id_category,
     searchParams.id_subcategory,

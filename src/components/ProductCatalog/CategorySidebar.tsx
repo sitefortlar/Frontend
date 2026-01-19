@@ -232,7 +232,7 @@ export const CategorySidebar = ({
       </div>
 
       {/* Desktop: Sidebar integrado ao layout flex */}
-      <div className="hidden lg:block w-80 flex-shrink-0 h-screen relative z-40 shadow-xl">
+      <div className="hidden lg:block w-80 flex-shrink-0 h-full min-h-screen relative z-40 shadow-xl">
         {sidebarContent}
       </div>
 

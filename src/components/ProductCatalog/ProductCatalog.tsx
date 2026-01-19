@@ -90,7 +90,7 @@ export const ProductCatalog = ({
     hasFilterSelected
   );
   
-  // Hook de paginação - sempre chamado, mas só usado se shouldUsePagination for true
+  // Hook de paginação - só faz requisições quando shouldUsePagination for true
   const paginationResult = useProducts({
     estado: userEstate,
     id_category: selectedCategory || undefined,
@@ -98,6 +98,7 @@ export const ProductCatalog = ({
     order_price: sortBy === 'price-high' ? 'DESC' : 'ASC',
     active_only: true,
     initialPageSize: 100,
+    enabled: shouldUsePagination, // Só fazer requisições quando necessário
   });
 
   // Usar produtos paginados ou produtos iniciais

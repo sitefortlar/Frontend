@@ -33,29 +33,11 @@ const float = keyframes`
 
 export const ProductCatalogContainer = styled.div`
   min-height: 100vh;
-  background: linear-gradient(
-    135deg,
-    hsl(var(--auth-bg-start)) 0%,
-    hsl(var(--auth-bg-end)) 100%
-  );
-  position: relative;
-  overflow: hidden;
-  display: flex;
   width: 100%;
-
-  /* Background pattern */
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-      radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
-    pointer-events: none;
-  }
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  /* Background removido - já está no CatalogContainer pai */
 `;
 
 export const ProductCatalogContent = styled.div`
@@ -64,7 +46,9 @@ export const ProductCatalogContent = styled.div`
   position: relative;
   z-index: 10;
   overflow-x: hidden;
-  width: 0; /* Force flex item to respect flex: 1 */
+  min-width: 0; /* Permite que o flex item encolha abaixo do tamanho do conteúdo */
+  display: flex;
+  flex-direction: column;
 `;
 
 export const ProductCatalogHeader = styled.div`
@@ -72,6 +56,9 @@ export const ProductCatalogHeader = styled.div`
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(1rem);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
 `;
 
 export const ProductGrid = styled.div`
