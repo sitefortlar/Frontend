@@ -141,14 +141,14 @@ export const CategorySidebar = ({
 
   const sidebarContent = (
     <div className="h-full flex flex-col" style={{ background: 'var(--gradient-sidebar)' }}>
-      <div className="p-6 border-b border-sidebar-border">
+      <div className="p-6 border-b border-sidebar-border flex-shrink-0">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-sidebar-primary mb-2">FORTLAR</h1>
           <p className="text-sidebar-foreground/80 text-sm">Utensílios de Qualidade</p>
         </div>
       </div>
 
-      <ScrollArea className="flex-1 p-4">
+      <ScrollArea className="flex-1 p-4 overflow-y-auto">
         <div className="space-y-2">
           <Button
             variant={selectedCategory === null ? "default" : "ghost"}
@@ -219,6 +219,7 @@ export const CategorySidebar = ({
 
   return (
     <>
+      {/* Mobile: Botão para abrir menu */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <Button
           variant="default"
@@ -230,10 +231,12 @@ export const CategorySidebar = ({
         </Button>
       </div>
 
-      <div className="hidden lg:block fixed left-0 top-0 h-full w-80 shadow-xl z-40">
+      {/* Desktop: Sidebar integrado ao layout flex */}
+      <div className="hidden lg:block w-80 flex-shrink-0 h-screen relative z-40 shadow-xl">
         {sidebarContent}
       </div>
 
+      {/* Mobile: Overlay com sidebar */}
       {isMobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
           <div

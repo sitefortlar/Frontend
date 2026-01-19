@@ -40,6 +40,8 @@ export const ProductCatalogContainer = styled.div`
   );
   position: relative;
   overflow: hidden;
+  display: flex;
+  width: 100%;
 
   /* Background pattern */
   &::before {
@@ -57,14 +59,12 @@ export const ProductCatalogContainer = styled.div`
 `;
 
 export const ProductCatalogContent = styled.div`
-  margin-left: 20rem;
+  flex: 1;
   min-height: 100vh;
   position: relative;
   z-index: 10;
-
-  @media (max-width: 1024px) {
-    margin-left: 0;
-  }
+  overflow-x: hidden;
+  width: 0; /* Force flex item to respect flex: 1 */
 `;
 
 export const ProductCatalogHeader = styled.div`
@@ -80,6 +80,8 @@ export const ProductGrid = styled.div`
   gap: 1.5rem;
   padding: 1.5rem;
   animation: ${fadeInScale} 0.6s ease-out;
+  width: 100%;
+  box-sizing: border-box;
 `;
 
 export const ProductCard = styled.div`
