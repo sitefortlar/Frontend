@@ -1,1 +1,0 @@
-import{d as e}from"./index-hV2YQk7K.js";const n=async()=>{const o=e.getToken();if(e.getCurrentUserFromStorage()&&o)throw new Response(null,{status:302,headers:{Location:"/catalog"}});return null};export{n as loginLoader};

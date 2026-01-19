@@ -67,8 +67,6 @@ export const ProductCatalogHeader = styled.div`
     padding: 1.25rem 1.5rem;
   }
 `;
-<｜tool▁calls▁begin｜><｜tool▁call▁begin｜>
-read_file
 
 export const ProductGrid = styled.div`
   display: grid;

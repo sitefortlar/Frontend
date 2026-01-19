@@ -1,6 +1,0 @@
-import{c as l,r,j as s,i as d,p as o}from"./index-hV2YQk7K.js";/**
- * @license lucide-react v0.462.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */const g=l("Upload",[["path",{d:"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4",key:"ih7n3h"}],["polyline",{points:"17 8 12 3 7 8",key:"t8dd8p"}],["line",{x1:"12",x2:"12",y1:"3",y2:"15",key:"widbto"}]]),n=o("relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground",{variants:{variant:{default:"bg-background text-foreground",destructive:"border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive"}},defaultVariants:{variant:"default"}}),c=r.forwardRef(({className:e,variant:t,...a},i)=>s.jsx("div",{ref:i,role:"alert",className:d(n({variant:t}),e),...a}));c.displayName="Alert";const v=r.forwardRef(({className:e,...t},a)=>s.jsx("h5",{ref:a,className:d("mb-1 font-medium leading-none tracking-tight",e),...t}));v.displayName="AlertTitle";const p=r.forwardRef(({className:e,...t},a)=>s.jsx("div",{ref:a,className:d("text-sm [&_p]:leading-relaxed",e),...t}));p.displayName="AlertDescription";export{c as A,g as U,p as a,v as b};
