@@ -31,7 +31,7 @@ export const CartFooter = ({
   onUpdateAllItemsPriceType,
 }: CartFooterProps) => {
   const { toast } = useToast();
-  const { appliedCoupon, calculateDiscount } = useCouponContext();
+  const { appliedCoupon, calculateDiscount, removeCoupon } = useCouponContext();
   const [paymentType, setPaymentType] = useState<PriceType>('avista');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -113,6 +113,9 @@ export const CartFooter = ({
       // Mostrar modal de sucesso
       setIsModalOpen(true);
       
+      // Limpar cupom após pedido enviado com sucesso
+      removeCoupon();
+      
       toast({
         title: "Pedido enviado com sucesso!",
         description: `Email enviado para ${response.email_enviado}`,
@@ -133,8 +136,9 @@ export const CartFooter = ({
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    // Limpa o carrinho após fechar o modal
+    // Limpa o carrinho e cupom após fechar o modal
     onClearCart();
+    removeCoupon();
   };
 
   return (

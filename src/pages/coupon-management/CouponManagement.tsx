@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,14 +11,16 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Plus, Edit, Trash2, Search, Loader2, Tag } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Loader2, Tag, ArrowLeft } from 'lucide-react';
 import { couponService } from '@/services/coupon/CouponService';
 import { CouponResponse, CreateCouponRequest, UpdateCouponRequest, CouponType, ListCouponsFilters } from '@/types/Coupon';
 import { useToast } from '@/hooks/use-toast';
 
 export default function CouponManagement() {
+  const navigate = useNavigate();
   const [coupons, setCoupons] = useState<CouponResponse[]>([]);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -62,7 +65,12 @@ export default function CouponManagement() {
   };
 
   useEffect(() => {
-    loadCoupons();
+    const loadData = async () => {
+      setInitialLoading(true);
+      await loadCoupons();
+      setInitialLoading(false);
+    };
+    loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeOnly, searchCode]);
 
@@ -225,23 +233,45 @@ export default function CouponManagement() {
     return `R$ ${coupon.valor.toFixed(2)}`;
   };
 
-  return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Tag className="h-8 w-8" />
-            Gestão de Cupons
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Gerencie cupons de desconto do sistema
-          </p>
+  // Show initial loading state
+  if (initialLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="text-muted-foreground">Carregando cupons...</p>
         </div>
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Novo Cupom
-        </Button>
       </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background p-6">
+      <div className="container mx-auto space-y-6 max-w-7xl">
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/catalog')}
+          className="mb-6"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Voltar ao Catálogo
+        </Button>
+
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold flex items-center gap-2">
+              <Tag className="h-8 w-8" />
+              Gestão de Cupons
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Gerencie cupons de desconto do sistema
+            </p>
+          </div>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Novo Cupom
+          </Button>
+        </div>
 
       <Card>
         <CardHeader>
@@ -630,6 +660,7 @@ export default function CouponManagement() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, FileSpreadsheet, CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
+import { Upload, FileSpreadsheet, CheckCircle, XCircle, ArrowLeft, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -134,7 +134,14 @@ export default function ImportProdutos() {
                   disabled={isUploading}
                   className="flex-1"
                 >
-                  {isUploading ? 'Enviando...' : 'Enviar Planilha'}
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    'Enviar Planilha'
+                  )}
                 </Button>
                 <Button
                   onClick={handleClear}

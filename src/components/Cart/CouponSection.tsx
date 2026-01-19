@@ -28,12 +28,12 @@ export const CouponSection = ({ disabled = false }: CouponSectionProps) => {
 
     const result = await applyCoupon(couponCode.toUpperCase());
     
-    if (result.success) {
+    if (result.success && result.coupon) {
       toast({
         title: 'Cupom aplicado!',
-        description: `Desconto de ${appliedCoupon?.tipo === 'percentual' 
-          ? `${appliedCoupon.valor}%` 
-          : `R$ ${appliedCoupon?.valor.toFixed(2)}`} aplicado com sucesso.`,
+        description: `Desconto de ${result.coupon.tipo === 'percentual' 
+          ? `${result.coupon.valor}%` 
+          : `R$ ${result.coupon.valor.toFixed(2)}`} aplicado com sucesso.`,
       });
       setCouponCode('');
     } else {

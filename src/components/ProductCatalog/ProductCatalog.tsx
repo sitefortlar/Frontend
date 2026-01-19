@@ -4,7 +4,7 @@ import { CategorySidebar } from './CategorySidebar';
 import { FilterBar } from './FilterBar';
 import { useCart } from '@/hooks/useCart';
 import { useProductFilters } from '@/hooks/useProductFilters';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Loader2 } from 'lucide-react';
 import CartSheet from '@/components/Cart/CartSheet';
 import { AdminSettingsButton } from './AdminSettingsButton';
 import { useAuthContext } from '@/contexts/AuthContext';
@@ -66,6 +66,20 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
 
   const { isAdmin } = useAuthContext();
 
+  // Show loading state when products are empty (initial load)
+  if (!products || products.length === 0) {
+    return (
+      <ProductCatalogContainer>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center space-y-4">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <p className="text-muted-foreground">Carregando produtos...</p>
+          </div>
+        </div>
+      </ProductCatalogContainer>
+    );
+  }
+
   return (
     <ProductCatalogContainer>
       <CategorySidebar
@@ -85,11 +99,20 @@ export const ProductCatalog = ({ products, categories, companyId }: ProductCatal
           />
         </ProductCatalogHeader>
         
-        <ProductGridComponent
-          products={filteredProducts}
-          priceType={filters.priceType}
-          onAddToCart={addToCart}
-        />
+        {filteredProducts.length === 0 ? (
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="flex flex-col items-center space-y-4">
+              <p className="text-muted-foreground text-lg">Nenhum produto encontrado</p>
+              <p className="text-muted-foreground text-sm">Tente ajustar os filtros</p>
+            </div>
+          </div>
+        ) : (
+          <ProductGridComponent
+            products={filteredProducts}
+            priceType={filters.priceType}
+            onAddToCart={addToCart}
+          />
+        )}
       </ProductCatalogContent>
 
       {/* Admin Settings Button - Only visible for admin users */}
