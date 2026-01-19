@@ -78,10 +78,19 @@ export const ProductCatalog = ({
   // Obter user_estate do localStorage
   const userEstate = authService.getUserEstate() || '';
 
-  // Usar hook de paginação se habilitado e não houver produtos iniciais
-  const shouldUsePagination = enablePagination && (!initialProducts || initialProducts.length === 0);
+  // Usar hook de paginação se:
+  // 1. Paginação está habilitada E
+  // 2. (Não há produtos iniciais OU produtos iniciais estão vazios OU uma categoria/subcategoria está selecionada)
+  // Isso garante que quando o usuário seleciona uma categoria, os produtos são carregados da API
+  // Mas se não houver filtro selecionado e houver produtos iniciais, usa os produtos iniciais
+  const hasInitialProducts = initialProducts && initialProducts.length > 0;
+  const hasFilterSelected = selectedCategory !== null || selectedSubcategory !== null;
+  const shouldUsePagination = enablePagination && (
+    !hasInitialProducts || 
+    hasFilterSelected
+  );
   
-  // Hook de paginação - só será usado se shouldUsePagination for true
+  // Hook de paginação - sempre chamado, mas só usado se shouldUsePagination for true
   const paginationResult = useProducts({
     estado: userEstate,
     id_category: selectedCategory || undefined,
@@ -152,7 +161,10 @@ export const ProductCatalog = ({
   }, [products, selectedCategory, selectedSubcategory, sortBy, priceType, shouldUsePagination]);
 
   // Calcular total de páginas se tivermos totalItems
-  const totalPages = totalItems ? Math.ceil(totalItems / pageSize) : undefined;
+  // Se totalItems for 0, ainda temos 1 página (vazia)
+  const totalPages = totalItems !== undefined 
+    ? Math.max(1, Math.ceil(totalItems / pageSize))
+    : undefined;
 
   // Show loading state
   if (shouldUsePagination && productsLoading) {
@@ -190,15 +202,15 @@ export const ProductCatalog = ({
         selectedSubcategory={selectedSubcategory}
         onCategorySelect={(category) => {
           setSelectedCategory(category);
-          if (shouldUsePagination) {
-            setPage(1); // Resetar para primeira página ao mudar categoria
-          }
+          // Sempre resetar para primeira página ao mudar categoria
+          // (setPage é uma função vazia se não estiver usando paginação)
+          setPage(1);
         }}
         onSubcategorySelect={(subcategory) => {
           setSelectedSubcategory(subcategory);
-          if (shouldUsePagination) {
-            setPage(1); // Resetar para primeira página ao mudar subcategoria
-          }
+          // Sempre resetar para primeira página ao mudar subcategoria
+          // (setPage é uma função vazia se não estiver usando paginação)
+          setPage(1);
         }}
       />
       
@@ -219,28 +231,27 @@ export const ProductCatalog = ({
             </div>
           </div>
         ) : (
-          <>
-            <ProductGridComponent
-              products={filteredProducts}
-              priceType={priceType}
-              onAddToCart={addToCart}
+          <ProductGridComponent
+            products={filteredProducts}
+            priceType={priceType}
+            onAddToCart={addToCart}
+          />
+        )}
+        
+        {/* Paginação sempre visível quando estiver usando paginação */}
+        {shouldUsePagination && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+              totalItems={totalItems}
+              showPageSizeSelector={true}
+              pageSizeOptions={[25, 50, 100, 200]}
             />
-            
-            {shouldUsePagination && (
-              <div className="mt-6">
-                <Pagination
-                  currentPage={page}
-                  totalPages={totalPages}
-                  pageSize={pageSize}
-                  onPageChange={setPage}
-                  onPageSizeChange={setPageSize}
-                  totalItems={totalItems}
-                  showPageSizeSelector={true}
-                  pageSizeOptions={[25, 50, 100, 200]}
-                />
-              </div>
-            )}
-          </>
+          </div>
         )}
       </ProductCatalogContent>
 
