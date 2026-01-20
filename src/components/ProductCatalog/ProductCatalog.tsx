@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Product, Category } from '@/types/Product';
 import { ProductCard } from './ProductCard';
 import { CategorySidebar } from './CategorySidebar';
@@ -66,7 +66,8 @@ export const ProductCatalog = ({
     clearCart, 
     isDrawerOpen, 
     setIsDrawerOpen,
-    priceType: cartPriceType // REGRA: priceType é global do carrinho
+    priceType: cartPriceType, // REGRA: priceType é global do carrinho
+    rebuildAllItemsPrices // REGRA: Função para reconstruir prices quando necessário
   } = useCart();
 
   const { isAdmin } = useAuthContext();
@@ -107,6 +108,45 @@ export const ProductCatalog = ({
   const products = shouldUsePagination 
     ? paginationResult.products 
     : (initialProducts || []);
+  
+  // REGRA OBRIGATÓRIA: Reconstruir prices dos itens do carrinho quando produtos estiverem disponíveis
+  // Isso garante que após refresh, os preços sejam reconstruídos corretamente
+  useEffect(() => {
+    if (products && products.length > 0 && items.length > 0) {
+      // Verificar se algum item precisa de prices reconstruído
+      // REGRA: Verificar se prices está ausente, inválido ou zerado (indicando problema)
+      const needsRebuild = items.some(item => {
+        if (!item.prices || typeof item.prices !== 'object') {
+          return true;
+        }
+        
+        const hasInvalidPrices = 
+          typeof item.prices.avista !== 'number' ||
+          typeof item.prices.dias30 !== 'number' ||
+          typeof item.prices.dias90 !== 'number' ||
+          isNaN(item.prices.avista) ||
+          isNaN(item.prices.dias30) ||
+          isNaN(item.prices.dias90);
+        
+        if (hasInvalidPrices) {
+          return true;
+        }
+        
+        // Se todos os preços são 0, pode ser que precise reconstruir
+        // (mas apenas se não for um produto realmente gratuito)
+        const allZero = item.prices.avista === 0 && 
+                        item.prices.dias30 === 0 && 
+                        item.prices.dias90 === 0;
+        
+        return allZero;
+      });
+      
+      if (needsRebuild) {
+        console.log('🔧 Reconstruindo prices dos itens do carrinho após refresh...');
+        rebuildAllItemsPrices(products);
+      }
+    }
+  }, [products.length, items.length, rebuildAllItemsPrices]); // Usar products.length para evitar loops
   
   /**
    * ESTADO DE LOADING LOCAL (não global):

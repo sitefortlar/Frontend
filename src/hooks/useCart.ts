@@ -169,20 +169,13 @@ export const useCart = () => {
                    (item.type === 'UNIT' || item.type === 'KIT');
           });
           
-            if (allItemsValid) {
+          if (allItemsValid) {
             // REGRA: Dados já estão no formato correto, carregar diretamente
             console.log('✅ Carrinho carregado do localStorage:', parsed.length, 'itens');
             // Garantir que todos os campos obrigatórios estão presentes e valores são números
             const validatedItems = parsed.map((item: any) => {
-              const validated: CartItem = {
-                id: String(item.id),
-                productId: Number(item.productId),
-                name: String(item.name),
-                image: String(item.image),
-                size: String(item.size || ''),
-                quantity: Number(item.quantity || 1),
-              prices: {
-                // Garantir conversão correta para número, mesmo se vier como string do localStorage
+              // REGRA OBRIGATÓRIA: Validar e converter prices para números
+              const prices: ItemPrices = {
                 avista: item.prices?.avista !== undefined && item.prices?.avista !== null 
                   ? Number(item.prices.avista) 
                   : 0,
@@ -192,7 +185,21 @@ export const useCart = () => {
                 dias90: item.prices?.dias90 !== undefined && item.prices?.dias90 !== null 
                   ? Number(item.prices.dias90) 
                   : 0,
-              },
+              };
+              
+              // Validar se prices são números válidos
+              if (isNaN(prices.avista) || isNaN(prices.dias30) || isNaN(prices.dias90)) {
+                console.warn('⚠️ Prices inválidos no item:', item.id, item.name, 'prices:', item.prices);
+              }
+              
+              const validated: CartItem = {
+                id: String(item.id),
+                productId: Number(item.productId),
+                name: String(item.name),
+                image: String(item.image),
+                size: String(item.size || ''),
+                quantity: Number(item.quantity || 1),
+                prices,
                 type: item.type === 'KIT' ? 'KIT' : 'UNIT',
                 codigo: item.codigo ? String(item.codigo) : undefined,
                 quantidade_kit: item.quantidade_kit ? Number(item.quantidade_kit) : undefined,
@@ -331,23 +338,29 @@ export const useCart = () => {
    * Função para obter preços por prazo de um produto
    * Usada ao adicionar item ao carrinho para salvar prices
    * 
+   * REGRA OBRIGATÓRIA: Sempre retorna prices completo (avista, dias30, dias90)
+   * 
    * @param product - Produto do backend
    * @param isKit - Se é kit
-   * @returns Preços por prazo
+   * @param itemCodigo - Código do item (para buscar kit específico)
+   * @returns Preços por prazo (sempre completo)
    */
   const getProductPrices = useCallback((
     product: Product,
-    isKit: boolean
+    isKit: boolean,
+    itemCodigo?: string
   ): ItemPrices => {
     if (isKit) {
       // REGRA: Para kits, buscar valores totais do kit
-      if (product.kits && product.codigo) {
-        const kit = product.kits.find(k => k.codigo === product.codigo);
+      const codigoToSearch = itemCodigo || product.codigo;
+      
+      if (product.kits && codigoToSearch) {
+        const kit = product.kits.find(k => k.codigo === codigoToSearch);
         if (kit) {
           return {
-            avista: kit.valor_total_avista,
-            dias30: kit.valor_total_30,
-            dias90: kit.valor_total_60,
+            avista: kit.valor_total_avista || 0,
+            dias30: kit.valor_total_30 || 0,
+            dias90: kit.valor_total_60 || 0,
           };
         }
       }
@@ -361,7 +374,7 @@ export const useCart = () => {
         };
       }
       
-      // Fallback: usar valor_total se disponível
+      // Fallback: usar valores do produto
       return {
         avista: product.avista || 0,
         dias30: product['30_dias'] || 0,
@@ -376,6 +389,97 @@ export const useCart = () => {
       };
     }
   }, []);
+  
+  /**
+   * Função para reconstruir prices de um item do carrinho
+   * REGRA OBRIGATÓRIA: Usada quando item não tem prices ou prices está incompleto
+   * 
+   * @param item - Item do carrinho
+   * @param allProducts - Array de produtos do backend
+   * @returns Item com prices reconstruído
+   */
+  const rebuildItemPrices = useCallback((
+    item: CartItem,
+    allProducts: Product[]
+  ): CartItem => {
+    // Buscar produto original
+    let product = allProducts.find(p => p.id_produto === item.productId);
+    
+    // Se não encontrou pelo id_produto, tentar buscar kit pelo código
+    if (!product && item.type === 'KIT' && item.codigo) {
+      // Buscar em todos os produtos que têm kits
+      for (const p of allProducts) {
+        if (p.kits) {
+          const kit = p.kits.find(k => k.codigo === item.codigo);
+          if (kit) {
+            product = p;
+            break;
+          }
+        }
+      }
+    }
+    
+    if (!product) {
+      console.warn('⚠️ Produto não encontrado para reconstruir prices:', item.id, item.name);
+      // Retornar item com prices zerado (melhor que quebrar)
+      return {
+        ...item,
+        prices: {
+          avista: 0,
+          dias30: 0,
+          dias90: 0,
+        }
+      };
+    }
+    
+    // Reconstruir prices usando getProductPrices
+    const isKit = item.type === 'KIT';
+    const prices = getProductPrices(product, isKit, item.codigo);
+    
+    return {
+      ...item,
+      prices
+    };
+  }, [getProductPrices]);
+  
+  /**
+   * Função para validar e reconstruir prices de todos os itens
+   * REGRA OBRIGATÓRIA: Chamada no mount e quando allProducts estiver disponível
+   * 
+   * @param cartItems - Itens do carrinho
+   * @param allProducts - Array de produtos do backend
+   * @returns Itens com prices validados/reconstruídos
+   */
+  const validateAndRebuildPrices = useCallback((
+    cartItems: CartItem[],
+    allProducts: Product[]
+  ): CartItem[] => {
+    if (!allProducts || allProducts.length === 0) {
+      // Se não há produtos disponíveis, retornar itens como estão
+      return cartItems;
+    }
+    
+    return cartItems.map(item => {
+      // Verificar se item tem prices completo e válido
+      const hasValidPrices = item.prices &&
+        typeof item.prices === 'object' &&
+        typeof item.prices.avista === 'number' &&
+        typeof item.prices.dias30 === 'number' &&
+        typeof item.prices.dias90 === 'number' &&
+        item.prices.avista >= 0 &&
+        item.prices.dias30 >= 0 &&
+        item.prices.dias90 >= 0;
+      
+      if (hasValidPrices) {
+        // Item já tem prices válido, não precisa reconstruir
+        return item;
+      }
+      
+      // REGRA: Reconstruir prices se faltar ou estiver inválido
+      console.log('🔧 Reconstruindo prices para item:', item.id, item.name);
+      return rebuildItemPrices(item, allProducts);
+    });
+  }, [rebuildItemPrices]);
   
   /**
    * Função LEGACY para calcular preço (mantida para compatibilidade durante migração)
@@ -549,7 +653,8 @@ export const useCart = () => {
       } else {
         // Novo item
         // REGRA OBRIGATÓRIA: Obter preços por prazo (não preço final)
-        const prices = getProductPrices(product, isKit);
+        // Sempre garantir que prices está completo (avista, dias30, dias90)
+        const prices = getProductPrices(product, isKit, product.codigo);
         
         // REGRA: Nome do produto deve ter prefixo "KIT -" quando for kit
         const productName = isKit 
@@ -674,29 +779,42 @@ export const useCart = () => {
     // REGRA: Apenas atualizar estado global
     setPriceType(newPriceType);
     
-    // REGRA: Se algum item não tem prices (migração pendente), atualizar prices
-    setItems(prev =>
-      prev.map(item => {
-        // Se item já tem prices, não precisa fazer nada
-        if (item.prices && item.type) {
-          return item;
-        }
-        
-        // Migrar item que ainda não tem prices
-        const product = allProducts.find(p => p.id_produto === item.productId);
-        if (product) {
-          const isKit = item.type === 'KIT';
-          const prices = getProductPrices(product, isKit);
-          return {
-            ...item,
-            prices,
-            type: item.type || (isKit ? 'KIT' : 'UNIT'),
-          };
-        }
-        return item;
-      })
-    );
-  }, [getProductPrices]);
+    // REGRA: Validar e reconstruir prices de todos os itens se necessário
+    if (allProducts && allProducts.length > 0) {
+      setItems(prev => validateAndRebuildPrices(prev, allProducts));
+    }
+  }, [validateAndRebuildPrices]);
+  
+  /**
+   * Função pública para reconstruir prices de todos os itens
+   * REGRA OBRIGATÓRIA: Chamada quando allProducts estiver disponível após mount
+   * 
+   * @param allProducts - Array de produtos do backend
+   */
+  const rebuildAllItemsPrices = useCallback((allProducts: Product[]) => {
+    if (!allProducts || allProducts.length === 0) {
+      return;
+    }
+    
+    setItems(prev => {
+      const rebuilt = validateAndRebuildPrices(prev, allProducts);
+      
+      // Verificar se houve mudanças
+      const hasChanges = rebuilt.some((item, index) => {
+        const original = prev[index];
+        return !original ||
+               original.prices.avista !== item.prices.avista ||
+               original.prices.dias30 !== item.prices.dias30 ||
+               original.prices.dias90 !== item.prices.dias90;
+      });
+      
+      if (hasChanges) {
+        console.log('✅ Prices reconstruídos para', rebuilt.length, 'itens');
+      }
+      
+      return rebuilt;
+    });
+  }, [validateAndRebuildPrices]);
 
   /**
    * Função central de cálculo do total do carrinho
@@ -793,5 +911,8 @@ export const useCart = () => {
     getItemCount,
     clearCart,
     generateWhatsAppMessage,
+    priceType, // REGRA: Exportar priceType global
+    setPriceType, // REGRA: Exportar setter para priceType global
+    rebuildAllItemsPrices, // REGRA: Exportar função para reconstruir prices
   };
 };
