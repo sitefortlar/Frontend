@@ -149,24 +149,89 @@ export const useCart = () => {
   });
   
   // Carregar itens do localStorage na inicialização
-  // REGRA: Migração será feita quando necessário (quando item não tem prices)
+  // REGRA: Carregar dados diretamente se já estão no formato correto (com prices e type)
   const [items, setItems] = useState<CartItem[]>(() => {
     try {
       const stored = localStorage.getItem(CART_STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          // Verificar se precisa migrar (se algum item não tem prices)
-          const needsMigration = parsed.some((item: any) => !item.prices || !item.type);
-          if (!needsMigration) {
-            return parsed as CartItem[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Verificar se todos os itens têm prices e type (formato novo)
+          const allItemsValid = parsed.every((item: any) => {
+            return item && 
+                   typeof item === 'object' &&
+                   item.prices && 
+                   typeof item.prices === 'object' &&
+                   item.prices.avista !== undefined &&
+                   item.prices.dias30 !== undefined &&
+                   item.prices.dias90 !== undefined &&
+                   item.type && 
+                   (item.type === 'UNIT' || item.type === 'KIT');
+          });
+          
+          if (allItemsValid) {
+            // REGRA: Dados já estão no formato correto, carregar diretamente
+            console.log('✅ Carrinho carregado do localStorage:', parsed.length, 'itens');
+            // Garantir que todos os campos obrigatórios estão presentes
+            const validatedItems = parsed.map((item: any) => ({
+              id: item.id,
+              productId: item.productId,
+              name: item.name,
+              image: item.image,
+              size: item.size || '',
+              quantity: item.quantity || 1,
+              prices: {
+                avista: item.prices.avista || 0,
+                dias30: item.prices.dias30 || 0,
+                dias90: item.prices.dias90 || 0,
+              },
+              type: item.type,
+              codigo: item.codigo,
+              quantidade_kit: item.quantidade_kit,
+              quantidade_itens_por_kit: item.quantidade_itens_por_kit,
+            })) as CartItem[];
+            return validatedItems;
+          } else {
+            // REGRA: Precisa migrar, mas vamos tentar carregar o que for possível
+            console.log('⚠️ Alguns itens precisam de migração, carregando itens válidos...');
+            const validItems = parsed
+              .filter((item: any) => 
+                item && 
+                item.prices && 
+                typeof item.prices === 'object' &&
+                item.prices.avista !== undefined &&
+                item.prices.dias30 !== undefined &&
+                item.prices.dias90 !== undefined &&
+                item.type && 
+                (item.type === 'UNIT' || item.type === 'KIT')
+              )
+              .map((item: any) => ({
+                id: item.id,
+                productId: item.productId,
+                name: item.name,
+                image: item.image,
+                size: item.size || '',
+                quantity: item.quantity || 1,
+                prices: {
+                  avista: item.prices.avista || 0,
+                  dias30: item.prices.dias30 || 0,
+                  dias90: item.prices.dias90 || 0,
+                },
+                type: item.type,
+                codigo: item.codigo,
+                quantidade_kit: item.quantidade_kit,
+                quantidade_itens_por_kit: item.quantidade_itens_por_kit,
+              })) as CartItem[];
+            
+            if (validItems.length > 0) {
+              console.log('✅ Carregados', validItems.length, 'itens válidos de', parsed.length);
+              return validItems;
+            }
           }
-          // Se precisa migrar, retornar vazio e migrar depois quando allProducts estiver disponível
-          return [];
         }
       }
     } catch (error) {
-      console.error('Erro ao carregar carrinho:', error);
+      console.error('Erro ao carregar carrinho do localStorage:', error);
     }
     return [];
   });
