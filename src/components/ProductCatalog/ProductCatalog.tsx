@@ -11,6 +11,7 @@ import CartSheet from '@/components/Cart/CartSheet';
 import { AdminSettingsButton } from './AdminSettingsButton';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { authService } from '@/services/auth/auth';
+import { ProductSkeletonLoader } from './ProductSkeletonLoader';
 import {
   ProductCatalogContainer,
   ProductCatalogContent,
@@ -106,7 +107,17 @@ export const ProductCatalog = ({
     ? paginationResult.products 
     : (initialProducts || []);
   
-  // Extrair valores de paginação apenas se necessário
+  /**
+   * ESTADO DE LOADING LOCAL (não global):
+   * 
+   * productsLoading: Controla apenas o loading da área de produtos.
+   * Este estado NÃO afeta o menu lateral, que permanece sempre visível e interativo.
+   * 
+   * Separado de estados globais como:
+   * - Carregamento inicial da aplicação (CatalogPage)
+   * - Autenticação (useAuthGuard)
+   * - Ações críticas (checkout, etc)
+   */
   const productsLoading = shouldUsePagination ? paginationResult.loading : false;
   const productsError = shouldUsePagination ? paginationResult.error : null;
   const page = shouldUsePagination ? paginationResult.page : 1;
@@ -167,33 +178,20 @@ export const ProductCatalog = ({
     ? Math.max(1, Math.ceil(totalItems / pageSize))
     : undefined;
 
-  // Show loading state
-  if (shouldUsePagination && productsLoading) {
-    return (
-      <ProductCatalogContainer>
-        <div className="flex items-center justify-center min-h-screen w-full">
-          <div className="flex flex-col items-center space-y-6">
-            <Loader2 className="h-12 w-12 animate-spin text-white" />
-            <p className="text-white text-lg font-medium">Carregando produtos...</p>
-          </div>
-        </div>
-      </ProductCatalogContainer>
-    );
-  }
-
-  // Show error state
-  if (shouldUsePagination && productsError) {
-    return (
-      <ProductCatalogContainer>
-        <div className="flex items-center justify-center min-h-screen w-full">
-          <div className="flex flex-col items-center space-y-6">
-            <p className="text-red-400 text-xl font-semibold">Erro ao carregar produtos</p>
-            <p className="text-white/80 text-sm max-w-md text-center">{productsError}</p>
-          </div>
-        </div>
-      </ProductCatalogContainer>
-    );
-  }
+  /**
+   * SEPARAÇÃO DE RESPONSABILIDADES DE LOADING:
+   * 
+   * - isProductsLoading: Estado local que controla apenas o loading da área de produtos.
+   *   NÃO afeta o menu lateral, que permanece visível e interativo.
+   * 
+   * - Loader global (fullscreen) foi removido para melhorar UX:
+   *   - Menu lateral permanece visível durante carregamento
+   *   - Usuário mantém contexto visual
+   *   - Transições mais fluidas
+   * 
+   * - Loader local é exibido apenas na área de produtos (ProductCatalogContent)
+   *   quando há mudança de categoria, subcategoria, ordenação ou paginação.
+   */
 
   return (
     <ProductCatalogContainer>
@@ -224,8 +222,19 @@ export const ProductCatalog = ({
           />
         </ProductCatalogHeader>
         
-        {filteredProducts.length === 0 ? (
-          <div className="flex items-center justify-center min-h-[60vh] w-full py-12">
+        {/* LOADER LOCAL: Exibido apenas na área de produtos, não bloqueia menu lateral */}
+        {shouldUsePagination && productsLoading ? (
+          <ProductSkeletonLoader />
+        ) : shouldUsePagination && productsError ? (
+          /* ERRO LOCAL: Exibido apenas na área de produtos */
+          <div className="flex-1 flex items-center justify-center min-h-[60vh] w-full py-12">
+            <div className="flex flex-col items-center space-y-4 text-center px-4 max-w-md">
+              <p className="text-red-400 text-lg font-semibold">Erro ao carregar produtos</p>
+              <p className="text-white/70 text-sm">{productsError}</p>
+            </div>
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="flex-1 flex items-center justify-center min-h-[60vh] w-full py-12">
             <div className="flex flex-col items-center space-y-4 text-center px-4">
               <p className="text-white text-lg font-medium">Nenhum produto encontrado</p>
               <p className="text-white/70 text-sm">Tente ajustar os filtros ou selecione outra categoria</p>
@@ -239,8 +248,8 @@ export const ProductCatalog = ({
           />
         )}
         
-        {/* Paginação sempre visível quando estiver usando paginação */}
-        {shouldUsePagination && (
+        {/* Paginação sempre visível quando estiver usando paginação e não estiver em loading */}
+        {shouldUsePagination && !productsLoading && (
           <div className="mt-6">
             <Pagination
               currentPage={page}

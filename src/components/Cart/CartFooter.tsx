@@ -84,20 +84,39 @@ export const CartFooter = ({
 
     try {
       // Mapear items do carrinho para OrderItemRequest
+      // REGRA DE NEGÓCIO: Para kits, quantidade_pedida = quantidade_kit, valor_total = valor_total * quantidade_kit
+      // Para produtos unitários, quantidade_pedida = quantity, valor_total = price * quantity
       const orderItems: SendOrderEmailRequest['itens'] = items.map((item) => {
         // Encontrar o produto completo para obter código, categoria e subcategoria
         const product = allProducts.find(p => p.id_produto === item.productId);
         
-        return {
-          id_produto: item.productId,
-          codigo: product?.codigo || '',
-          nome: item.name,
-          quantidade_pedida: item.quantity,
-          valor_unitario: item.price,
-          valor_total: item.price * item.quantity,
-          categoria: product?.categoria,
-          subcategoria: product?.subcategoria,
-        };
+        if (item.type === 'KIT') {
+          // REGRA: Para kits, quantidade_pedida = quantidade de kits
+          // valor_unitario = valor_total do kit (preço por kit)
+          // valor_total = valor_total * quantidade_kit
+          return {
+            id_produto: item.productId,
+            codigo: product?.codigo || item.codigo || '',
+            nome: item.name,
+            quantidade_pedida: item.quantidade_kit || 1,
+            valor_unitario: item.valor_total || item.price,
+            valor_total: (item.valor_total || item.price) * (item.quantidade_kit || 1),
+            categoria: product?.categoria,
+            subcategoria: product?.subcategoria,
+          };
+        } else {
+          // Produtos unitários: quantidade_pedida = quantity, valor_total = price * quantity
+          return {
+            id_produto: item.productId,
+            codigo: product?.codigo || '',
+            nome: item.name,
+            quantidade_pedida: item.quantity,
+            valor_unitario: item.price,
+            valor_total: item.price * item.quantity,
+            categoria: product?.categoria,
+            subcategoria: product?.subcategoria,
+          };
+        }
       });
 
       const orderRequest: SendOrderEmailRequest = {

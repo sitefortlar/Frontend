@@ -16,6 +16,27 @@ export const CartItem = ({
   onUpdateQuantity, 
   product 
 }: CartItemProps) => {
+  /**
+   * REGRA DE NEGÓCIO:
+   * - KIT: quantidade_kit controla a quantidade de kits. quantity sempre = 1.
+   * - UNIT: quantity controla a quantidade de unidades.
+   */
+  const isKit = item.type === 'KIT';
+  const displayQuantity = isKit ? (item.quantidade_kit || 1) : item.quantity;
+  
+  // Calcular subtotal corretamente
+  const calculateSubtotal = (): number => {
+    if (isKit && item.valor_total !== undefined && item.quantidade_kit !== undefined) {
+      // REGRA: Kit = valor_total * quantidade_kit
+      return item.valor_total * item.quantidade_kit;
+    }
+    // Produto unitário = price * quantity
+    return item.price * item.quantity;
+  };
+
+  const subtotal = calculateSubtotal();
+  const unitPrice = isKit ? (item.valor_total || item.price) : item.price;
+
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity <= 0) {
       onRemove(item.id);
@@ -42,15 +63,22 @@ export const CartItem = ({
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
               <h3 className="font-medium text-sm leading-tight">{item.name}</h3>
-              {item.size && <p className="text-xs text-muted-foreground mt-1">Tamanho: {item.size}</p>}
+              {item.size && !isKit && (
+                <p className="text-xs text-muted-foreground mt-1">Tamanho: {item.size}</p>
+              )}
+              {isKit && item.quantidade_itens_por_kit && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {item.quantidade_itens_por_kit} unidades por kit
+                </p>
+              )}
             </div>
             
             <div className="text-right flex-shrink-0">
               <div className="font-bold text-lg text-primary whitespace-nowrap">
-                R$ {(item.price * item.quantity).toFixed(2)}
+                R$ {subtotal.toFixed(2)}
               </div>
               <div className="text-xs text-muted-foreground whitespace-nowrap">
-                R$ {item.price.toFixed(2)} cada
+                {isKit ? `R$ ${unitPrice.toFixed(2)} por kit` : `R$ ${unitPrice.toFixed(2)} cada`}
               </div>
             </div>
           </div>
@@ -62,16 +90,16 @@ export const CartItem = ({
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => handleQuantityChange(item.quantity - 1)}
+                onClick={() => handleQuantityChange(displayQuantity - 1)}
               >
                 <Minus className="h-3 w-3" />
               </Button>
-              <span className="w-12 text-center font-medium">{item.quantity}</span>
+              <span className="w-12 text-center font-medium">{displayQuantity}</span>
               <Button
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => handleQuantityChange(item.quantity + 1)}
+                onClick={() => handleQuantityChange(displayQuantity + 1)}
               >
                 <Plus className="h-3 w-3" />
               </Button>
