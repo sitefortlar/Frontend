@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
@@ -38,6 +38,17 @@ interface CategorySidebarProps {
   onSubcategorySelect: (subcategoryId: number | null) => void;
 }
 
+/**
+ * Componente de menu lateral de categorias com subcategorias.
+ * 
+ * Comportamento implementado:
+ * - Categorias com subcategorias exibem chevron (▸ quando fechado, ▾ quando aberto)
+ * - Ao clicar em categoria principal: submenu abre e permanece aberto
+ * - Ao clicar em subcategoria: submenu NÃO fecha, subcategoria recebe estado ativo
+ * - Submenu fecha APENAS quando outra categoria principal é selecionada
+ * - Estados visuais distintos para categoria ativa e subcategoria ativa
+ * - Estado controlado por React state, sincronizado com props
+ */
 export const CategorySidebar = ({
   categories,
   selectedCategory,
@@ -45,9 +56,58 @@ export const CategorySidebar = ({
   onCategorySelect,
   onSubcategorySelect,
 }: CategorySidebarProps) => {
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  // Estado de expansão: controla quais categorias têm submenu aberto
+  // Usa Set para performance e facilidade de manipulação
+  const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
+  /**
+   * Sincroniza o estado de expansão com a categoria selecionada.
+   * 
+   * Regra: Se uma categoria tem subcategorias e está selecionada,
+   * seu submenu deve estar aberto automaticamente.
+   * 
+   * Quando outra categoria é selecionada, apenas ela deve estar expandida.
+   */
+  useEffect(() => {
+    if (selectedCategory === null) {
+      // Se nenhuma categoria está selecionada, fechar todos os submenus
+      setExpandedCategories(new Set());
+      return;
+    }
+
+    // Encontrar a categoria selecionada
+    const category = categories.find(cat => cat.id_categoria === selectedCategory);
+    
+    if (category && category.subcategorias && category.subcategorias.length > 0) {
+      // Se a categoria tem subcategorias, garantir que está expandida
+      // e fechar todas as outras
+      setExpandedCategories(new Set([selectedCategory]));
+    } else {
+      // Se não tem subcategorias, fechar todos os submenus
+      setExpandedCategories(new Set());
+    }
+  }, [selectedCategory, categories]);
+
+  /**
+   * Verifica se uma categoria possui subcategorias.
+   * Usado para determinar se deve exibir o chevron.
+   */
+  const hasSubcategories = (category: Category): boolean => {
+    return !!(category.subcategorias && category.subcategorias.length > 0);
+  };
+
+  /**
+   * Verifica se uma categoria está expandida (submenu aberto).
+   */
+  const isExpanded = (categoryId: number): boolean => {
+    return expandedCategories.has(categoryId);
+  };
+
+  /**
+   * Retorna o ícone apropriado para cada categoria baseado no nome.
+   * Mantém a lógica existente de mapeamento de ícones.
+   */
   const getCategoryIcon = (categoryName: string) => {
     const name = categoryName.toLowerCase();
     
@@ -99,23 +159,38 @@ export const CategorySidebar = ({
     return CookingPot; // Ícone padrão
   };
 
+  /**
+   * Handler para seleção de categoria principal.
+   * 
+   * Comportamento:
+   * - Seleciona a categoria
+   * - Limpa a subcategoria selecionada (se houver)
+   * - O estado de expansão é gerenciado pelo useEffect baseado na categoria selecionada
+   * - Se a categoria tem subcategorias, o submenu será aberto automaticamente
+   */
   const handleCategorySelect = (categoryId: number) => {
-    // Selecionar categoria e expandir automaticamente
     onCategorySelect(categoryId);
     onSubcategorySelect(null); // Limpar subcategoria ao selecionar nova categoria
-    
-    // Expandir categoria quando selecionada
-    const newExpanded = new Set(expandedCategories);
-    newExpanded.add(String(categoryId));
-    setExpandedCategories(newExpanded);
+    // Nota: O estado de expansão é gerenciado pelo useEffect acima
   };
 
+  /**
+   * Handler para seleção de subcategoria.
+   * 
+   * Comportamento:
+   * - Seleciona a subcategoria
+   * - NÃO fecha o submenu (mantém o estado de expansão)
+   * - Permite deselecionar clicando novamente (toggle)
+   * - Fecha o menu mobile após seleção
+   */
   const handleSubcategorySelect = (subcategoryId: number) => {
+    // Toggle: se já está selecionada, deseleciona
     if (selectedSubcategory === subcategoryId) {
       onSubcategorySelect(null);
     } else {
       onSubcategorySelect(subcategoryId);
     }
+    // Fechar menu mobile após seleção (melhor UX em mobile)
     setIsMobileOpen(false);
   };
 
@@ -131,62 +206,115 @@ export const CategorySidebar = ({
       <div className="flex-1 overflow-hidden">
         <ScrollArea className="h-full p-4">
         <div className="space-y-2">
-          {categories.map((category) => (
-            <div key={category.id_categoria} className="space-y-1">
-              <Button
-                variant="ghost"
-                className={cn(
-                  "w-full justify-between text-left h-auto p-3 text-sidebar-foreground hover:bg-sidebar-accent/20",
-                  selectedCategory === category.id_categoria && "bg-sidebar-primary hover:bg-sidebar-primary/80 text-sidebar-primary-foreground"
-                )}
-                onClick={() => {
-                  handleCategorySelect(category.id_categoria);
-                }}
-              >
-                <div className="flex items-center gap-2">
-                  {(() => {
-                    const IconComponent = getCategoryIcon(category.nome);
-                    return <IconComponent className="h-4 w-4" />;
-                  })()}
-                  <span className="font-medium">{category.nome}</span>
-                </div>
-                {/* Garantir que as setas sempre apareçam se houver subcategorias */}
-                {category.subcategorias && category.subcategorias.length > 0 && (
-                  expandedCategories.has(String(category.id_categoria)) ? (
-                    <ChevronDown className="h-4 w-4 flex-shrink-0" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4 flex-shrink-0" />
-                  )
-                )}
-              </Button>
+          {categories.map((category) => {
+            const hasSubcats = hasSubcategories(category);
+            const isCategoryActive = selectedCategory === category.id_categoria;
+            const isCategoryExpanded = isExpanded(category.id_categoria);
 
-              {expandedCategories.has(String(category.id_categoria)) && (
-                <div className="ml-4 space-y-1 animate-fade-in">
-                  {category.subcategorias.map((subcategory) => (
-                    <Button
-                      key={subcategory.id_subcategoria}
-                      variant="ghost"
-                      size="sm"
-                      className={cn(
-                        "w-full justify-start text-left h-auto p-2 pl-4 text-sidebar-foreground/70 hover:bg-sidebar-accent/20",
-                        selectedSubcategory === subcategory.id_subcategoria && "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/80"
+            return (
+              <div key={category.id_categoria} className="space-y-1">
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    // Estilos base
+                    "w-full justify-between text-left h-auto p-3",
+                    "text-sidebar-foreground transition-all duration-200",
+                    // Hover state
+                    "hover:bg-sidebar-accent/30 hover:text-sidebar-foreground",
+                    // Estado ativo da categoria principal (background mais forte)
+                    isCategoryActive && "bg-sidebar-primary hover:bg-sidebar-primary/90 text-sidebar-primary-foreground font-semibold",
+                    // Melhoria de acessibilidade: foco visível
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-primary focus-visible:ring-offset-2"
+                  )}
+                  onClick={() => handleCategorySelect(category.id_categoria)}
+                  aria-expanded={hasSubcats ? isCategoryExpanded : undefined}
+                  aria-haspopup={hasSubcats ? "true" : undefined}
+                >
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    {(() => {
+                      const IconComponent = getCategoryIcon(category.nome);
+                      return <IconComponent className="h-4 w-4 flex-shrink-0" />;
+                    })()}
+                    <span className="font-medium truncate">{category.nome}</span>
+                  </div>
+                  {/* 
+                    REGRA: Categorias com subcategorias DEVEM exibir chevron.
+                    ChevronDown (▾) quando expandido, ChevronRight (▸) quando fechado.
+                  */}
+                  {hasSubcats && (
+                    <div className="ml-2 flex-shrink-0">
+                      {isCategoryExpanded ? (
+                        <ChevronDown className="h-4 w-4 transition-transform duration-200" aria-hidden="true" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4 transition-transform duration-200" aria-hidden="true" />
                       )}
-                      onClick={() => handleSubcategorySelect(subcategory.id_subcategoria)}
-                    >
-                      {subcategory.nome}
-                    </Button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+                    </div>
+                  )}
+                </Button>
 
-          {/* "Todos os Produtos" agora é o último elemento */}
+                {/* 
+                  REGRA: Submenu permanece aberto quando subcategoria é selecionada.
+                  O estado de expansão é controlado pelo useEffect baseado na categoria selecionada.
+                */}
+                {isCategoryExpanded && hasSubcats && (
+                  <div 
+                    className="ml-4 space-y-1 animate-fade-in"
+                    role="menu"
+                    aria-label={`Subcategorias de ${category.nome}`}
+                  >
+                    {category.subcategorias.map((subcategory) => {
+                      const isSubcategoryActive = selectedSubcategory === subcategory.id_subcategoria;
+                      
+                      return (
+                        <Button
+                          key={subcategory.id_subcategoria}
+                          variant="ghost"
+                          size="sm"
+                          role="menuitem"
+                          className={cn(
+                            // Estilos base para subcategoria
+                            "w-full justify-start text-left h-auto p-2 pl-4",
+                            "text-sidebar-foreground/80 transition-all duration-200",
+                            // Hover state
+                            "hover:bg-sidebar-accent/25 hover:text-sidebar-foreground",
+                            // Estado ativo da subcategoria (background interno diferente + borda lateral)
+                            isSubcategoryActive && [
+                              "bg-sidebar-accent/40 text-sidebar-foreground",
+                              "border-l-2 border-sidebar-primary",
+                              "font-medium hover:bg-sidebar-accent/50"
+                            ],
+                            // Melhoria de acessibilidade
+                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-primary focus-visible:ring-offset-1"
+                          )}
+                          onClick={() => handleSubcategorySelect(subcategory.id_subcategoria)}
+                          aria-current={isSubcategoryActive ? "page" : undefined}
+                        >
+                          {subcategory.nome}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* "Todos os Produtos" - opção para limpar filtros */}
           <Button
             variant={selectedCategory === null ? "default" : "ghost"}
             className={cn(
-              "w-full justify-start text-left h-auto p-3 text-sidebar-foreground hover:bg-sidebar-accent/20",
-              selectedCategory === null && "bg-sidebar-primary hover:bg-sidebar-primary/80 text-sidebar-primary-foreground"
+              // Estilos base
+              "w-full justify-start text-left h-auto p-3",
+              "text-sidebar-foreground transition-all duration-200",
+              // Hover state
+              "hover:bg-sidebar-accent/30 hover:text-sidebar-foreground",
+              // Estado ativo
+              selectedCategory === null && [
+                "bg-sidebar-primary hover:bg-sidebar-primary/90",
+                "text-sidebar-primary-foreground font-semibold"
+              ],
+              // Melhoria de acessibilidade
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-primary focus-visible:ring-offset-2"
             )}
             onClick={() => {
               onCategorySelect(null);
