@@ -57,22 +57,138 @@ export const useCart = () => {
   }, [isDrawerOpen]);
 
   /**
-   * Helper function to get price from product
+   * Função centralizada para calcular preço de item do carrinho
+   * 
+   * REGRA DE NEGÓCIO OBRIGATÓRIA:
+   * 
+   * 1. Produto UNITÁRIO (cod_kit = null):
+   *    - Preço = preço_unitário_do_prazo × quantidade
+   *    - Usa: avista, 30_dias, 60_dias (valores unitários)
+   * 
+   * 2. Produto KIT (cod_kit != null):
+   *    - Preço = valor_total_[prazo selecionado]
+   *    - Usa EXCLUSIVAMENTE: valor_total_avista, valor_total_30, valor_total_60
+   *    - NÃO multiplicar por quantidade interna
+   *    - NÃO usar avista/30_dias/60_dias unitários
+   *    - NÃO usar fallback para valor_base
+   * 
+   * @param item - Item do carrinho
+   * @param product - Produto original do backend
+   * @param priceType - Tipo de prazo selecionado
+   * @returns Preço calculado conforme regra de negócio
+   */
+  const calculateCartItemPrice = useCallback((
+    item: CartItem,
+    product: Product | undefined,
+    priceType: PriceType
+  ): number => {
+    // DETECÇÃO EXPLÍCITA: Verificar se é KIT
+    const isKit = item.type === 'KIT' || (product?.cod_kit !== null && product?.cod_kit !== undefined);
+    
+    if (isKit) {
+      // REGRA CRÍTICA: Para KIT, usar EXCLUSIVAMENTE valor_total_* da estrutura Kit
+      // NÃO usar fallback para valor_base ou preços unitários
+      
+      // Tentar 1: Buscar kit na estrutura kits do produto original
+      if (product?.kits && item.codigo) {
+        const kit = product.kits.find(k => k.codigo === item.codigo);
+        if (kit) {
+          // Usar valores totais do kit conforme prazo selecionado
+          if (priceType === 'avista') {
+            return kit.valor_total_avista;
+          } else if (priceType === 'dias30') {
+            return kit.valor_total_30;
+          } else if (priceType === 'dias90') {
+            return kit.valor_total_60;
+          }
+        }
+      }
+      
+      // Tentar 2: Se o produto foi convertido (ProductModal), os valores totais
+      // já estão nos campos avista/30_dias/60_dias (preenchidos com valor_total_*)
+      // IMPORTANTE: Verificar se o produto tem cod_kit (é um kit convertido)
+      if (product && product.cod_kit !== null && product.cod_kit !== undefined) {
+        if (priceType === 'avista' && product.avista !== undefined && product.avista > 0) {
+          return product.avista;
+        } else if (priceType === 'dias30' && product['30_dias'] !== undefined && product['30_dias'] > 0) {
+          return product['30_dias'];
+        } else if (priceType === 'dias90' && product['60_dias'] !== undefined && product['60_dias'] > 0) {
+          return product['60_dias'];
+        }
+      }
+      
+      // Tentar 3: Buscar em todos os produtos que têm kits (caso o produto original não tenha kits populados)
+      // Esta busca é feita no updateAllItemsPriceType, mas aqui é um fallback adicional
+      // Se o item já tem valor_total armazenado e estamos apenas verificando, usar esse valor
+      // Mas apenas se o priceType não mudou (caso contrário precisa recalcular)
+      if (item.valor_total !== undefined && item.priceType === priceType) {
+        return item.valor_total;
+      }
+      
+      // ERRO: Não foi possível encontrar o preço do kit
+      // NÃO usar fallback silencioso para valor_base
+      console.error('Erro: Não foi possível calcular preço do kit', {
+        itemId: item.id,
+        codigo: item.codigo,
+        productId: item.productId,
+        priceType,
+        hasProduct: !!product,
+        hasKits: !!product?.kits,
+        productCodKit: product?.cod_kit
+      });
+      return 0; // Retornar 0 em vez de valor_base incorreto
+    } else {
+      // REGRA: Produto UNITÁRIO - usar preço unitário conforme prazo
+      if (!product) {
+        // Se não encontrar o produto, usar o preço atual do item
+        return item.price;
+      }
+      
+      // Buscar preço unitário conforme tabela de prazo
+      if (priceType === 'avista') {
+        return product.avista ?? product.valor_base ?? 0;
+      } else if (priceType === 'dias30') {
+        return product['30_dias'] ?? product.valor_base ?? 0;
+      } else if (priceType === 'dias90') {
+        return product['60_dias'] ?? product.valor_base ?? 0;
+      }
+      return product.avista ?? product.valor_base ?? 0;
+    }
+  }, []);
+
+  /**
+   * Helper function to get price from product (mantida para compatibilidade)
    * REGRA DE NEGÓCIO: Para kits, os valores avista/30_dias/60_dias já são os valores TOTAIS do kit
    * (não unitários), pois são preenchidos com valor_total_avista/valor_total_30/valor_total_60
    * quando o kit é convertido em Product no ProductModal.
    * Para produtos unitários, retorna o preço unitário conforme a tabela de prazo.
    */
   const getPrice = useCallback((prod: Product, pt: PriceType): number => {
-    if (pt === 'avista') {
+    // Verificar se é kit (cod_kit não é null)
+    const isKit = prod.cod_kit !== null && prod.cod_kit !== undefined;
+    
+    if (isKit) {
+      // REGRA: Para kits, os valores avista/30_dias/60_dias já são os valores TOTAIS
+      // (preenchidos no ProductModal quando o kit é convertido)
+      if (pt === 'avista') {
+        return prod.avista ?? 0; // NÃO usar valor_base como fallback para kits
+      } else if (pt === 'dias30') {
+        return prod['30_dias'] ?? 0;
+      } else if (pt === 'dias90') {
+        return prod['60_dias'] ?? 0;
+      }
+      return prod.avista ?? 0;
+    } else {
+      // Produto unitário: usar preço unitário com fallback para valor_base
+      if (pt === 'avista') {
+        return prod.avista ?? prod.valor_base ?? 0;
+      } else if (pt === 'dias30') {
+        return prod['30_dias'] ?? prod.valor_base ?? 0;
+      } else if (pt === 'dias90') {
+        return prod['60_dias'] ?? prod.valor_base ?? 0;
+      }
       return prod.avista ?? prod.valor_base ?? 0;
-    } else if (pt === 'dias30') {
-      return prod['30_dias'] ?? prod.valor_base ?? 0;
-    } else if (pt === 'dias90') {
-      // Mapeia dias90 para 60_dias se disponível
-      return prod['60_dias'] ?? prod.valor_base ?? 0;
     }
-    return prod.avista ?? prod.valor_base ?? 0;
   }, []);
 
   /**
@@ -128,6 +244,8 @@ export const useCart = () => {
         );
       } else {
         // Novo item
+        // REGRA: Para kits, getPrice retorna valor_total (já preenchido no ProductModal)
+        // Para produtos unitários, getPrice retorna preço unitário
         const price = getPrice(product, priceType);
         
         // REGRA: Nome do produto deve ter prefixo "KIT -" quando for kit
@@ -156,7 +274,9 @@ export const useCart = () => {
           baseItem.codigo = product.codigo;
           baseItem.quantidade_kit = quantity; // Quantidade de kits adicionados
           baseItem.quantidade_itens_por_kit = product.quantidade || 1; // Quantidade de itens por kit (apenas informativo)
-          baseItem.valor_total = price; // Valor total do kit conforme tabela de prazo selecionada
+          // REGRA CRÍTICA: valor_total = preço do kit conforme tabela de prazo selecionada
+          // Para kits, price já é o valor_total (não unitário)
+          baseItem.valor_total = price;
         } else {
           baseItem.type = 'UNIT';
         }
@@ -206,6 +326,11 @@ export const useCart = () => {
 
   /**
    * Atualiza a forma de pagamento (prazo) de um item individual
+   * 
+   * REGRA DE NEGÓCIO:
+   * - Para kits: usar EXCLUSIVAMENTE valor_total_* da estrutura Kit
+   * - Para produtos unitários: usar preço unitário conforme tabela de prazo
+   * 
    * NOTA: Esta função assume que o product passado já contém os valores totais do kit
    * (valor_total_avista/30/60) quando for um kit, como acontece no ProductModal.
    */
@@ -218,84 +343,100 @@ export const useCart = () => {
     setItems(prev =>
       prev.map(item => {
         if (item.id === itemId) {
-          // REGRA: getPrice funciona para kits porque o product já contém os valores totais
-          // quando convertido em ProductModal (avista = valor_total_avista, etc)
-          const newPrice = getPrice(product, priceType);
+          // Usar função centralizada para calcular preço
+          const newPrice = calculateCartItemPrice(item, product, priceType);
+          
+          // DETECÇÃO EXPLÍCITA: Verificar se é KIT
           if (item.type === 'KIT') {
-            // Para kits, atualizar valor_total e price
+            // REGRA CRÍTICA: Para kits, atualizar valor_total e price com o mesmo valor
             return {
               ...item,
               priceType,
               price: newPrice,
-              valor_total: newPrice
+              valor_total: newPrice // Garantir que valor_total sempre reflete o preço correto do kit
             };
           } else {
-            // Para produtos unitários, atualizar price normalmente
+            // REGRA: Para produtos unitários, atualizar price normalmente
             return { ...item, priceType, price: newPrice };
           }
         }
         return item;
       })
     );
-  }, [getPrice]);
+  }, [calculateCartItemPrice]);
 
   /**
    * Atualiza a forma de pagamento (prazo) de TODOS os itens do carrinho
+   * 
    * REGRA DE NEGÓCIO CRÍTICA:
    * - Deve recalcular o preço de TODOS os itens (unitários e kits) conforme a tabela de prazo selecionada.
-   * - Para kits: buscar o valor_total do kit na estrutura Kit original (valor_total_avista/30/60).
-   * - Para produtos unitários: buscar o preço unitário conforme tabela de prazo.
+   * - Para kits: usar EXCLUSIVAMENTE valor_total_avista/30/60 da estrutura Kit
+   * - Para produtos unitários: usar preço unitário conforme tabela de prazo
+   * - Garantir consistência matemática do subtotal e total
    */
   const updateAllItemsPriceType = useCallback((priceType: PriceType, allProducts: Product[]) => {
     setItems(prev =>
       prev.map(item => {
-        // Encontrar o produto original para obter os preços corretos
-        const originalProduct = allProducts.find(p => p.id_produto === item.productId);
-        if (originalProduct) {
-          if (item.type === 'KIT') {
-            // REGRA CRÍTICA: Para kits, buscar o valor_total do kit na estrutura Kit original
-            // O kit está em originalProduct.kits, precisamos encontrar pelo codigo
-            const kit = originalProduct.kits?.find(k => k.codigo === item.codigo);
-            let newPrice = 0;
-            
-            if (kit) {
-              // Usar os valores totais do kit conforme a tabela de prazo
-              if (priceType === 'avista') {
-                newPrice = kit.valor_total_avista;
-              } else if (priceType === 'dias30') {
-                newPrice = kit.valor_total_30;
-              } else if (priceType === 'dias90') {
-                newPrice = kit.valor_total_60;
-              }
-            } else {
-              // Fallback: se não encontrar o kit, usar getPrice (pode ter sido convertido em Product)
-              newPrice = getPrice(originalProduct, priceType);
+        // DETECÇÃO EXPLÍCITA: Verificar se é KIT
+        const isKit = item.type === 'KIT';
+        
+        let originalProduct: Product | undefined;
+        
+        if (isKit && item.codigo) {
+          // REGRA CRÍTICA: Para kits, buscar produto que contém o kit com o código correspondente
+          // Estratégia de busca em múltiplas etapas:
+          
+          // Tentar 1: Buscar produto que tem o kit no array kits com código correspondente
+          originalProduct = allProducts.find(p => {
+            if (p.kits && p.kits.length > 0) {
+              return p.kits.some(k => k.codigo === item.codigo);
             }
-            
-            return {
-              ...item,
-              priceType,
-              price: newPrice,
-              valor_total: newPrice
-            };
-          } else {
-            // Para produtos unitários, atualizar price normalmente
-            const newPrice = getPrice(originalProduct, priceType);
-            return {
-              ...item,
-              priceType,
-              price: newPrice
-            };
+            return false;
+          });
+          
+          // Tentar 2: Se não encontrou, buscar produto que é o próprio kit (convertido no ProductModal)
+          // Isso acontece quando o kit foi adicionado como Product convertido
+          if (!originalProduct) {
+            originalProduct = allProducts.find(p => 
+              p.codigo === item.codigo && 
+              p.cod_kit !== null && 
+              p.cod_kit !== undefined
+            );
           }
+          
+          // Tentar 3: Se ainda não encontrou, buscar pelo id_produto
+          // (pode ser que o produto original tenha o kit mas não esteja no array allProducts)
+          if (!originalProduct) {
+            originalProduct = allProducts.find(p => p.id_produto === item.productId);
+          }
+        } else {
+          // Para produtos unitários, buscar pelo id_produto
+          originalProduct = allProducts.find(p => p.id_produto === item.productId);
         }
-        // Se não encontrar o produto, mantém o preço atual mas atualiza o priceType
-        return {
-          ...item,
-          priceType
-        };
+        
+        // Usar função centralizada para calcular preço
+        const newPrice = calculateCartItemPrice(item, originalProduct, priceType);
+        
+        if (isKit) {
+          // REGRA CRÍTICA: Para kits, atualizar valor_total e price com o mesmo valor
+          // (valor_total é o preço do kit conforme prazo selecionado)
+          return {
+            ...item,
+            priceType,
+            price: newPrice,
+            valor_total: newPrice // Garantir que valor_total sempre reflete o preço correto do kit
+          };
+        } else {
+          // REGRA: Para produtos unitários, atualizar price normalmente
+          return {
+            ...item,
+            priceType,
+            price: newPrice
+          };
+        }
       })
     );
-  }, [getPrice]);
+  }, [calculateCartItemPrice]);
 
   /**
    * Função central de cálculo do total do carrinho
