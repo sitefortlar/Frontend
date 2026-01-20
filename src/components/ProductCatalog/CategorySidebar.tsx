@@ -99,35 +99,15 @@ export const CategorySidebar = ({
     return CookingPot; // Ícone padrão
   };
 
-  const toggleCategory = (categoryId: number) => {
-    const categoryIdStr = String(categoryId);
-    const newExpanded = new Set(expandedCategories);
-    if (newExpanded.has(categoryIdStr)) {
-      newExpanded.delete(categoryIdStr);
-    } else {
-      newExpanded.add(categoryIdStr);
-    }
-    setExpandedCategories(newExpanded);
-  };
-
-  const handleCategoryClick = (categoryId: number) => {
-    // Apenas expandir/retrair categoria sem selecionar
-    toggleCategory(categoryId);
-  };
-
   const handleCategorySelect = (categoryId: number) => {
-    // Selecionar categoria
-    if (selectedCategory === categoryId) {
-      onCategorySelect(null);
-      onSubcategorySelect(null);
-    } else {
-      onCategorySelect(categoryId);
-      onSubcategorySelect(null);
-      // Expandir categoria quando selecionada
-      const newExpanded = new Set(expandedCategories);
-      newExpanded.add(String(categoryId));
-      setExpandedCategories(newExpanded);
-    }
+    // Selecionar categoria e expandir automaticamente
+    onCategorySelect(categoryId);
+    onSubcategorySelect(null); // Limpar subcategoria ao selecionar nova categoria
+    
+    // Expandir categoria quando selecionada
+    const newExpanded = new Set(expandedCategories);
+    newExpanded.add(String(categoryId));
+    setExpandedCategories(newExpanded);
   };
 
   const handleSubcategorySelect = (subcategoryId: number) => {
@@ -151,21 +131,6 @@ export const CategorySidebar = ({
       <div className="flex-1 overflow-hidden">
         <ScrollArea className="h-full p-4">
         <div className="space-y-2">
-          <Button
-            variant={selectedCategory === null ? "default" : "ghost"}
-            className={cn(
-              "w-full justify-start text-left h-auto p-3 text-sidebar-foreground hover:bg-sidebar-accent/20",
-              selectedCategory === null && "bg-sidebar-primary hover:bg-sidebar-primary/80 text-sidebar-primary-foreground"
-            )}
-            onClick={() => {
-              onCategorySelect(null);
-              onSubcategorySelect(null);
-              setIsMobileOpen(false);
-            }}
-          >
-            Todos os Produtos
-          </Button>
-
           {categories.map((category) => (
             <div key={category.id_categoria} className="space-y-1">
               <Button
@@ -176,7 +141,6 @@ export const CategorySidebar = ({
                 )}
                 onClick={() => {
                   handleCategorySelect(category.id_categoria);
-                  handleCategoryClick(category.id_categoria);
                 }}
               >
                 <div className="flex items-center gap-2">
@@ -186,10 +150,13 @@ export const CategorySidebar = ({
                   })()}
                   <span className="font-medium">{category.nome}</span>
                 </div>
-                {expandedCategories.has(String(category.id_categoria)) ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronRight className="h-4 w-4" />
+                {/* Garantir que as setas sempre apareçam se houver subcategorias */}
+                {category.subcategorias && category.subcategorias.length > 0 && (
+                  expandedCategories.has(String(category.id_categoria)) ? (
+                    <ChevronDown className="h-4 w-4 flex-shrink-0" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                  )
                 )}
               </Button>
 
@@ -213,6 +180,22 @@ export const CategorySidebar = ({
               )}
             </div>
           ))}
+
+          {/* "Todos os Produtos" agora é o último elemento */}
+          <Button
+            variant={selectedCategory === null ? "default" : "ghost"}
+            className={cn(
+              "w-full justify-start text-left h-auto p-3 text-sidebar-foreground hover:bg-sidebar-accent/20",
+              selectedCategory === null && "bg-sidebar-primary hover:bg-sidebar-primary/80 text-sidebar-primary-foreground"
+            )}
+            onClick={() => {
+              onCategorySelect(null);
+              onSubcategorySelect(null);
+              setIsMobileOpen(false);
+            }}
+          >
+            Todos os Produtos
+          </Button>
         </div>
         </ScrollArea>
       </div>
