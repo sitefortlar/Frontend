@@ -20,6 +20,7 @@ interface CartFooterProps {
   companyId: number;
   onClearCart: () => void;
   onUpdateAllItemsPriceType?: (priceType: PriceType, allProducts: Product[]) => void;
+  priceType: PriceType; // REGRA: priceType é global, passado como prop
 }
 
 export const CartFooter = ({ 
@@ -29,10 +30,12 @@ export const CartFooter = ({
   companyId,
   onClearCart,
   onUpdateAllItemsPriceType,
+  priceType: cartPriceType, // REGRA: priceType global do carrinho
 }: CartFooterProps) => {
   const { toast } = useToast();
   const { appliedCoupon, calculateDiscount, removeCoupon } = useCouponContext();
-  const [paymentType, setPaymentType] = useState<PriceType>('avista');
+  // REGRA: paymentType local para o formulário de checkout (pode ser diferente do priceType do carrinho)
+  const [paymentType, setPaymentType] = useState<PriceType>(cartPriceType);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -84,35 +87,39 @@ export const CartFooter = ({
 
     try {
       // Mapear items do carrinho para OrderItemRequest
-      // REGRA DE NEGÓCIO: Para kits, quantidade_pedida = quantidade_kit, valor_total = valor_total * quantidade_kit
-      // Para produtos unitários, quantidade_pedida = quantity, valor_total = price * quantity
+      // REGRA DE NEGÓCIO: Para kits, quantidade_pedida = quantidade_kit, valor_total = prices[prazo] * quantidade_kit
+      // Para produtos unitários, quantidade_pedida = quantity, valor_total = prices[prazo] * quantity
       const orderItems: SendOrderEmailRequest['itens'] = items.map((item) => {
         // Encontrar o produto completo para obter código, categoria e subcategoria
         const product = allProducts.find(p => p.id_produto === item.productId);
         
+        // REGRA: Usar prices do item com priceType global
+        const unitPrice = item.prices[paymentType] || 0;
+        
         if (item.type === 'KIT') {
-          // REGRA: Para kits, quantidade_pedida = quantidade de kits
-          // valor_unitario = valor_total do kit (preço por kit)
-          // valor_total = valor_total * quantidade_kit
+          // REGRA: Para kits, quantidade_pedida = quantidade_kit
+          // valor_unitario = prices[prazo] (preço por kit)
+          // valor_total = prices[prazo] * quantidade_kit
+          const quantidade = item.quantidade_kit || item.quantity || 1;
           return {
             id_produto: item.productId,
             codigo: product?.codigo || item.codigo || '',
             nome: item.name,
-            quantidade_pedida: item.quantidade_kit || 1,
-            valor_unitario: item.valor_total || item.price,
-            valor_total: (item.valor_total || item.price) * (item.quantidade_kit || 1),
+            quantidade_pedida: quantidade,
+            valor_unitario: unitPrice,
+            valor_total: unitPrice * quantidade,
             categoria: product?.categoria,
             subcategoria: product?.subcategoria,
           };
         } else {
-          // Produtos unitários: quantidade_pedida = quantity, valor_total = price * quantity
+          // Produtos unitários: quantidade_pedida = quantity, valor_total = prices[prazo] * quantity
           return {
             id_produto: item.productId,
             codigo: product?.codigo || '',
             nome: item.name,
             quantidade_pedida: item.quantity,
-            valor_unitario: item.price,
-            valor_total: item.price * item.quantity,
+            valor_unitario: unitPrice,
+            valor_total: unitPrice * item.quantity,
             categoria: product?.categoria,
             subcategoria: product?.subcategoria,
           };

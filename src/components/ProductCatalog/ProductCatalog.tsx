@@ -65,7 +65,8 @@ export const ProductCatalog = ({
     getItemCount,
     clearCart, 
     isDrawerOpen, 
-    setIsDrawerOpen 
+    setIsDrawerOpen,
+    priceType: cartPriceType // REGRA: priceType é global do carrinho
   } = useCart();
 
   const { isAdmin } = useAuthContext();
@@ -289,6 +290,7 @@ export const ProductCatalog = ({
         getTotalPrice={getTotalPrice}
         companyId={companyId || 0}
         onClearCart={clearCart}
+        priceType={cartPriceType}
       />
     </ProductCatalogContainer>
   );

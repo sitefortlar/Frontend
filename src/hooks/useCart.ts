@@ -1,17 +1,123 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { CartItem, CheckoutData } from '@/types/Cart';
+import { CartItem, CheckoutData, ItemPrices } from '@/types/Cart';
 import { Product, PriceType } from '@/types/Product';
 import { convertDriveUrlToImage } from '@/utils/imageUtils';
 
 const CART_STORAGE_KEY = 'fortlar_cart_items';
 const CART_DRAWER_STORAGE_KEY = 'fortlar_cart_drawer_open';
+const CART_PRICE_TYPE_KEY = 'fortlar_cart_price_type'; // Estado global do prazo selecionado
 
-// Função para carregar itens do localStorage
-const loadCartFromStorage = (): CartItem[] => {
+/**
+ * Interface para item antigo (compatibilidade com migração)
+ */
+interface LegacyCartItem {
+  id: string;
+  productId: number;
+  name: string;
+  image: string;
+  size: string;
+  priceType?: 'avista' | 'dias30' | 'dias90';
+  price?: number;
+  quantity: number;
+  type?: 'UNIT' | 'KIT';
+  codigo?: string;
+  quantidade_kit?: number;
+  quantidade_itens_por_kit?: number;
+  valor_total?: number;
+}
+
+/**
+ * Migra item antigo para nova estrutura
+ * REGRA: Converte estrutura antiga (com price final) para nova (com prices por prazo)
+ */
+const migrateCartItem = (legacyItem: LegacyCartItem, allProducts: Product[] = []): CartItem => {
+  // Se já está na nova estrutura, retornar como está
+  if ('prices' in legacyItem && legacyItem.prices && legacyItem.type) {
+    return legacyItem as CartItem;
+  }
+  
+  // Buscar produto original para obter preços corretos
+  const product = allProducts.find(p => p.id_produto === legacyItem.productId);
+  const isKit = legacyItem.type === 'KIT' || (product?.cod_kit !== null && product?.cod_kit !== undefined);
+  
+  let prices: ItemPrices = {
+    avista: legacyItem.price || 0,
+    dias30: legacyItem.price || 0,
+    dias90: legacyItem.price || 0,
+  };
+  
+  // Se é kit, tentar buscar valores totais do kit
+  if (isKit && product) {
+    if (product.kits && legacyItem.codigo) {
+      const kit = product.kits.find(k => k.codigo === legacyItem.codigo);
+      if (kit) {
+        prices = {
+          avista: kit.valor_total_avista,
+          dias30: kit.valor_total_30,
+          dias90: kit.valor_total_60,
+        };
+      }
+    } else if (product.cod_kit !== null) {
+      // Produto convertido (ProductModal)
+      prices = {
+        avista: product.avista || 0,
+        dias30: product['30_dias'] || 0,
+        dias90: product['60_dias'] || 0,
+      };
+    } else if (legacyItem.valor_total !== undefined) {
+      // Usar valor_total como fallback (assumindo que era o valor à vista)
+      prices = {
+        avista: legacyItem.valor_total,
+        dias30: legacyItem.valor_total,
+        dias90: legacyItem.valor_total,
+      };
+    }
+  } else if (product) {
+    // Produto unitário
+    prices = {
+      avista: product.avista || product.valor_base || 0,
+      dias30: product['30_dias'] || product.valor_base || 0,
+      dias90: product['60_dias'] || product.valor_base || 0,
+    };
+  }
+  
+  return {
+    id: legacyItem.id,
+    productId: legacyItem.productId,
+    name: legacyItem.name,
+    image: legacyItem.image,
+    size: legacyItem.size,
+    quantity: legacyItem.quantity,
+    prices,
+    type: legacyItem.type || (isKit ? 'KIT' : 'UNIT'),
+    codigo: legacyItem.codigo,
+    quantidade_kit: legacyItem.quantidade_kit,
+    quantidade_itens_por_kit: legacyItem.quantidade_itens_por_kit,
+    // Manter campos deprecated para compatibilidade
+    priceType: legacyItem.priceType,
+    price: legacyItem.price,
+    valor_total: legacyItem.valor_total,
+  };
+};
+
+// Função para carregar itens do localStorage com migração automática
+const loadCartFromStorage = (allProducts: Product[] = []): CartItem[] => {
   try {
     const stored = localStorage.getItem(CART_STORAGE_KEY);
     if (stored) {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      // Verificar se precisa migrar
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const needsMigration = parsed.some((item: any) => !item.prices || !item.type);
+        if (needsMigration) {
+          console.log('Migrando carrinho para nova estrutura...');
+          const migrated = parsed.map((item: LegacyCartItem) => migrateCartItem(item, allProducts));
+          // Salvar versão migrada
+          saveCartToStorage(migrated);
+          return migrated;
+        }
+        return parsed as CartItem[];
+      }
     }
   } catch (error) {
     console.error('Erro ao carregar carrinho do localStorage:', error);
@@ -29,8 +135,41 @@ const saveCartToStorage = (items: CartItem[]) => {
 };
 
 export const useCart = () => {
+  // REGRA OBRIGATÓRIA: priceType é estado GLOBAL do carrinho, não por item
+  const [priceType, setPriceType] = useState<PriceType>(() => {
+    try {
+      const stored = localStorage.getItem(CART_PRICE_TYPE_KEY);
+      if (stored && (stored === 'avista' || stored === 'dias30' || stored === 'dias90')) {
+        return stored as PriceType;
+      }
+    } catch {
+      // Ignorar erro
+    }
+    return 'avista'; // Default
+  });
+  
   // Carregar itens do localStorage na inicialização
-  const [items, setItems] = useState<CartItem[]>(() => loadCartFromStorage());
+  // REGRA: Migração será feita quando necessário (quando item não tem prices)
+  const [items, setItems] = useState<CartItem[]>(() => {
+    try {
+      const stored = localStorage.getItem(CART_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          // Verificar se precisa migrar (se algum item não tem prices)
+          const needsMigration = parsed.some((item: any) => !item.prices || !item.type);
+          if (!needsMigration) {
+            return parsed as CartItem[];
+          }
+          // Se precisa migrar, retornar vazio e migrar depois quando allProducts estiver disponível
+          return [];
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao carregar carrinho:', error);
+    }
+    return [];
+  });
   
   // Carregar estado do drawer do localStorage
   const [isDrawerOpen, setIsDrawerOpen] = useState(() => {
@@ -46,6 +185,15 @@ export const useCart = () => {
   useEffect(() => {
     saveCartToStorage(items);
   }, [items]);
+  
+  // Salvar priceType global no localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(CART_PRICE_TYPE_KEY, priceType);
+    } catch (error) {
+      console.error('Erro ao salvar priceType no localStorage:', error);
+    }
+  }, [priceType]);
 
   // Salvar estado do drawer no localStorage
   useEffect(() => {
@@ -61,23 +209,91 @@ export const useCart = () => {
    * 
    * REGRA DE NEGÓCIO OBRIGATÓRIA:
    * 
-   * 1. Produto UNITÁRIO (cod_kit = null):
-   *    - Preço = preço_unitário_do_prazo × quantidade
-   *    - Usa: avista, 30_dias, 60_dias (valores unitários)
+   * 1. Produto UNITÁRIO (type === 'UNIT'):
+   *    - Preço = prices[prazo] × quantity
+   *    - prices contém preços unitários por prazo
    * 
-   * 2. Produto KIT (cod_kit != null):
-   *    - Preço = valor_total_[prazo selecionado]
-   *    - Usa EXCLUSIVAMENTE: valor_total_avista, valor_total_30, valor_total_60
+   * 2. Produto KIT (type === 'KIT'):
+   *    - Preço = prices[prazo] × quantidade_kit
+   *    - prices contém valores TOTAIS do kit por prazo
    *    - NÃO multiplicar por quantidade interna
-   *    - NÃO usar avista/30_dias/60_dias unitários
-   *    - NÃO usar fallback para valor_base
    * 
-   * @param item - Item do carrinho
-   * @param product - Produto original do backend
-   * @param priceType - Tipo de prazo selecionado
+   * @param item - Item do carrinho (com prices por prazo)
+   * @param priceType - Tipo de prazo selecionado (estado global)
    * @returns Preço calculado conforme regra de negócio
    */
   const calculateCartItemPrice = useCallback((
+    item: CartItem,
+    priceType: PriceType
+  ): number => {
+    // REGRA: Usar prices do item (já contém valores corretos por prazo)
+    const price = item.prices[priceType] || 0;
+    
+    if (item.type === 'KIT') {
+      // REGRA: Para kits, multiplicar pelo quantidade_kit (não quantity)
+      const quantidade = item.quantidade_kit || item.quantity || 1;
+      return price * quantidade;
+    } else {
+      // REGRA: Para produtos unitários, multiplicar pelo quantity
+      return price * item.quantity;
+    }
+  }, []);
+  
+  /**
+   * Função para obter preços por prazo de um produto
+   * Usada ao adicionar item ao carrinho para salvar prices
+   * 
+   * @param product - Produto do backend
+   * @param isKit - Se é kit
+   * @returns Preços por prazo
+   */
+  const getProductPrices = useCallback((
+    product: Product,
+    isKit: boolean
+  ): ItemPrices => {
+    if (isKit) {
+      // REGRA: Para kits, buscar valores totais do kit
+      if (product.kits && product.codigo) {
+        const kit = product.kits.find(k => k.codigo === product.codigo);
+        if (kit) {
+          return {
+            avista: kit.valor_total_avista,
+            dias30: kit.valor_total_30,
+            dias90: kit.valor_total_60,
+          };
+        }
+      }
+      
+      // Se produto foi convertido (ProductModal), valores totais já estão em avista/30_dias/60_dias
+      if (product.cod_kit !== null) {
+        return {
+          avista: product.avista || 0,
+          dias30: product['30_dias'] || 0,
+          dias90: product['60_dias'] || 0,
+        };
+      }
+      
+      // Fallback: usar valor_total se disponível
+      return {
+        avista: product.avista || 0,
+        dias30: product['30_dias'] || 0,
+        dias90: product['60_dias'] || 0,
+      };
+    } else {
+      // REGRA: Para produtos unitários, usar preços unitários
+      return {
+        avista: product.avista || product.valor_base || 0,
+        dias30: product['30_dias'] || product.valor_base || 0,
+        dias90: product['60_dias'] || product.valor_base || 0,
+      };
+    }
+  }, []);
+  
+  /**
+   * Função LEGACY para calcular preço (mantida para compatibilidade durante migração)
+   * @deprecated Usar calculateCartItemPrice com prices do item
+   */
+  const calculateCartItemPriceLegacy = useCallback((
     item: CartItem,
     product: Product | undefined,
     priceType: PriceType
@@ -244,9 +460,8 @@ export const useCart = () => {
         );
       } else {
         // Novo item
-        // REGRA: Para kits, getPrice retorna valor_total (já preenchido no ProductModal)
-        // Para produtos unitários, getPrice retorna preço unitário
-        const price = getPrice(product, priceType);
+        // REGRA OBRIGATÓRIA: Obter preços por prazo (não preço final)
+        const prices = getProductPrices(product, isKit);
         
         // REGRA: Nome do produto deve ter prefixo "KIT -" quando for kit
         const productName = isKit 
@@ -261,31 +476,26 @@ export const useCart = () => {
             ? convertDriveUrlToImage(product.imagens[0])
             : "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=64&h=64&fit=crop",
           size,
-          priceType,
-          price,
-          // REGRA CRÍTICA: Para kits, quantity sempre = 1 (representa 1 unidade de kit no carrinho)
-          // quantidade_kit armazena a quantidade real de kits
-          quantity: isKit ? 1 : quantity,
+          // REGRA OBRIGATÓRIA: Salvar prices por prazo (não preço final)
+          prices,
+          // REGRA OBRIGATÓRIA: type é obrigatório
+          type: isKit ? 'KIT' : 'UNIT',
+          // REGRA: quantity sempre representa quantidade de unidades (UNIT) ou quantidade de kits (KIT)
+          quantity: isKit ? quantity : quantity,
         };
 
         // Adicionar campos específicos de kit
         if (isKit) {
-          baseItem.type = 'KIT';
           baseItem.codigo = product.codigo;
           baseItem.quantidade_kit = quantity; // Quantidade de kits adicionados
           baseItem.quantidade_itens_por_kit = product.quantidade || 1; // Quantidade de itens por kit (apenas informativo)
-          // REGRA CRÍTICA: valor_total = preço do kit conforme tabela de prazo selecionada
-          // Para kits, price já é o valor_total (não unitário)
-          baseItem.valor_total = price;
-        } else {
-          baseItem.type = 'UNIT';
         }
 
         return [...prev, baseItem];
       }
     });
     setIsDrawerOpen(true);
-  }, [getPrice]);
+  }, [getProductPrices]);
 
   const removeFromCart = useCallback((itemId: string) => {
     setItems(prev => prev.filter(item => item.id !== itemId));
@@ -368,98 +578,55 @@ export const useCart = () => {
   /**
    * Atualiza a forma de pagamento (prazo) de TODOS os itens do carrinho
    * 
-   * REGRA DE NEGÓCIO CRÍTICA:
-   * - Deve recalcular o preço de TODOS os itens (unitários e kits) conforme a tabela de prazo selecionada.
-   * - Para kits: usar EXCLUSIVAMENTE valor_total_avista/30/60 da estrutura Kit
-   * - Para produtos unitários: usar preço unitário conforme tabela de prazo
-   * - Garantir consistência matemática do subtotal e total
+   * REGRA OBRIGATÓRIA: priceType é estado GLOBAL, não por item
+   * Esta função apenas atualiza o estado global, não recalcula preços
+   * (preços já estão salvos em prices por prazo)
    */
-  const updateAllItemsPriceType = useCallback((priceType: PriceType, allProducts: Product[]) => {
+  const updateAllItemsPriceType = useCallback((newPriceType: PriceType, allProducts: Product[]) => {
+    // REGRA: Apenas atualizar estado global
+    setPriceType(newPriceType);
+    
+    // REGRA: Se algum item não tem prices (migração pendente), atualizar prices
     setItems(prev =>
       prev.map(item => {
-        // DETECÇÃO EXPLÍCITA: Verificar se é KIT
-        const isKit = item.type === 'KIT';
-        
-        let originalProduct: Product | undefined;
-        
-        if (isKit && item.codigo) {
-          // REGRA CRÍTICA: Para kits, buscar produto que contém o kit com o código correspondente
-          // Estratégia de busca em múltiplas etapas:
-          
-          // Tentar 1: Buscar produto que tem o kit no array kits com código correspondente
-          originalProduct = allProducts.find(p => {
-            if (p.kits && p.kits.length > 0) {
-              return p.kits.some(k => k.codigo === item.codigo);
-            }
-            return false;
-          });
-          
-          // Tentar 2: Se não encontrou, buscar produto que é o próprio kit (convertido no ProductModal)
-          // Isso acontece quando o kit foi adicionado como Product convertido
-          if (!originalProduct) {
-            originalProduct = allProducts.find(p => 
-              p.codigo === item.codigo && 
-              p.cod_kit !== null && 
-              p.cod_kit !== undefined
-            );
-          }
-          
-          // Tentar 3: Se ainda não encontrou, buscar pelo id_produto
-          // (pode ser que o produto original tenha o kit mas não esteja no array allProducts)
-          if (!originalProduct) {
-            originalProduct = allProducts.find(p => p.id_produto === item.productId);
-          }
-        } else {
-          // Para produtos unitários, buscar pelo id_produto
-          originalProduct = allProducts.find(p => p.id_produto === item.productId);
+        // Se item já tem prices, não precisa fazer nada
+        if (item.prices && item.type) {
+          return item;
         }
         
-        // Usar função centralizada para calcular preço
-        const newPrice = calculateCartItemPrice(item, originalProduct, priceType);
-        
-        if (isKit) {
-          // REGRA CRÍTICA: Para kits, atualizar valor_total e price com o mesmo valor
-          // (valor_total é o preço do kit conforme prazo selecionado)
+        // Migrar item que ainda não tem prices
+        const product = allProducts.find(p => p.id_produto === item.productId);
+        if (product) {
+          const isKit = item.type === 'KIT';
+          const prices = getProductPrices(product, isKit);
           return {
             ...item,
-            priceType,
-            price: newPrice,
-            valor_total: newPrice // Garantir que valor_total sempre reflete o preço correto do kit
-          };
-        } else {
-          // REGRA: Para produtos unitários, atualizar price normalmente
-          return {
-            ...item,
-            priceType,
-            price: newPrice
+            prices,
+            type: item.type || (isKit ? 'KIT' : 'UNIT'),
           };
         }
+        return item;
       })
     );
-  }, [calculateCartItemPrice]);
+  }, [getProductPrices]);
 
   /**
    * Função central de cálculo do total do carrinho
    * REGRA DE NEGÓCIO:
-   * - KIT: valor_total * quantidade_kit (não multiplicar pela quantidade de itens por kit)
-   * - UNIT: price * quantity
-   * - Sempre recalcula do zero quando items mudam (reatividade garantida por useMemo)
+   * - KIT: prices[prazo] * quantidade_kit (não multiplicar pela quantidade de itens por kit)
+   * - UNIT: prices[prazo] * quantity
+   * - Sempre recalcula do zero quando items ou priceType mudam (reatividade garantida por useMemo)
    */
-  const calculateCartTotal = useCallback((cartItems: CartItem[]): number => {
+  const calculateCartTotal = useCallback((cartItems: CartItem[], currentPriceType: PriceType): number => {
     return cartItems.reduce((total, item) => {
-      if (item.type === 'KIT' && item.valor_total !== undefined && item.quantidade_kit !== undefined) {
-        // REGRA: Kit = valor_total do kit * quantidade de kits
-        // NÃO multiplicar pela quantidade de itens por kit
-        return total + (item.valor_total * item.quantidade_kit);
-      }
-      // Produtos unitários: preço unitário * quantidade
-      return total + (item.price * item.quantity);
+      // REGRA: Usar calculateCartItemPrice que já considera type e quantidade correta
+      return total + calculateCartItemPrice(item, currentPriceType);
     }, 0);
-  }, []);
+  }, [calculateCartItemPrice]);
 
   const getTotalPrice = useMemo(() => {
-    return calculateCartTotal(items);
-  }, [items, calculateCartTotal]);
+    return calculateCartTotal(items, priceType);
+  }, [items, priceType, calculateCartTotal]);
 
   /**
    * Conta o número de itens distintos no carrinho
@@ -493,25 +660,29 @@ export const useCart = () => {
     items.forEach((item, index) => {
       message += `${index + 1}. ${item.name}\n`;
       
+      // REGRA: Usar prices do item com priceType do checkoutData
+      const unitPrice = item.prices[checkoutData.paymentType] || 0;
+      
       if (item.type === 'KIT') {
         message += `   Tipo: Kit\n`;
         message += `   Código do kit: ${item.codigo || 'N/A'}\n`;
-        message += `   Quantidade de kits: ${item.quantidade_kit || 1}\n`;
+        const quantidade = item.quantidade_kit || item.quantity || 1;
+        message += `   Quantidade de kits: ${quantidade}\n`;
         message += `   Itens por kit: ${item.quantidade_itens_por_kit || 1}\n`;
         // Calcular total de unidades: quantidade_kit * quantidade_itens_por_kit
-        const totalUnidades = (item.quantidade_kit || 1) * (item.quantidade_itens_por_kit || 1);
+        const totalUnidades = quantidade * (item.quantidade_itens_por_kit || 1);
         message += `   Total de unidades: ${totalUnidades}\n`;
-        message += `   Valor total do kit: R$ ${item.valor_total?.toFixed(2) || item.price.toFixed(2)}\n`;
-        // REGRA: Subtotal = valor_total * quantidade_kit
-        const subtotal = (item.valor_total || item.price) * (item.quantidade_kit || 1);
+        message += `   Valor total do kit: R$ ${unitPrice.toFixed(2)}\n`;
+        // REGRA: Subtotal = prices[prazo] * quantidade_kit
+        const subtotal = unitPrice * quantidade;
         message += `   Subtotal: R$ ${subtotal.toFixed(2)}\n\n`;
       } else {
         message += `   Tipo: Produto unitário\n`;
         message += `   Tamanho: ${item.size}\n`;
         message += `   Quantidade: ${item.quantity}\n`;
-        message += `   Preço unitário: R$ ${item.price.toFixed(2)}\n`;
-        // REGRA: Subtotal = price * quantity
-        message += `   Subtotal: R$ ${(item.price * item.quantity).toFixed(2)}\n\n`;
+        message += `   Preço unitário: R$ ${unitPrice.toFixed(2)}\n`;
+        // REGRA: Subtotal = prices[prazo] * quantity
+        message += `   Subtotal: R$ ${(unitPrice * item.quantity).toFixed(2)}\n\n`;
       }
     });
     

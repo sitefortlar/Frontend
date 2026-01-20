@@ -25,6 +25,7 @@ interface CartSheetProps {
   onClearCart: () => void;
   onUpdateAllItemsPriceType?: (priceType: PriceType, allProducts: Product[]) => void;
   allProducts?: Product[];
+  priceType: PriceType; // REGRA: priceType é global, passado como prop
 }
 
 const CartSheet = ({
@@ -38,6 +39,7 @@ const CartSheet = ({
   onClearCart,
   onUpdateAllItemsPriceType,
   allProducts = [],
+  priceType,
 }: CartSheetProps) => {
   const { toast } = useToast();
 
@@ -72,6 +74,7 @@ const CartSheet = ({
                         product={product!}
                         onRemove={onRemoveItem}
                         onUpdateQuantity={onUpdateQuantity}
+                        priceType={priceType}
                       />
                     );
                   })}
@@ -86,6 +89,7 @@ const CartSheet = ({
                   companyId={companyId}
                   onClearCart={onClearCart}
                   onUpdateAllItemsPriceType={onUpdateAllItemsPriceType}
+                  priceType={priceType}
                 />
               </div>
             </>

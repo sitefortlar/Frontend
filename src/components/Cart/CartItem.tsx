@@ -1,41 +1,50 @@
 import { Trash2, Plus, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CartItem as CartItemType } from '@/types/Cart';
-import { Product } from '@/types/Product';
+import { Product, PriceType } from '@/types/Product';
 
 interface CartItemProps {
   item: CartItemType;
   onRemove: (itemId: string) => void;
   onUpdateQuantity: (itemId: string, quantity: number) => void;
   product: Product;
+  priceType: PriceType; // REGRA: priceType é global, passado como prop
 }
 
 export const CartItem = ({ 
   item, 
   onRemove, 
   onUpdateQuantity, 
-  product 
+  product,
+  priceType
 }: CartItemProps) => {
   /**
    * REGRA DE NEGÓCIO:
-   * - KIT: quantidade_kit controla a quantidade de kits. quantity sempre = 1.
-   * - UNIT: quantity controla a quantidade de unidades.
+   * - KIT: quantidade_kit controla a quantidade de kits
+   * - UNIT: quantity controla a quantidade de unidades
    */
   const isKit = item.type === 'KIT';
-  const displayQuantity = isKit ? (item.quantidade_kit || 1) : item.quantity;
+  const displayQuantity = isKit ? (item.quantidade_kit || item.quantity || 1) : item.quantity;
+  
+  // REGRA: Calcular preço usando prices do item e priceType global
+  const getPrice = (): number => {
+    return item.prices[priceType] || 0;
+  };
   
   // Calcular subtotal corretamente
   const calculateSubtotal = (): number => {
-    if (isKit && item.valor_total !== undefined && item.quantidade_kit !== undefined) {
-      // REGRA: Kit = valor_total * quantidade_kit
-      return item.valor_total * item.quantidade_kit;
+    const price = getPrice();
+    if (isKit) {
+      // REGRA: Kit = price * quantidade_kit
+      const quantidade = item.quantidade_kit || item.quantity || 1;
+      return price * quantidade;
     }
     // Produto unitário = price * quantity
-    return item.price * item.quantity;
+    return price * item.quantity;
   };
 
   const subtotal = calculateSubtotal();
-  const unitPrice = isKit ? (item.valor_total || item.price) : item.price;
+  const unitPrice = getPrice();
 
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity <= 0) {
