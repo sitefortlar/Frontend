@@ -26,9 +26,47 @@ export const CartItem = ({
   const isKit = item.type === 'KIT';
   const displayQuantity = isKit ? (item.quantidade_kit || item.quantity || 1) : item.quantity;
   
+  // Debug: verificar se priceType está sendo passado
+  if (!priceType) {
+    console.error('❌ priceType não foi passado para CartItem:', item.id, item.name);
+  }
+  
   // REGRA: Calcular preço usando prices do item e priceType global
   const getPrice = (): number => {
-    return item.prices[priceType] || 0;
+    // Debug: verificar se prices existe
+    if (!item.prices || typeof item.prices !== 'object') {
+      console.error('❌ Item sem prices válido:', item.id, item.name, item);
+      return 0;
+    }
+    
+    // Acessar price diretamente usando priceType
+    // priceType pode ser 'avista', 'dias30' ou 'dias90'
+    let price: number | undefined;
+    
+    if (priceType === 'avista') {
+      price = item.prices.avista;
+    } else if (priceType === 'dias30') {
+      price = item.prices.dias30;
+    } else if (priceType === 'dias90') {
+      price = item.prices.dias90;
+    }
+    
+    // Converter para número e validar
+    const numericPrice = price !== undefined && price !== null ? Number(price) : 0;
+    
+    if (isNaN(numericPrice) || numericPrice < 0) {
+      console.warn('⚠️ Preço inválido para', priceType, 'no item:', {
+        id: item.id,
+        name: item.name,
+        prices: item.prices,
+        priceType,
+        rawPrice: price,
+        numericPrice
+      });
+      return 0;
+    }
+    
+    return numericPrice;
   };
   
   // Calcular subtotal corretamente

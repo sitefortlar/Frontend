@@ -169,27 +169,50 @@ export const useCart = () => {
                    (item.type === 'UNIT' || item.type === 'KIT');
           });
           
-          if (allItemsValid) {
+            if (allItemsValid) {
             // REGRA: Dados já estão no formato correto, carregar diretamente
             console.log('✅ Carrinho carregado do localStorage:', parsed.length, 'itens');
-            // Garantir que todos os campos obrigatórios estão presentes
-            const validatedItems = parsed.map((item: any) => ({
-              id: item.id,
-              productId: item.productId,
-              name: item.name,
-              image: item.image,
-              size: item.size || '',
-              quantity: item.quantity || 1,
+            // Garantir que todos os campos obrigatórios estão presentes e valores são números
+            const validatedItems = parsed.map((item: any) => {
+              const validated: CartItem = {
+                id: String(item.id),
+                productId: Number(item.productId),
+                name: String(item.name),
+                image: String(item.image),
+                size: String(item.size || ''),
+                quantity: Number(item.quantity || 1),
               prices: {
-                avista: item.prices.avista || 0,
-                dias30: item.prices.dias30 || 0,
-                dias90: item.prices.dias90 || 0,
+                // Garantir conversão correta para número, mesmo se vier como string do localStorage
+                avista: item.prices?.avista !== undefined && item.prices?.avista !== null 
+                  ? Number(item.prices.avista) 
+                  : 0,
+                dias30: item.prices?.dias30 !== undefined && item.prices?.dias30 !== null 
+                  ? Number(item.prices.dias30) 
+                  : 0,
+                dias90: item.prices?.dias90 !== undefined && item.prices?.dias90 !== null 
+                  ? Number(item.prices.dias90) 
+                  : 0,
               },
-              type: item.type,
-              codigo: item.codigo,
-              quantidade_kit: item.quantidade_kit,
-              quantidade_itens_por_kit: item.quantidade_itens_por_kit,
-            })) as CartItem[];
+                type: item.type === 'KIT' ? 'KIT' : 'UNIT',
+                codigo: item.codigo ? String(item.codigo) : undefined,
+                quantidade_kit: item.quantidade_kit ? Number(item.quantidade_kit) : undefined,
+                quantidade_itens_por_kit: item.quantidade_itens_por_kit ? Number(item.quantidade_itens_por_kit) : undefined,
+              };
+              
+              // Debug: log do primeiro item para verificar
+              if (parsed.indexOf(item) === 0) {
+                console.log('📦 Primeiro item validado:', {
+                  id: validated.id,
+                  name: validated.name,
+                  type: validated.type,
+                  prices: validated.prices,
+                  quantity: validated.quantity,
+                  quantidade_kit: validated.quantidade_kit
+                });
+              }
+              
+              return validated;
+            });
             return validatedItems;
           } else {
             // REGRA: Precisa migrar, mas vamos tentar carregar o que for possível
