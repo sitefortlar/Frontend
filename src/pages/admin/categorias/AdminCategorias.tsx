@@ -42,14 +42,12 @@ import {
   SubcategoryName,
   SubcategoryActions,
   SubcategoryForm,
-  SubcategoryFormInput,
   DialogFormContainer,
   DialogFormField,
   DialogFormSubcategoryList,
   DialogFormSubcategoryItem,
   DialogFormSubcategoryName,
   DialogFormSubcategoryInput,
-  DialogFormSubcategoryInputField,
   SpinnerButton,
 } from './styles';
 
@@ -544,16 +542,16 @@ export default function AdminCategorias() {
                     </div>
                     <Separator />
                     <SubcategoryForm>
-                      <SubcategoryFormInput
-                        as={Input}
+                      <Input
                         placeholder="Nome da nova subcategoria"
                         value={newSubcategoryName}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewSubcategoryName(e.target.value)}
-                        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                        onChange={(e) => setNewSubcategoryName(e.target.value)}
+                        onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             handleCreateSubcategory(category.id_categoria);
                           }
                         }}
+                        className="flex-1"
                       />
                       <Button
                         onClick={() => handleCreateSubcategory(category.id_categoria)}
@@ -593,17 +591,17 @@ export default function AdminCategorias() {
               <DialogFormField>
                 <Label>Subcategorias (opcional)</Label>
                 <DialogFormSubcategoryInput>
-                  <DialogFormSubcategoryInputField
-                    as={Input}
+                  <Input
                     placeholder="Nome da subcategoria"
                     value={newSubcategoryName}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewSubcategoryName(e.target.value)}
-                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    onChange={(e) => setNewSubcategoryName(e.target.value)}
+                    onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
                         handleAddSubcategoryToForm();
                       }
                     }}
+                    className="flex-1"
                   />
                   <Button
                     type="button"

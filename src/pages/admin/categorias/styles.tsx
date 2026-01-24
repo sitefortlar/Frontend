@@ -208,9 +208,6 @@ export const SubcategoryForm = styled.div`
   gap: 0.5rem;
 `;
 
-export const SubcategoryFormInput = styled.input`
-  flex: 1;
-`;
 
 export const DialogFormContainer = styled.div`
   display: flex;
@@ -248,10 +245,6 @@ export const DialogFormSubcategoryName = styled.span`
 export const DialogFormSubcategoryInput = styled.div`
   display: flex;
   gap: 0.5rem;
-`;
-
-export const DialogFormSubcategoryInputField = styled.input`
-  flex: 1;
 `;
 
 export const ButtonWithIcon = styled.button`
