@@ -47,8 +47,25 @@ export interface Category {
 export interface Subcategory {
   id_subcategoria: number;
   nome: string;
+  id_categoria?: number; // Opcional, pode não estar presente em todas as respostas
   created_at: string;
   updated_at: string;
+}
+
+// Tipos para requisições de categorias
+export interface CategoryRequest {
+  name: string;
+  subcategory?: SubcategoryRequest[];
+}
+
+export interface SubcategoryRequest {
+  name: string;
+}
+
+export interface CategoryListParams {
+  skip?: number;
+  limit?: number;
+  search_name?: string;
 }
 
 export type SortOption = 'price-high' | 'price-low';
