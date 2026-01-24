@@ -43,6 +43,10 @@ const router = createBrowserRouter([
         path: paths.couponManagement,
         lazy: () => import('@/pages/coupon-management').then(module => ({ Component: module.default })),
       },
+      {
+        path: paths.adminCategorias,
+        lazy: () => import('@/pages/admin/categorias').then(module => ({ Component: module.default })),
+      },
     ],
   },
   

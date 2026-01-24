@@ -35,10 +35,7 @@ export const AdminSettingsButton = () => {
     {
       label: 'Gerenciar Categorias',
       icon: FolderTree,
-      onClick: () => {
-        // TODO: Criar rota /admin/categorias quando necessário
-        console.log('Navegar para gerenciar categorias');
-      },
+      onClick: () => navigate('/admin/categorias'),
     },
   ];
 
