@@ -76,13 +76,14 @@ export const CategorySidebar = ({
       return;
     }
 
-    // Encontrar a categoria selecionada
-    const category = categories.find(cat => cat.id_categoria === selectedCategory);
+    // Encontrar a categoria selecionada (usar conversão para Number para garantir comparação correta)
+    const selectedCategoryId = Number(selectedCategory);
+    const category = categories.find(cat => Number(cat.id_categoria) === selectedCategoryId);
     
     if (category && category.subcategorias && category.subcategorias.length > 0) {
       // Se a categoria tem subcategorias, garantir que está expandida
       // e fechar todas as outras
-      setExpandedCategories(new Set([selectedCategory]));
+      setExpandedCategories(new Set([selectedCategoryId]));
     } else {
       // Se não tem subcategorias, fechar todos os submenus
       setExpandedCategories(new Set());
@@ -191,11 +192,15 @@ export const CategorySidebar = ({
    */
   const handleSubcategorySelect = useCallback((subcategoryId: number) => {
     try {
+      // Converter para Number para garantir comparação correta
+      const subcategoryIdNum = Number(subcategoryId);
+      const currentSubcategoryId = selectedSubcategory !== null ? Number(selectedSubcategory) : null;
+      
       // Toggle: se já está selecionada, deseleciona
-      if (selectedSubcategory === subcategoryId) {
+      if (currentSubcategoryId === subcategoryIdNum) {
         onSubcategorySelect(null);
       } else {
-        onSubcategorySelect(subcategoryId);
+        onSubcategorySelect(subcategoryIdNum);
       }
       // Fechar menu mobile após seleção (melhor UX em mobile)
       setIsMobileOpen(false);
@@ -218,8 +223,11 @@ export const CategorySidebar = ({
         <div className="space-y-2">
           {categories.map((category) => {
             const hasSubcats = hasSubcategories(category);
-            const isCategoryActive = selectedCategory === category.id_categoria;
-            const isCategoryExpanded = isExpanded(category.id_categoria);
+            // Usar conversão para Number para garantir comparação correta
+            const categoryId = Number(category.id_categoria);
+            const selectedCategoryId = selectedCategory !== null ? Number(selectedCategory) : null;
+            const isCategoryActive = selectedCategoryId === categoryId;
+            const isCategoryExpanded = isExpanded(categoryId);
 
             return (
               <div key={category.id_categoria} className="space-y-1">
@@ -236,7 +244,7 @@ export const CategorySidebar = ({
                     // Melhoria de acessibilidade: foco visível
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-primary focus-visible:ring-offset-2"
                   )}
-                  onClick={() => handleCategorySelect(category.id_categoria)}
+                  onClick={() => handleCategorySelect(categoryId)}
                   aria-expanded={hasSubcats ? isCategoryExpanded : undefined}
                   aria-haspopup={hasSubcats ? "true" : undefined}
                 >
@@ -273,7 +281,10 @@ export const CategorySidebar = ({
                     aria-label={`Subcategorias de ${category.nome}`}
                   >
                     {category.subcategorias.map((subcategory) => {
-                      const isSubcategoryActive = selectedSubcategory === subcategory.id_subcategoria;
+                      // Usar conversão para Number para garantir comparação correta
+                      const subcategoryId = Number(subcategory.id_subcategoria);
+                      const selectedSubcategoryId = selectedSubcategory !== null ? Number(selectedSubcategory) : null;
+                      const isSubcategoryActive = selectedSubcategoryId === subcategoryId;
                       
                       return (
                         <Button
@@ -296,7 +307,7 @@ export const CategorySidebar = ({
                             // Melhoria de acessibilidade
                             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-primary focus-visible:ring-offset-1"
                           )}
-                          onClick={() => handleSubcategorySelect(subcategory.id_subcategoria)}
+                          onClick={() => handleSubcategorySelect(subcategoryId)}
                           aria-current={isSubcategoryActive ? "page" : undefined}
                         >
                           {subcategory.nome}
