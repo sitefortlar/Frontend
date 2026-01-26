@@ -1,10 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Product, Category, PriceType, SortOption } from '@/types/Product';
 import { CategorySidebar } from './CategorySidebar';
 import { FilterBar } from './FilterBar';
 import { ProductGrid } from './ProductGrid';
 import { AdminSettingsButton } from './AdminSettingsButton';
 import { useCart } from '@/hooks/useCart';
+import CartSheet from '@/components/Cart/CartSheet';
+import { CartButton } from '@/components/Cart/CartButton';
 import {
   ProductCatalogContainer,
   ProductCatalogContent,
@@ -25,63 +27,156 @@ export const ProductCatalog = ({
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<number | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('price-low');
-  const { addToCart, priceType } = useCart();
+  
+  // Hook do carrinho com todas as funções necessárias
+  const { 
+    items, 
+    isDrawerOpen, 
+    setIsDrawerOpen, 
+    addToCart,
+    removeFromCart, 
+    updateQuantity, 
+    getTotalPrice, 
+    clearCart, 
+    updateAllItemsPriceType,
+    priceType,
+    rebuildAllItemsPrices
+  } = useCart();
 
-  // Filtrar produtos por categoria e subcategoria
+  // Reconstruir prices quando produtos estiverem disponíveis
+  useEffect(() => {
+    if (products && products.length > 0) {
+      rebuildAllItemsPrices(products);
+    }
+  }, [products, rebuildAllItemsPrices]);
+
+  /**
+   * Filtra produtos por categoria e subcategoria.
+   * IMPORTANTE: Filtrar por categoria primeiro, depois por subcategoria.
+   * Isso garante que subcategorias sejam filtradas apenas dentro da categoria selecionada.
+   */
   const filteredProducts = useMemo(() => {
-    let filtered = [...products];
+    try {
+      // Validar entrada
+      if (!Array.isArray(products) || products.length === 0) {
+        return [];
+      }
 
-    // Filtrar por categoria
-    if (selectedCategory !== null) {
-      filtered = filtered.filter(
-        (product) => product.id_categoria === selectedCategory
-      );
+      let filtered = [...products];
+
+      // IMPORTANTE: Filtrar por categoria primeiro
+      if (selectedCategory !== null) {
+        filtered = filtered.filter(
+          (product) => product?.id_categoria === selectedCategory
+        );
+      }
+
+      // IMPORTANTE: Filtrar por subcategoria DEPOIS (dentro da categoria selecionada)
+      // Isso garante que apenas subcategorias da categoria selecionada sejam consideradas
+      if (selectedSubcategory !== null) {
+        filtered = filtered.filter(
+          (product) => product?.id_subcategoria === selectedSubcategory
+        );
+      }
+
+      // Ordenar produtos por preço
+      const sorted = [...filtered];
+      sorted.sort((a, b) => {
+        try {
+          const priceA = priceType === 'avista' 
+            ? (a?.avista ?? a?.valor_base ?? 0)
+            : priceType === 'dias30'
+            ? (a?.['30_dias'] ?? a?.valor_base ?? 0)
+            : (a?.['60_dias'] ?? a?.valor_base ?? 0);
+          
+          const priceB = priceType === 'avista'
+            ? (b?.avista ?? b?.valor_base ?? 0)
+            : priceType === 'dias30'
+            ? (b?.['30_dias'] ?? b?.valor_base ?? 0)
+            : (b?.['60_dias'] ?? b?.valor_base ?? 0);
+
+          return sortBy === 'price-low' ? priceA - priceB : priceB - priceA;
+        } catch (error) {
+          console.error('Erro ao ordenar produtos:', error);
+          return 0;
+        }
+      });
+
+      return sorted;
+    } catch (error) {
+      console.error('Erro ao filtrar produtos:', error);
+      return [];
     }
-
-    // Filtrar por subcategoria
-    if (selectedSubcategory !== null) {
-      filtered = filtered.filter(
-        (product) => product.id_subcategoria === selectedSubcategory
-      );
-    }
-
-    // Ordenar produtos
-    filtered.sort((a, b) => {
-      const priceA = priceType === 'avista' 
-        ? (a.avista ?? a.valor_base ?? 0)
-        : priceType === 'dias30'
-        ? (a['30_dias'] ?? a.valor_base ?? 0)
-        : (a['60_dias'] ?? a.valor_base ?? 0);
-      
-      const priceB = priceType === 'avista'
-        ? (b.avista ?? b.valor_base ?? 0)
-        : priceType === 'dias30'
-        ? (b['30_dias'] ?? b.valor_base ?? 0)
-        : (b['60_dias'] ?? b.valor_base ?? 0);
-
-      return sortBy === 'price-low' ? priceA - priceB : priceB - priceA;
-    });
-
-    return filtered;
   }, [products, selectedCategory, selectedSubcategory, sortBy, priceType]);
 
-  // Handler para adicionar ao carrinho
-  const handleAddToCart = (
+  /**
+   * Handler para adicionar produto ao carrinho.
+   * Otimizado com useCallback para evitar re-renderizações.
+   */
+  const handleAddToCart = useCallback((
     product: Product,
     size: string,
     productPriceType: PriceType,
     quantity: number = 1
   ) => {
-    addToCart(product, size, productPriceType, quantity);
-  };
+    try {
+      if (!product || !product.id_produto) {
+        console.error('Produto inválido para adicionar ao carrinho');
+        return;
+      }
+      addToCart(product, size, productPriceType, quantity);
+    } catch (error) {
+      console.error('Erro ao adicionar produto ao carrinho:', error);
+    }
+  }, [addToCart]);
 
-  // Resetar filtros quando categoria é deselecionada
-  const handleCategorySelect = (categoryId: number | null) => {
+  /**
+   * Handler para seleção de categoria.
+   * Resetar subcategoria quando categoria é deselecionada.
+   * Otimizado com useCallback.
+   */
+  const handleCategorySelect = useCallback((categoryId: number | null) => {
     setSelectedCategory(categoryId);
     if (categoryId === null) {
       setSelectedSubcategory(null);
     }
-  };
+  }, []);
+
+  /**
+   * Handler para seleção de subcategoria.
+   * IMPORTANTE: Garantir que a categoria pai esteja selecionada quando uma subcategoria é selecionada.
+   * Otimizado com useCallback.
+   */
+  const handleSubcategorySelect = useCallback((subcategoryId: number | null) => {
+    if (subcategoryId !== null) {
+      // Encontrar a categoria pai da subcategoria selecionada
+      const parentCategory = categories.find(cat => 
+        cat.subcategorias?.some(sub => sub.id_subcategoria === subcategoryId)
+      );
+      
+      // Se encontrou a categoria pai e ela não está selecionada, selecioná-la
+      if (parentCategory && selectedCategory !== parentCategory.id_categoria) {
+        setSelectedCategory(parentCategory.id_categoria);
+      }
+    }
+    setSelectedSubcategory(subcategoryId);
+  }, [categories, selectedCategory]);
+
+  /**
+   * Handler para abrir o carrinho.
+   * Otimizado com useCallback.
+   */
+  const handleOpenCart = useCallback(() => {
+    setIsDrawerOpen(true);
+  }, [setIsDrawerOpen]);
+
+  /**
+   * Handler para fechar o carrinho.
+   * Otimizado com useCallback.
+   */
+  const handleCloseCart = useCallback(() => {
+    setIsDrawerOpen(false);
+  }, [setIsDrawerOpen]);
 
   return (
     <ProductCatalogContainer>
@@ -90,7 +185,7 @@ export const ProductCatalog = ({
         selectedCategory={selectedCategory}
         selectedSubcategory={selectedSubcategory}
         onCategorySelect={handleCategorySelect}
-        onSubcategorySelect={setSelectedSubcategory}
+        onSubcategorySelect={handleSubcategorySelect}
       />
       <ProductCatalogContent>
         <ProductCatalogHeader>
@@ -106,6 +201,28 @@ export const ProductCatalog = ({
           onAddToCart={handleAddToCart}
         />
       </ProductCatalogContent>
+      
+      {/* Botão flutuante do carrinho */}
+      <CartButton
+        itemCount={items.length}
+        onClick={handleOpenCart}
+      />
+      
+      {/* Sheet do carrinho */}
+      <CartSheet
+        isOpen={isDrawerOpen}
+        onClose={handleCloseCart}
+        items={items}
+        onRemoveItem={removeFromCart}
+        onUpdateQuantity={updateQuantity}
+        getTotalPrice={getTotalPrice}
+        companyId={companyId || 0}
+        onClearCart={clearCart}
+        onUpdateAllItemsPriceType={updateAllItemsPriceType}
+        allProducts={products}
+        priceType={priceType}
+      />
+      
       <AdminSettingsButton />
     </ProductCatalogContainer>
   );

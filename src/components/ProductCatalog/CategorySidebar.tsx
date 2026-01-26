@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
@@ -167,12 +167,17 @@ export const CategorySidebar = ({
    * - Limpa a subcategoria selecionada (se houver)
    * - O estado de expansão é gerenciado pelo useEffect baseado na categoria selecionada
    * - Se a categoria tem subcategorias, o submenu será aberto automaticamente
+   * Otimizado com useCallback para evitar re-renderizações.
    */
-  const handleCategorySelect = (categoryId: number) => {
-    onCategorySelect(categoryId);
-    onSubcategorySelect(null); // Limpar subcategoria ao selecionar nova categoria
-    // Nota: O estado de expansão é gerenciado pelo useEffect acima
-  };
+  const handleCategorySelect = useCallback((categoryId: number) => {
+    try {
+      onCategorySelect(categoryId);
+      onSubcategorySelect(null); // Limpar subcategoria ao selecionar nova categoria
+      // Nota: O estado de expansão é gerenciado pelo useEffect acima
+    } catch (error) {
+      console.error('Erro ao selecionar categoria:', error);
+    }
+  }, [onCategorySelect, onSubcategorySelect]);
 
   /**
    * Handler para seleção de subcategoria.
@@ -182,17 +187,22 @@ export const CategorySidebar = ({
    * - NÃO fecha o submenu (mantém o estado de expansão)
    * - Permite deselecionar clicando novamente (toggle)
    * - Fecha o menu mobile após seleção
+   * Otimizado com useCallback para evitar re-renderizações.
    */
-  const handleSubcategorySelect = (subcategoryId: number) => {
-    // Toggle: se já está selecionada, deseleciona
-    if (selectedSubcategory === subcategoryId) {
-      onSubcategorySelect(null);
-    } else {
-      onSubcategorySelect(subcategoryId);
+  const handleSubcategorySelect = useCallback((subcategoryId: number) => {
+    try {
+      // Toggle: se já está selecionada, deseleciona
+      if (selectedSubcategory === subcategoryId) {
+        onSubcategorySelect(null);
+      } else {
+        onSubcategorySelect(subcategoryId);
+      }
+      // Fechar menu mobile após seleção (melhor UX em mobile)
+      setIsMobileOpen(false);
+    } catch (error) {
+      console.error('Erro ao selecionar subcategoria:', error);
     }
-    // Fechar menu mobile após seleção (melhor UX em mobile)
-    setIsMobileOpen(false);
-  };
+  }, [selectedSubcategory, onSubcategorySelect]);
 
   const sidebarContent = (
     <div className="h-full w-full flex flex-col" style={{ background: 'var(--gradient-sidebar)' }}>

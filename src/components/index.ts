@@ -35,6 +35,7 @@ export { PasswordForm } from './companyRegistration/PasswordForm';
 // Cart Components
 export { default as CartDrawer } from './Cart/CartDrawer';
 export { default as CartSheet } from './Cart/CartSheet';
+export { CartButton } from './Cart/CartButton';
 export { CartHeader } from './Cart/CartHeader';
 export { CartItem } from './Cart/CartItem';
 export { CartFooter } from './Cart/CartFooter';
