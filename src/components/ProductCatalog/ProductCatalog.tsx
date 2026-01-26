@@ -50,6 +50,27 @@ export const ProductCatalog = ({
     }
   }, [products, rebuildAllItemsPrices]);
 
+  // Sincronizar categoria pai quando subcategoria é selecionada
+  // IMPORTANTE: Garantir que a categoria pai esteja selecionada quando uma subcategoria é selecionada
+  useEffect(() => {
+    if (selectedSubcategory !== null) {
+      // Encontrar a categoria pai da subcategoria selecionada
+      const parentCategory = categories.find(cat => 
+        cat.subcategorias?.some(sub => Number(sub.id_subcategoria) === Number(selectedSubcategory))
+      );
+      
+      // Se encontrou a categoria pai e ela não está selecionada, selecioná-la
+      if (parentCategory) {
+        const parentCategoryId = Number(parentCategory.id_categoria);
+        const currentCategoryId = selectedCategory !== null ? Number(selectedCategory) : null;
+        
+        if (currentCategoryId !== parentCategoryId) {
+          setSelectedCategory(parentCategoryId);
+        }
+      }
+    }
+  }, [selectedSubcategory, selectedCategory, categories]);
+
   /**
    * Filtra produtos por categoria e subcategoria.
    * IMPORTANTE: Filtrar por categoria primeiro, depois por subcategoria.
@@ -65,9 +86,18 @@ export const ProductCatalog = ({
       let filtered = [...products];
 
       // IMPORTANTE: Filtrar por categoria primeiro
+      // Usar comparação estrita com conversão para garantir que funciona mesmo se os tipos forem diferentes
       if (selectedCategory !== null) {
+        const beforeFilter = filtered.length;
         filtered = filtered.filter(
-          (product) => product?.id_categoria === selectedCategory
+          (product) => {
+            if (!product) return false;
+            // Converter ambos para Number para garantir comparação correta
+            const productCategoryId = Number(product.id_categoria);
+            const selectedCategoryId = Number(selectedCategory);
+            const matches = productCategoryId === selectedCategoryId;
+            return matches;
+          }
         );
       }
 
@@ -75,7 +105,14 @@ export const ProductCatalog = ({
       // Isso garante que apenas subcategorias da categoria selecionada sejam consideradas
       if (selectedSubcategory !== null) {
         filtered = filtered.filter(
-          (product) => product?.id_subcategoria === selectedSubcategory
+          (product) => {
+            if (!product) return false;
+            // Converter ambos para Number para garantir comparação correta
+            const productSubcategoryId = Number(product.id_subcategoria);
+            const selectedSubcategoryId = Number(selectedSubcategory);
+            const matches = productSubcategoryId === selectedSubcategoryId;
+            return matches;
+          }
         );
       }
 
@@ -132,35 +169,23 @@ export const ProductCatalog = ({
 
   /**
    * Handler para seleção de categoria.
-   * Resetar subcategoria quando categoria é deselecionada.
+   * Resetar subcategoria quando categoria é deselecionada ou quando uma nova categoria é selecionada.
    * Otimizado com useCallback.
    */
   const handleCategorySelect = useCallback((categoryId: number | null) => {
     setSelectedCategory(categoryId);
-    if (categoryId === null) {
-      setSelectedSubcategory(null);
-    }
+    // Sempre limpar subcategoria ao selecionar nova categoria
+    setSelectedSubcategory(null);
   }, []);
 
   /**
    * Handler para seleção de subcategoria.
-   * IMPORTANTE: Garantir que a categoria pai esteja selecionada quando uma subcategoria é selecionada.
+   * IMPORTANTE: O useEffect acima garante que a categoria pai seja selecionada automaticamente.
    * Otimizado com useCallback.
    */
   const handleSubcategorySelect = useCallback((subcategoryId: number | null) => {
-    if (subcategoryId !== null) {
-      // Encontrar a categoria pai da subcategoria selecionada
-      const parentCategory = categories.find(cat => 
-        cat.subcategorias?.some(sub => sub.id_subcategoria === subcategoryId)
-      );
-      
-      // Se encontrou a categoria pai e ela não está selecionada, selecioná-la
-      if (parentCategory && selectedCategory !== parentCategory.id_categoria) {
-        setSelectedCategory(parentCategory.id_categoria);
-      }
-    }
-    setSelectedSubcategory(subcategoryId);
-  }, [categories, selectedCategory]);
+    setSelectedSubcategory(subcategoryId !== null ? Number(subcategoryId) : null);
+  }, []);
 
   /**
    * Handler para abrir o carrinho.
