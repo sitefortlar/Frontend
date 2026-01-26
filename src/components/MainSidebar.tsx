@@ -17,8 +17,10 @@ import {
   Ticket,
   LayoutDashboard,
   Shield,
+  LogOut,
 } from 'lucide-react';
 import { paths } from '@/routes/paths';
+import { LogoutButton } from './LogoutButton';
 
 export const MainSidebar = () => {
   const { isAdmin, isLoading } = useAuthContext();
@@ -108,6 +110,18 @@ export const MainSidebar = () => {
             </SidebarGroup>
           </>
         )}
+
+        {/* Seção de Logout */}
+        <SidebarSeparator />
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <LogoutButton variant="ghost" showIcon={true} />
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
     </Sidebar>
   );

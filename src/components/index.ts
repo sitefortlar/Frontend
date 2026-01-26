@@ -48,3 +48,5 @@ export { default as ProductModal } from './ProductCatalog/ProductModal';
 export { CategorySidebar } from './ProductCatalog/CategorySidebar';
 export { FilterBar } from './ProductCatalog/FilterBar';
 
+// Auth Components
+export { LogoutButton } from './LogoutButton';

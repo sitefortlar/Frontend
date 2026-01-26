@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 import { 
   ChevronDown, 
   ChevronRight, 
@@ -29,6 +30,7 @@ import {
 } from 'lucide-react';
 import { Category } from '@/types/Product';
 import { cn } from '@/lib/utils';
+import { LogoutButton } from '@/components/LogoutButton';
 
 interface CategorySidebarProps {
   categories: Category[];
@@ -347,6 +349,12 @@ export const CategorySidebar = ({
           </Button>
         </div>
         </ScrollArea>
+      </div>
+
+      {/* Rodapé com botão de logout */}
+      <div className="p-4 border-t border-sidebar-border flex-shrink-0">
+        <Separator className="mb-4" />
+        <LogoutButton />
       </div>
     </div>
   );
