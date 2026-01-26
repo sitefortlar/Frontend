@@ -7,6 +7,9 @@ import { AdminSettingsButton } from './AdminSettingsButton';
 import { useCart } from '@/hooks/useCart';
 import CartSheet from '@/components/Cart/CartSheet';
 import { CartButton } from '@/components/Cart/CartButton';
+import { productService } from '@/services/products';
+import { authService } from '@/services/auth/auth';
+import { Loader2 } from 'lucide-react';
 import {
   ProductCatalogContainer,
   ProductCatalogContent,
@@ -20,13 +23,15 @@ interface ProductCatalogProps {
 }
 
 export const ProductCatalog = ({
-  products,
+  products: initialProducts,
   categories,
   companyId,
 }: ProductCatalogProps) => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<number | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('price-low');
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [loading, setLoading] = useState(false);
   
   // Hook do carrinho com todas as funções necessárias
   const { 
@@ -43,12 +48,73 @@ export const ProductCatalog = ({
     rebuildAllItemsPrices
   } = useCart();
 
+  // Atualizar produtos quando produtos iniciais mudarem (primeiro carregamento)
+  useEffect(() => {
+    // Só atualizar se não houver filtros selecionados
+    if (selectedCategory === null && selectedSubcategory === null) {
+      setProducts(initialProducts);
+    }
+  }, [initialProducts, selectedCategory, selectedSubcategory]);
+
   // Reconstruir prices quando produtos estiverem disponíveis
   useEffect(() => {
     if (products && products.length > 0) {
       rebuildAllItemsPrices(products);
     }
   }, [products, rebuildAllItemsPrices]);
+
+  // Fazer chamada à API quando categoria ou subcategoria for selecionada
+  useEffect(() => {
+    const fetchFilteredProducts = async () => {
+      // Se nenhum filtro está selecionado, usar produtos iniciais
+      if (selectedCategory === null && selectedSubcategory === null) {
+        setProducts(initialProducts);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        // Obter user_estate do authService
+        const userEstate = authService.getUserEstate();
+        
+        // Preparar filtros para a API
+        const filters: {
+          user_estate?: string | null;
+          id_category?: number;
+          id_subcategory?: number;
+        } = {
+          user_estate: userEstate,
+        };
+
+        // Adicionar filtro de categoria se selecionada
+        if (selectedCategory !== null) {
+          filters.id_category = Number(selectedCategory);
+        }
+
+        // Adicionar filtro de subcategoria se selecionada
+        if (selectedSubcategory !== null) {
+          filters.id_subcategory = Number(selectedSubcategory);
+        }
+
+        console.log('🔍 Buscando produtos com filtros:', filters);
+        
+        // Fazer chamada à API
+        const filteredProducts = await productService.getProducts(filters);
+        
+        console.log('✅ Produtos recebidos:', filteredProducts.length);
+        setProducts(filteredProducts);
+      } catch (error) {
+        console.error('❌ Erro ao buscar produtos filtrados:', error);
+        // Em caso de erro, manter produtos iniciais ou array vazio
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFilteredProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategory, selectedSubcategory]);
 
   // Sincronizar categoria pai quando subcategoria é selecionada
   // IMPORTANTE: Garantir que a categoria pai esteja selecionada quando uma subcategoria é selecionada
@@ -220,11 +286,18 @@ export const ProductCatalog = ({
             productCount={filteredProducts.length}
           />
         </ProductCatalogHeader>
-        <ProductGrid
-          products={filteredProducts}
-          priceType={priceType}
-          onAddToCart={handleAddToCart}
-        />
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mr-3" />
+            <span className="text-muted-foreground">Carregando produtos...</span>
+          </div>
+        ) : (
+          <ProductGrid
+            products={filteredProducts}
+            priceType={priceType}
+            onAddToCart={handleAddToCart}
+          />
+        )}
       </ProductCatalogContent>
       
       {/* Botão flutuante do carrinho */}
