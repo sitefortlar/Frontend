@@ -7,7 +7,12 @@ interface CartItemProps {
   item: CartItemType;
   onRemove: (itemId: string) => void;
   onUpdateQuantity: (itemId: string, quantity: number) => void;
-  product: Product;
+  /**
+   * Produto original do backend.
+   * Mantido apenas para compatibilidade, mas a renderização usa
+   * exclusivamente os dados do próprio item (name, image, prices).
+   */
+  product?: Product;
   priceType: PriceType; // REGRA: priceType é global, passado como prop
 }
 

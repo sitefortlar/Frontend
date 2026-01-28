@@ -80,11 +80,6 @@ const CartSheet = ({
 
                       const product = validProducts.find(p => p?.id_produto === item.productId);
                       
-                      if (!product) {
-                        console.warn('Produto não encontrado para item:', item.id, item.productId);
-                        return null;
-                      }
-                      
                       return (
                         <CartItemComponent
                           key={item.id}
