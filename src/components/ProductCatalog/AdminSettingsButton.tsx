@@ -1,5 +1,6 @@
 import { Settings, Package, Upload, Ticket, FolderTree } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '@/contexts/AuthContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +13,16 @@ import { AdminSettingsButton as StyledAdminButton } from './styles';
 
 export const AdminSettingsButton = () => {
   const navigate = useNavigate();
+  const { isAdmin, isLoading, isAuthenticated } = useAuthContext();
+
+  // Exibe o botão apenas para usuários autenticados com perfil de administrador
+  if (isLoading) {
+    return null;
+  }
+
+  if (!isAuthenticated || !isAdmin) {
+    return null;
+  }
 
   const menuItems = [
     {
