@@ -339,14 +339,14 @@ export default function AdminProdutoEdit() {
                 <div className="space-y-2">
                   <Label>Subcategoria</Label>
                   <Select
-                    value={idSubcategoria === '' ? '' : String(idSubcategoria)}
-                    onValueChange={(v) => setIdSubcategoria(v === '' ? '' : Number(v))}
+                    value={idSubcategoria === '' ? '__none__' : String(idSubcategoria)}
+                    onValueChange={(v) => setIdSubcategoria(v === '__none__' ? '' : Number(v))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Opcional" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Nenhuma</SelectItem>
+                      <SelectItem value="__none__">Nenhuma</SelectItem>
                       {subcategories.map((s) => (
                         <SelectItem key={s.id_subcategoria} value={String(s.id_subcategoria)}>
                           {s.nome}

@@ -187,12 +187,12 @@ export default function AdminProdutos() {
               </div>
               <div className="w-[140px]">
                 <label className="text-sm font-medium mb-1 block">Categoria</label>
-                <Select value={idCategory} onValueChange={(v) => { setIdCategory(v); setIdSubcategory(''); }}>
+                <Select value={idCategory || '__all__'} onValueChange={(v) => { setIdCategory(v === '__all__' ? '' : v); setIdSubcategory(''); }}>
                   <SelectTrigger>
                     <SelectValue placeholder="Todas" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas</SelectItem>
+                    <SelectItem value="__all__">Todas</SelectItem>
                     {categories.map((c) => (
                       <SelectItem key={c.id_categoria} value={String(c.id_categoria)}>
                         {c.nome}
@@ -203,12 +203,12 @@ export default function AdminProdutos() {
               </div>
               <div className="w-[140px]">
                 <label className="text-sm font-medium mb-1 block">Subcategoria</label>
-                <Select value={idSubcategory} onValueChange={setIdSubcategory}>
+                <Select value={idSubcategory || '__all__'} onValueChange={(v) => setIdSubcategory(v === '__all__' ? '' : v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Todas" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas</SelectItem>
+                    <SelectItem value="__all__">Todas</SelectItem>
                     {subcategories.map((s) => (
                       <SelectItem key={s.id_subcategoria} value={String(s.id_subcategoria)}>
                         {s.nome}
