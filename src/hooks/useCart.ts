@@ -276,6 +276,14 @@ export const useCart = () => {
     }
   });
 
+  // Último item adicionado (para feedback visual no painel do carrinho)
+  const [lastAddedItem, setLastAddedItem] = useState<{
+    name: string;
+    image: string;
+    quantity: number;
+    unitPrice: number;
+  } | null>(null);
+
   // Salvar itens no localStorage sempre que mudarem
   useEffect(() => {
     saveCartToStorage(items);
@@ -296,6 +304,13 @@ export const useCart = () => {
       localStorage.setItem(CART_DRAWER_STORAGE_KEY, String(isDrawerOpen));
     } catch (error) {
       console.error('Erro ao salvar estado do drawer:', error);
+    }
+  }, [isDrawerOpen]);
+
+  // Limpar feedback "último item adicionado" ao fechar o painel
+  useEffect(() => {
+    if (!isDrawerOpen) {
+      setLastAddedItem(null);
     }
   }, [isDrawerOpen]);
 
@@ -687,8 +702,24 @@ export const useCart = () => {
         return [...prev, baseItem];
       }
     });
+
+    // Feedback visual: mostrar confirmação no painel
+    const prices = getProductPrices(product, isKit, product.codigo);
+    const unitPrice = priceType === 'avista' ? prices.avista : priceType === 'dias30' ? prices.dias30 : prices.dias90;
+    setLastAddedItem({
+      name: isKit ? `KIT - ${product.nome || 'Produto sem nome'}` : (product.nome || 'Produto sem nome'),
+      image: product.imagens && product.imagens.length > 0
+        ? convertDriveUrlToImage(product.imagens[0])
+        : 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=64&h=64&fit=crop',
+      quantity,
+      unitPrice,
+    });
     setIsDrawerOpen(true);
-  }, [getProductPrices]);
+  }, [getProductPrices, priceType]);
+
+  const clearLastAddedItem = useCallback(() => {
+    setLastAddedItem(null);
+  }, []);
 
   const removeFromCart = useCallback((itemId: string) => {
     setItems(prev => prev.filter(item => item.id !== itemId));
@@ -902,6 +933,8 @@ export const useCart = () => {
     items,
     isDrawerOpen,
     setIsDrawerOpen,
+    lastAddedItem,
+    clearLastAddedItem,
     addToCart,
     removeFromCart,
     updateQuantity,

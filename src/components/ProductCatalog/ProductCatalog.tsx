@@ -34,18 +34,19 @@ export const ProductCatalog = ({
   const [loading, setLoading] = useState(false);
   
   // Hook do carrinho com todas as funções necessárias
-  const { 
-    items, 
-    isDrawerOpen, 
-    setIsDrawerOpen, 
+  const {
+    items,
+    isDrawerOpen,
+    setIsDrawerOpen,
+    lastAddedItem,
     addToCart,
-    removeFromCart, 
-    updateQuantity, 
-    getTotalPrice, 
-    clearCart, 
+    removeFromCart,
+    updateQuantity,
+    getTotalPrice,
+    clearCart,
     updateAllItemsPriceType,
     priceType,
-    rebuildAllItemsPrices
+    rebuildAllItemsPrices,
   } = useCart();
 
   // Atualizar produtos quando produtos iniciais mudarem (primeiro carregamento)
@@ -319,6 +320,7 @@ export const ProductCatalog = ({
         onUpdateAllItemsPriceType={updateAllItemsPriceType}
         allProducts={products}
         priceType={priceType}
+        lastAddedItem={lastAddedItem}
       />
       
       <AdminSettingsButton />

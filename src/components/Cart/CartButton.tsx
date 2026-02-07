@@ -19,18 +19,18 @@ export const CartButton = memo(({ itemCount, onClick, className }: CartButtonPro
     <Button
       onClick={onClick}
       className={cn(
-        "fixed bottom-4 right-4 z-50 h-14 w-14 rounded-full shadow-lg",
+        "fixed bottom-5 right-5 z-50 h-16 w-16 rounded-full shadow-xl border-2 border-primary-foreground/20",
         "bg-primary hover:bg-primary/90 text-primary-foreground",
-        "transition-all duration-200 hover:scale-105",
+        "transition-all duration-200 hover:scale-105 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         className
       )}
       size="icon"
       aria-label={`Carrinho de compras com ${itemCount} ${itemCount === 1 ? 'item' : 'itens'}`}
     >
-      <ShoppingCart className="h-6 w-6" />
+      <ShoppingCart className="h-8 w-8" strokeWidth={2.5} />
       {itemCount > 0 && (
-        <Badge 
-          className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 flex items-center justify-center bg-destructive text-destructive-foreground"
+        <Badge
+          className="absolute -top-1 -right-1 min-w-[28px] h-7 px-1.5 rounded-full flex items-center justify-center text-sm font-bold bg-destructive text-destructive-foreground border-2 border-background shadow-md"
           aria-label={`${itemCount} itens no carrinho`}
         >
           {itemCount > 99 ? '99+' : itemCount}

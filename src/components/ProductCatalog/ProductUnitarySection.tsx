@@ -93,7 +93,7 @@ export const ProductUnitarySection = ({
             className="w-full gap-2 bg-primary hover:bg-primary/90"
           >
             <ShoppingCart className="h-4 w-4" />
-            Adicionar produto unitário
+            Adicionar ao carrinho
           </Button>
         )}
       </div>
