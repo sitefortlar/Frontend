@@ -288,7 +288,7 @@ export const ProductCatalog = ({
           />
         </ProductCatalogHeader>
         {loading ? (
-          <div className="flex items-center justify-center py-12">
+          <div className="flex items-center justify-center py-12 px-4 sm:px-6">
             <Loader2 className="h-8 w-8 animate-spin text-primary mr-3" />
             <span className="text-muted-foreground">Carregando produtos...</span>
           </div>

@@ -36,10 +36,13 @@ export const ProductCatalogContainer = styled.div`
   width: 100%;
   position: relative;
   display: block;
-  /* Background removido - já está no CatalogContainer pai */
-  
+  padding-left: 1rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
+
   @media (min-width: 1024px) {
     padding-left: 18rem; /* Compensar sidebar fixa de 72 (18rem) */
+    padding-right: 1rem;
   }
 `;
 

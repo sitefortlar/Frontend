@@ -1,6 +1,7 @@
-import { Settings, Package, Upload, Ticket, FolderTree } from 'lucide-react';
+import { Settings, Upload, Ticket, FolderTree, PackageSearch } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { paths } from '@/routes/paths';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,12 +27,9 @@ export const AdminSettingsButton = () => {
 
   const menuItems = [
     {
-      label: 'Inserir Produto',
-      icon: Package,
-      onClick: () => {
-        // TODO: Criar rota /admin/produtos/novo quando necessário
-        console.log('Navegar para inserir produto');
-      },
+      label: 'Gerenciar Produtos',
+      icon: PackageSearch,
+      onClick: () => navigate(paths.admin.produtos),
     },
     {
       label: 'Importar Produtos',

@@ -5,7 +5,7 @@ import {
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ShoppingCart, ShoppingBag, ArrowDown } from 'lucide-react';
+import { ShoppingCart, ShoppingBag } from 'lucide-react';
 import { CartItem } from '@/types/Cart';
 import { PriceType, Product } from '@/types/Product';
 import { useToast } from '@/hooks/use-toast';
@@ -49,9 +49,7 @@ const CartSheet = ({
   allProducts = [],
   priceType,
   lastAddedItem = null,
-  onScrollToCheckout,
 }: CartSheetProps) => {
-  const footerRef = useRef<HTMLDivElement>(null);
   const addedToastDismissRef = useRef<(() => void) | null>(null);
   const { toast } = useToast();
 
@@ -60,18 +58,6 @@ const CartSheet = ({
   const validTotalPrice = typeof getTotalPrice === 'number' && !isNaN(getTotalPrice)
     ? getTotalPrice
     : 0;
-
-  const handleScrollToCheckout = () => {
-    if (onScrollToCheckout) {
-      onScrollToCheckout();
-    } else {
-      footerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }
-    toast({
-      title: 'Finalizar pedido',
-      description: 'Confira os itens e finalize seu pedido abaixo.',
-    });
-  };
 
   const handleContinueShopping = () => {
     onClose();
@@ -87,11 +73,6 @@ const CartSheet = ({
     addedToastDismissRef.current?.();
   };
 
-  const handleFinalizeFromToast = () => {
-    handleScrollToCheckout();
-    addedToastDismissRef.current?.();
-  };
-
   useEffect(() => {
     if (!lastAddedItem) return;
     const { dismiss } = toast({
@@ -99,27 +80,16 @@ const CartSheet = ({
       description: `${lastAddedItem.name} · Quantidade: ${lastAddedItem.quantity}`,
       duration: 5000,
       action: (
-        <div className="flex flex-wrap gap-2 mt-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 text-xs"
-            onClick={handleContinueFromToast}
-          >
-            <ShoppingBag className="h-3.5 w-3.5 mr-1.5" />
-            Continuar comprando
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            className="h-8 text-xs"
-            onClick={handleFinalizeFromToast}
-          >
-            <ArrowDown className="h-3.5 w-3.5 mr-1.5" />
-            Finalizar pedido
-          </Button>
-        </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="h-8 text-xs mt-2"
+          onClick={handleContinueFromToast}
+        >
+          <ShoppingBag className="h-3.5 w-3.5 mr-1.5" />
+          Continuar comprando
+        </Button>
       ),
     });
     addedToastDismissRef.current = dismiss;
@@ -183,18 +153,7 @@ const CartSheet = ({
                 </div>
               </ScrollArea>
 
-              <div ref={footerRef} className="mt-auto pt-4 pb-5 border-t border-border/20 bg-background">
-                {validItems.length > 0 && (
-                  <div className="flex gap-2 py-3">
-                    <Button variant="outline" className="flex-1 gap-2" onClick={handleContinueShopping}>
-                      <ShoppingBag className="h-4 w-4" />
-                      Continuar comprando
-                    </Button>
-                    <Button className="flex-1 gap-2" onClick={handleScrollToCheckout}>
-                      Finalizar pedido
-                    </Button>
-                  </div>
-                )}
+              <div className="mt-auto pt-4 pb-5 border-t border-border/20 bg-background">
                 <CartFooter
                   totalPrice={validTotalPrice}
                   items={validItems}
