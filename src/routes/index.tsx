@@ -47,6 +47,22 @@ const router = createBrowserRouter([
         path: paths.adminCategorias,
         lazy: () => import('@/pages/admin/categorias').then(module => ({ Component: module.default })),
       },
+      {
+        path: paths.admin.produtos,
+        lazy: () => import('@/pages/admin/produtos').then(module => ({ Component: module.default })),
+      },
+      {
+        path: '/admin/produtos/:productId',
+        lazy: () => import('@/pages/admin/produtos/AdminProdutoEdit').then(module => ({ Component: module.default })),
+      },
+      {
+        path: paths.admin.descontos,
+        lazy: () => import('@/pages/admin/descontos').then(module => ({ Component: module.default })),
+      },
+      {
+        path: paths.admin.cupons,
+        lazy: () => import('@/pages/admin/cupons').then(module => ({ Component: module.default })),
+      },
     ],
   },
   

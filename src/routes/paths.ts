@@ -14,6 +14,14 @@ export const paths = {
   couponManagement: '/coupon-management',
   adminCategorias: '/admin/categorias',
   
+  // Admin nested routes (sidebar + detail)
+  admin: {
+    produtos: '/admin/produtos',
+    produtoEdit: (id: number) => `/admin/produtos/${id}`,
+    descontos: '/admin/descontos',
+    cupons: '/admin/cupons',
+  },
+  
   // Error routes
   notFound: '/404',
 } as const;

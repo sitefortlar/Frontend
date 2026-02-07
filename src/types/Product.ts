@@ -1,24 +1,49 @@
-// Backend Product structure
+// Backend Product structure (listagem, GET por ID, PUT)
 export interface Product {
   id_produto: number;
   codigo: string;
   nome: string;
-  descricao?: string;
-  quantidade?: number;
-  cod_kit?: string | null;
+  descricao: string | null;
+  quantidade: number;
+  cod_kit: string | null;
   id_categoria: number;
-  id_subcategoria: number;
-  valor_base?: number;
+  id_subcategoria: number | null;
+  valor_base: number;
   ativo: boolean;
   created_at: string;
-  updated_at: string;
-  categoria: string;
-  subcategoria: string;
+  updated_at: string | null;
+  categoria: string | null;
+  subcategoria: string | null;
   imagens: string[];
-  avista?: number;
-  '30_dias'?: number;
-  '60_dias'?: number;
-  kits?: Kit[]; // Array de kits disponíveis para este produto
+  avista?: number | null;
+  dias_30?: number | null;
+  dias_60?: number | null;
+  '30_dias'?: number | null;
+  '60_dias'?: number | null;
+  valor_base_total?: number;
+  valor_total_avista?: number;
+  valor_total_30?: number;
+  valor_total_60?: number;
+  kits?: Product[];
+}
+
+/** Body para PUT (atualização parcial) - apenas campos que quiser alterar */
+export interface UpdateProductRequest {
+  nome?: string;
+  descricao?: string | null;
+  quantidade?: number;
+  cod_kit?: string | null;
+  id_categoria?: number;
+  id_subcategoria?: number | null;
+  valor_base?: number;
+  ativo?: boolean;
+}
+
+/** Resposta do POST de imagem ao produto */
+export interface AddImageResponse {
+  id_imagem: number;
+  url: string;
+  id_produto: number;
 }
 
 // Kit structure from API
