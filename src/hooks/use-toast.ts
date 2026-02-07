@@ -1,9 +1,6 @@
 import * as React from "react"
 
-import type {
-  ToastActionElement,
-  ToastProps,
-} from "@/components/ui/toast"
+import type { ToastProps } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 5000
@@ -12,7 +9,8 @@ type ToasterToast = ToastProps & {
   id: string
   title?: React.ReactNode
   description?: React.ReactNode
-  action?: ToastActionElement
+  action?: React.ReactNode
+  duration?: number
 }
 
 const actionTypes = {
@@ -139,7 +137,7 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, "id">
 
-function toast({ ...props }: Toast) {
+function toast({ duration = 5000, ...props }: Toast) {
   const id = genId()
 
   const update = (props: ToasterToast) =>
@@ -153,6 +151,7 @@ function toast({ ...props }: Toast) {
     type: "ADD_TOAST",
     toast: {
       ...props,
+      duration,
       id,
       open: true,
       onOpenChange: (open) => {
@@ -160,6 +159,10 @@ function toast({ ...props }: Toast) {
       },
     },
   })
+
+  if (duration > 0) {
+    setTimeout(() => dismiss(), duration)
+  }
 
   return {
     id: id,

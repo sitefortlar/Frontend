@@ -8,7 +8,7 @@ interface CartHeaderProps {
 
 export const CartHeader = ({ onClose, itemCount }: CartHeaderProps) => {
   return (
-    <div className="flex items-center justify-between p-6 border-b border-border/20">
+    <div className="flex items-center justify-between">
       <div>
         <h2 className="text-lg font-semibold">Carrinho</h2>
         <p className="text-sm text-muted-foreground">
