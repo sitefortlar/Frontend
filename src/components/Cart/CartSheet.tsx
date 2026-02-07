@@ -8,6 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ShoppingCart, CheckCircle2, ShoppingBag, ArrowDown } from 'lucide-react';
 import { CartItem } from '@/types/Cart';
 import { PriceType, Product } from '@/types/Product';
+import { useToast } from '@/hooks/use-toast';
 import { CartHeader } from './CartHeader';
 import { CartItem as CartItemComponent } from './CartItem';
 import { CartFooter } from './CartFooter';
@@ -51,6 +52,7 @@ const CartSheet = ({
   onScrollToCheckout,
 }: CartSheetProps) => {
   const footerRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const validItems = Array.isArray(items) ? items : [];
   const validProducts = Array.isArray(allProducts) ? allProducts : [];
@@ -58,12 +60,24 @@ const CartSheet = ({
     ? getTotalPrice
     : 0;
 
+  const handleContinueShopping = () => {
+    onClose();
+    toast({
+      title: 'Continuar comprando',
+      description: 'Carrinho mantido. Você pode continuar adicionando produtos.',
+    });
+  };
+
   const handleScrollToCheckout = () => {
     if (onScrollToCheckout) {
       onScrollToCheckout();
     } else {
       footerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
+    toast({
+      title: 'Finalizar pedido',
+      description: 'Confira os itens e finalize seu pedido abaixo.',
+    });
   };
 
   return (
@@ -83,7 +97,7 @@ const CartSheet = ({
               <p className="text-muted-foreground mb-6">
                 Adicione alguns produtos para começar
               </p>
-              <Button onClick={onClose} size="lg" className="gap-2">
+              <Button onClick={handleContinueShopping} size="lg" className="gap-2">
                 Continuar comprando
               </Button>
             </div>
@@ -117,7 +131,7 @@ const CartSheet = ({
                         <Button
                           variant="outline"
                           className="flex-1 gap-2 order-2 sm:order-1"
-                          onClick={onClose}
+                          onClick={handleContinueShopping}
                         >
                           <ShoppingBag className="h-4 w-4" />
                           Continuar comprando
@@ -163,7 +177,7 @@ const CartSheet = ({
               <div ref={footerRef} className="mt-auto -mx-6 px-6 border-t bg-background">
                 {!lastAddedItem && validItems.length > 0 && (
                   <div className="flex gap-2 py-3">
-                    <Button variant="outline" className="flex-1 gap-2" onClick={onClose}>
+                    <Button variant="outline" className="flex-1 gap-2" onClick={handleContinueShopping}>
                       <ShoppingBag className="h-4 w-4" />
                       Continuar comprando
                     </Button>

@@ -124,7 +124,7 @@ export default function AdminProdutos() {
   if (initialLoading && products.length === 0) {
     return (
       <AdminRoute>
-        <div className="flex items-center justify-center min-h-[400px]">
+        <div className="max-w-6xl mx-auto p-6 flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <Loader2 className="h-10 w-10 animate-spin mx-auto mb-4 text-primary" />
             <p className="text-muted-foreground">Carregando produtos...</p>
@@ -258,7 +258,7 @@ export default function AdminProdutos() {
         </Card>
 
         {loading && products.length > 0 ? (
-          <div className="flex justify-center py-8">
+          <div className="flex justify-center py-8 px-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : products.length === 0 ? (
@@ -272,7 +272,7 @@ export default function AdminProdutos() {
           </Card>
         ) : (
           <Card>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto p-4">
               <table className="w-full">
                 <thead>
                   <tr className="border-b bg-muted/50">

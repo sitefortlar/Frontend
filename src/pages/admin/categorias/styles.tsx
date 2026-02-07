@@ -126,7 +126,7 @@ export const LoadingSpinnerSmall = styled.div`
 
 export const EmptyStateContainer = styled.div`
   text-align: center;
-  padding: 3rem 0;
+  padding: 3rem 1rem;
 `;
 
 export const EmptyStateIcon = styled.div`
