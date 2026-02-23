@@ -1,36 +1,94 @@
 /**
- * Mapeia nome da categoria (normalizado) para caminho da imagem no public.
- * Imagens geradas para os cards de categorias (fallback: ícone no componente).
+ * Imagens dos cards de categorias (em src/assets/categories).
+ * Mapeia nome da categoria para a URL da imagem; fallback: ícone no componente.
+ */
+import panelaPressaoUrl from '@/assets/categories/panela-pressao.png';
+import panelasCacarolasUrl from '@/assets/categories/panelas-cacarolas.png';
+import caldeiroesUrl from '@/assets/categories/caldeiroes.png';
+import canecoesFevedoresUrl from '@/assets/categories/canecoes-fevedores.png';
+import frigideirasUrl from '@/assets/categories/frigideiras.png';
+import formasAssadeirasUrl from '@/assets/categories/formas-assadeiras.png';
+import jarrasUrl from '@/assets/categories/jarras.png';
+import marmitasJogosMarmitaUrl from '@/assets/categories/marmitas-jogos-marmita.png';
+import conchaEspumadeiraUrl from '@/assets/categories/concha-espumadeira.png';
+import tampasAvulsasUrl from '@/assets/categories/tampas-avulsas.png';
+import jogosPanelasUrl from '@/assets/categories/jogos-panelas.png';
+import kitFeirinhaUrl from '@/assets/categories/kit-feirinha.png';
+import filtraOleoUrl from '@/assets/categories/filtra-oleo.png';
+import depositoManutencaoUrl from '@/assets/categories/deposito-mantimentoss.png';
+import lataoLeiteUrl from '@/assets/categories/latao-leite.png';
+import lavarrozEscorredoresUrl from '@/assets/categories/lavarroz-escorredores.png';
+import panelaBanhoMariaUrl from '@/assets/categories/panela-banho-maria.png';
+
+/**
+ * Chaves mais específicas primeiro para que o primeiro match ganhe.
  */
 const CATEGORY_IMAGE_MAP: Record<string, string> = {
-  pressão: '/categories/pressure-cooker.png',
-  pressao: '/categories/pressure-cooker.png',
-  panela: '/categories/pots.png',
-  caçarola: '/categories/pots.png',
-  cacarola: '/categories/pots.png',
-  caldeirão: '/categories/kettles.png',
-  caldeirao: '/categories/kettles.png',
-  caldeiroes: '/categories/kettles.png',
-  canecão: '/categories/kettles.png',
-  canecao: '/categories/kettles.png',
-  fervedor: '/categories/kettles.png',
-  frigideira: '/categories/frying-pans.png',
-  forma: '/categories/baking.png',
-  assadeira: '/categories/baking.png',
-  jarra: '/categories/jars.png',
-  marmita: '/categories/lunchboxes.png',
-  concha: '/categories/ladles.png',
-  espumadeira: '/categories/ladles.png',
-  tampa: '/categories/pots.png',
-  jogo: '/categories/cookware-set.png',
-  jogos: '/categories/cookware-set.png',
-  feirinha: '/categories/fair-kit.png',
-  kit: '/categories/fair-kit.png',
-  filtro: '/categories/oil-filter.png',
-  óleo: '/categories/oil-filter.png',
-  oleo: '/categories/oil-filter.png',
-  depósito: '/categories/archive.png',
-  deposito: '/categories/archive.png',
+  /* Linha Panela de Pressão */
+  pressão: panelaPressaoUrl,
+  pressao: panelaPressaoUrl,
+  /* Panelas e Caçarolas */
+  caçarola: panelasCacarolasUrl,
+  cacarola: panelasCacarolasUrl,
+  panela: panelasCacarolasUrl,
+  panelas: panelasCacarolasUrl,
+  /* Caldeirões */
+  caldeirão: caldeiroesUrl,
+  caldeirao: caldeiroesUrl,
+  caldeiroes: caldeiroesUrl,
+  /* Canecões e Fervedores */
+  canecão: canecoesFevedoresUrl,
+  canecao: canecoesFevedoresUrl,
+  fervedor: canecoesFevedoresUrl,
+  canecoes: canecoesFevedoresUrl,
+  /* Frigideiras */
+  frigideira: frigideirasUrl,
+  frigideiras: frigideirasUrl,
+  /* Formas e Assadeiras */
+  forma: formasAssadeirasUrl,
+  formas: formasAssadeirasUrl,
+  assadeira: formasAssadeirasUrl,
+  assadeiras: formasAssadeirasUrl,
+  /* Jarras */
+  jarra: jarrasUrl,
+  jarras: jarrasUrl,
+  /* Marmitas e Jogos de Marmita */
+  marmita: marmitasJogosMarmitaUrl,
+  marmitas: marmitasJogosMarmitaUrl,
+  /* Concha - Espumadeira */
+  concha: conchaEspumadeiraUrl,
+  espumadeira: conchaEspumadeiraUrl,
+  /* Tampas Avulsas */
+  tampa: tampasAvulsasUrl,
+  tampas: tampasAvulsasUrl,
+  avulsas: tampasAvulsasUrl,
+  /* Jogos de Panelas */
+  jogo: jogosPanelasUrl,
+  jogos: jogosPanelasUrl,
+  /* Kit Feirinha */
+  feirinha: kitFeirinhaUrl,
+  kit: kitFeirinhaUrl,
+  /* Filtro de Óleo */
+  filtra: filtraOleoUrl,
+  filtro: filtraOleoUrl,
+  óleo: filtraOleoUrl,
+  oleo: filtraOleoUrl,
+  /* Depósito de Manutenção */
+  depósito: depositoManutencaoUrl,
+  deposito: depositoManutencaoUrl,
+  manutenção: depositoManutencaoUrl,
+  manutencao: depositoManutencaoUrl,
+  /* Latão Leite */
+  latão: lataoLeiteUrl,
+  latao: lataoLeiteUrl,
+  leite: lataoLeiteUrl,
+  /* Lavarroz e Escorredores */
+  lavarroz: lavarrozEscorredoresUrl,
+  escorredor: lavarrozEscorredoresUrl,
+  escorredores: lavarrozEscorredoresUrl,
+  /* Panela Banho Maria */
+  banho: panelaBanhoMariaUrl,
+  maria: panelaBanhoMariaUrl,
 };
 
 /**
