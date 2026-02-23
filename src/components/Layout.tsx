@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { CouponProvider } from '@/contexts/CouponContext';
 import RouteLoading from '@/components/RouteLoading';
+import { LgpdConsent } from '@/components/LgpdConsent/LgpdConsent';
 
 const Layout = () => {
   return (
@@ -10,6 +11,7 @@ const Layout = () => {
         <Suspense fallback={<RouteLoading />}>
           <Outlet />
         </Suspense>
+        <LgpdConsent />
       </div>
     </CouponProvider>
   );

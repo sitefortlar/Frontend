@@ -102,11 +102,11 @@ export const ProductKitCard = ({ kit, priceType, onAddKit }: ProductKitCardProps
         </Button>
       </div>
 
-      {/* Botão adicionar kit */}
+      {/* Botão adicionar kit - azul permanentemente, hover com leve escurecimento/sombra */}
       <Button
-        variant="outline"
+        variant="default"
         size="sm"
-        className="w-full gap-2"
+        className="w-full gap-2 bg-blue-600 hover:bg-blue-700 hover:shadow-md transition-colors"
         onClick={handleAddKit}
       >
         <ShoppingCart className="h-3 w-3" />

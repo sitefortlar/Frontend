@@ -1,23 +1,40 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { ArrowUpDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ArrowUpDown, ArrowLeft } from 'lucide-react';
 import { SortOption } from '@/types/Product';
 
 interface FilterBarProps {
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
   productCount: number;
+  onBackToCategories?: () => void;
 }
 
 export const FilterBar = ({
   sortBy,
   onSortChange,
   productCount,
+  onBackToCategories,
 }: FilterBarProps) => {
   return (
     <div className="bg-card border border-border rounded-lg p-4 shadow-soft">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {onBackToCategories && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 text-muted-foreground hover:text-foreground"
+              onClick={onBackToCategories}
+              aria-label="Voltar para explorar categorias"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Ver todas as categorias
+            </Button>
+          )}
+          {onBackToCategories && <span className="text-border">|</span>}
           <ArrowUpDown className="h-5 w-5 text-primary" />
           <span className="font-medium">Ordenar por Preço</span>
           {productCount > 0 && (

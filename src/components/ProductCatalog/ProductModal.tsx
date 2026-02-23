@@ -55,27 +55,29 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
     }
   }, [isOpen, product.id_produto, api, productImages.length]);
 
-  // Handler para adicionar kit ao carrinho
+  // Handler para adicionar kit ao carrinho; após adicionar, fecha o modal
   const handleAddKit = (kit: Kit, quantity: number, kitPriceType: PriceType) => {
     if (!onAddToCart) return;
 
-    // Criar um objeto Product compatível para o carrinho
-    // Mas vamos precisar atualizar o useCart para aceitar kits corretamente
     const kitAsProduct: Product = {
       ...product,
       id_produto: kit.id_produto,
       codigo: kit.codigo,
       cod_kit: kit.cod_kit,
       quantidade: kit.quantidade,
-      // Usar os valores totais do kit diretamente da API
       avista: kit.valor_total_avista,
       '30_dias': kit.valor_total_30,
       '60_dias': kit.valor_total_60,
     };
 
-    // Chamar onAddToCart com informações do kit
-    // O useCart precisará ser atualizado para processar kits corretamente
     onAddToCart(kitAsProduct, '', kitPriceType, quantity);
+    onClose();
+  };
+
+  // Wrapper: adiciona ao carrinho e fecha o modal
+  const handleAddToCartAndClose = (p: Product, size: string, pt: PriceType, qty?: number) => {
+    onAddToCart?.(p, size, pt, qty ?? 1);
+    onClose();
   };
 
   return (
@@ -194,14 +196,14 @@ export const ProductModal = ({ product, isOpen, onClose, priceType, onAddToCart 
               <ProductUnitarySection
                 product={product}
                 priceType={priceType}
-                onAddToCart={onAddToCart}
+                onAddToCart={onAddToCart ? handleAddToCartAndClose : undefined}
               />
             )}
 
             {/* Seção Kits Disponíveis */}
             {product.kits && product.kits.length > 0 && (
               <ProductKitSection
-                kits={product.kits}
+                kits={product.kits as Kit[]}
                 priceType={priceType}
                 onAddKit={handleAddKit}
               />

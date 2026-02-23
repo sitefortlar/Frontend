@@ -20,14 +20,22 @@ interface ProductCatalogProps {
   products: Product[];
   categories: Category[];
   companyId?: number;
+  /** Quando definido, a listagem abre já com esta categoria selecionada (página de categoria). */
+  initialCategoryId?: number;
+  /** Chamado quando o usuário escolhe "Todos os Produtos" na sidebar; usado para voltar à tela de categorias. */
+  onBackToCategories?: () => void;
 }
 
 export const ProductCatalog = ({
   products: initialProducts,
   categories,
   companyId,
+  initialCategoryId,
+  onBackToCategories,
 }: ProductCatalogProps) => {
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(
+    initialCategoryId != null ? initialCategoryId : null
+  );
   const [selectedSubcategory, setSelectedSubcategory] = useState<number | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('price-low');
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -48,6 +56,14 @@ export const ProductCatalog = ({
     priceType,
     rebuildAllItemsPrices,
   } = useCart();
+
+  // Sincronizar categoria quando initialCategoryId mudar (ex.: navegação por URL)
+  useEffect(() => {
+    if (initialCategoryId != null) {
+      setSelectedCategory(initialCategoryId);
+      setSelectedSubcategory(null);
+    }
+  }, [initialCategoryId]);
 
   // Atualizar produtos quando produtos iniciais mudarem (primeiro carregamento)
   useEffect(() => {
@@ -236,14 +252,16 @@ export const ProductCatalog = ({
 
   /**
    * Handler para seleção de categoria.
-   * Resetar subcategoria quando categoria é deselecionada ou quando uma nova categoria é selecionada.
-   * Otimizado com useCallback.
+   * Se deselecionar (null) e existir onBackToCategories, navega de volta à tela de categorias.
    */
   const handleCategorySelect = useCallback((categoryId: number | null) => {
+    if (categoryId === null && onBackToCategories) {
+      onBackToCategories();
+      return;
+    }
     setSelectedCategory(categoryId);
-    // Sempre limpar subcategoria ao selecionar nova categoria
     setSelectedSubcategory(null);
-  }, []);
+  }, [onBackToCategories]);
 
   /**
    * Handler para seleção de subcategoria.
@@ -285,6 +303,7 @@ export const ProductCatalog = ({
             sortBy={sortBy}
             onSortChange={setSortBy}
             productCount={filteredProducts.length}
+            onBackToCategories={onBackToCategories}
           />
         </ProductCatalogHeader>
         {loading ? (

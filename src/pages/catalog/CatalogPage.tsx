@@ -1,6 +1,14 @@
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useSearchParams, useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 import ProductCatalog from '@/components/ProductCatalog/ProductCatalog';
+import { CategoryGrid } from '@/components/ProductCatalog/CategoryGrid';
+import { CategorySidebar } from '@/components/ProductCatalog/CategorySidebar';
+import { ProductCatalogContainer, ProductCatalogContent, ProductCatalogHeader } from '@/components/ProductCatalog/styles';
+import CartSheet from '@/components/Cart/CartSheet';
+import { CartButton } from '@/components/Cart/CartButton';
+import { AdminSettingsButton } from '@/components/ProductCatalog/AdminSettingsButton';
+import { useCart } from '@/hooks/useCart';
 import type { CatalogLoaderData } from './loader';
 import {
   CatalogContainer,
@@ -18,9 +26,91 @@ import {
   CatalogContent
 } from './styles';
 
+interface CategoryHomeViewProps {
+  loaderData: CatalogLoaderData;
+  productCountByCategoryId: Record<number, number>;
+  onSelectCategory: (id: number) => void;
+  onCategorySidebarSelect: (id: number | null) => void;
+}
+
+const CategoryHomeView = ({
+  loaderData,
+  productCountByCategoryId,
+  onSelectCategory,
+  onCategorySidebarSelect,
+}: CategoryHomeViewProps) => {
+  const {
+    items,
+    isDrawerOpen,
+    setIsDrawerOpen,
+    lastAddedItem,
+    removeFromCart,
+    updateQuantity,
+    getTotalPrice,
+    clearCart,
+    updateAllItemsPriceType,
+    priceType,
+  } = useCart();
+
+  return (
+    <ProductCatalogContainer>
+      <CategorySidebar
+        categories={loaderData.categories}
+        selectedCategory={null}
+        selectedSubcategory={null}
+        onCategorySelect={onCategorySidebarSelect}
+        onSubcategorySelect={() => {}}
+      />
+      <ProductCatalogContent>
+        <ProductCatalogHeader>
+          <h2 className="text-2xl font-bold text-foreground">Explorar categorias</h2>
+        </ProductCatalogHeader>
+        <CategoryGrid
+          categories={loaderData.categories}
+          productCountByCategoryId={productCountByCategoryId}
+          onSelectCategory={onSelectCategory}
+        />
+      </ProductCatalogContent>
+      <CartButton itemCount={items.length} onClick={() => setIsDrawerOpen(true)} />
+      <CartSheet
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        items={items}
+        onRemoveItem={removeFromCart}
+        onUpdateQuantity={updateQuantity}
+        getTotalPrice={getTotalPrice}
+        companyId={loaderData.user?.company?.id_empresa ?? 0}
+        onClearCart={clearCart}
+        onUpdateAllItemsPriceType={updateAllItemsPriceType}
+        allProducts={loaderData.products}
+        priceType={priceType}
+        lastAddedItem={lastAddedItem}
+      />
+      <AdminSettingsButton />
+    </ProductCatalogContainer>
+  );
+};
+
 const CatalogPage = () => {
   const { isAuthenticated, isLoading } = useAuthGuard();
   const loaderData = useLoaderData() as CatalogLoaderData | undefined;
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const categoryIdParam = searchParams.get('category');
+  const selectedCategoryId = categoryIdParam ? parseInt(categoryIdParam, 10) : null;
+  const isCategoryView = selectedCategoryId !== null && !isNaN(selectedCategoryId);
+
+  const productCountByCategoryId = useMemo(() => {
+    if (!loaderData?.products?.length) return {};
+    const map: Record<number, number> = {};
+    for (const p of loaderData.products) {
+      if (p && p.id_categoria != null) {
+        const id = Number(p.id_categoria);
+        map[id] = (map[id] ?? 0) + 1;
+      }
+    }
+    return map;
+  }, [loaderData?.products]);
 
   // Show loading state
   if (isLoading || !loaderData) {
@@ -68,14 +158,25 @@ const CatalogPage = () => {
     <CatalogContainer>
       <FloatingElement top="5%" right="5%" width="4rem" height="4rem" />
       <FloatingElement bottom="10%" left="5%" width="6rem" height="6rem" delay="3s" />
-      
+
       <CatalogContent>
         {loaderData && (
-          <ProductCatalog 
-            products={loaderData.products}
-            categories={loaderData.categories}
-            companyId={loaderData.user?.company?.id_empresa}
-          />
+          isCategoryView ? (
+            <ProductCatalog
+              products={loaderData.products}
+              categories={loaderData.categories}
+              companyId={loaderData.user?.company?.id_empresa}
+              initialCategoryId={selectedCategoryId ?? undefined}
+              onBackToCategories={() => navigate('/catalog')}
+            />
+          ) : (
+            <CategoryHomeView
+              loaderData={loaderData}
+              productCountByCategoryId={productCountByCategoryId}
+              onSelectCategory={(id) => navigate(`/catalog?category=${id}`)}
+              onCategorySidebarSelect={(id) => navigate(id !== null ? `/catalog?category=${id}` : '/catalog')}
+            />
+          )
         )}
       </CatalogContent>
     </CatalogContainer>

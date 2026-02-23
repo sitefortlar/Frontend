@@ -34,19 +34,30 @@ export const CartFooter = ({
 }: CartFooterProps) => {
   const { toast } = useToast();
   const { appliedCoupon, calculateDiscount, removeCoupon } = useCouponContext();
-  // REGRA: paymentType local para o formulário de checkout (pode ser diferente do priceType do carrinho)
-  const [paymentType, setPaymentType] = useState<PriceType>(cartPriceType);
+  // Forma de pagamento inicia vazia; obrigatória para finalizar
+  const [paymentType, setPaymentType] = useState<PriceType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   // Calcular desconto e total final
   const discount = calculateDiscount(totalPrice);
   const finalTotal = totalPrice - discount;
 
-  const handlePaymentTypeChange = (value: PriceType) => {
-    setPaymentType(value);
+  const handlePaymentTypeChange = (value: string) => {
+    const next = value as PriceType;
+    setPaymentType(next);
     if (onUpdateAllItemsPriceType) {
-      onUpdateAllItemsPriceType(value, allProducts);
+      onUpdateAllItemsPriceType(next, allProducts);
+    }
+  };
+
+  const getPaymentLabel = (type: PriceType): string => {
+    switch (type) {
+      case 'avista': return 'À vista';
+      case 'dias30': return '30 dias';
+      case 'dias90': return '60 dias';
+      default: return type;
     }
   };
 
@@ -64,7 +75,7 @@ export const CartFooter = ({
     }
   };
 
-  const handleRealizarPedido = async () => {
+  const handleRealizarPedidoClick = () => {
     if (items.length === 0) {
       toast({
         title: "Carrinho vazio",
@@ -73,7 +84,14 @@ export const CartFooter = ({
       });
       return;
     }
-
+    if (!paymentType) {
+      toast({
+        title: "Forma de pagamento obrigatória",
+        description: "Selecione uma forma de pagamento para finalizar o pedido.",
+        variant: "destructive",
+      });
+      return;
+    }
     if (!companyId || companyId === 0) {
       toast({
         title: "Erro de configuração",
@@ -82,7 +100,12 @@ export const CartFooter = ({
       });
       return;
     }
+    setIsConfirmModalOpen(true);
+  };
 
+  const handleConfirmarPedido = async () => {
+    if (!paymentType || items.length === 0 || !companyId) return;
+    setIsConfirmModalOpen(false);
     setIsLoading(true);
 
     try {
@@ -128,7 +151,7 @@ export const CartFooter = ({
 
       const orderRequest: SendOrderEmailRequest = {
         company_id: companyId,
-        forma_pagamento: mapPaymentTypeToBackend(paymentType),
+        forma_pagamento: mapPaymentTypeToBackend(paymentType as PriceType),
         itens: orderItems,
         // Incluir id_cupom se houver cupom aplicado
         ...(appliedCoupon && { id_cupom: appliedCoupon.id_cupom }),
@@ -207,12 +230,12 @@ export const CartFooter = ({
               Forma de Pagamento:
             </Label>
             <Select
-              value={paymentType}
+              value={paymentType ?? ''}
               onValueChange={handlePaymentTypeChange}
               disabled={isLoading}
             >
-              <SelectTrigger className="w-40 bg-background">
-                <SelectValue />
+              <SelectTrigger id="paymentType" className="w-40 bg-background" aria-required="true">
+                <SelectValue placeholder="Selecione..." />
               </SelectTrigger>
               <SelectContent className="bg-background z-50">
                 <SelectItem value="avista">À vista</SelectItem>
@@ -225,10 +248,10 @@ export const CartFooter = ({
 
         <div className="flex gap-3 pt-2">
           <Button
-            onClick={handleRealizarPedido}
+            onClick={handleRealizarPedidoClick}
             className="flex-1 h-12 text-base font-semibold"
             size="lg"
-            disabled={isLoading || items.length === 0}
+            disabled={isLoading || items.length === 0 || !paymentType}
           >
             {isLoading ? (
               <>
@@ -253,6 +276,32 @@ export const CartFooter = ({
           </Button>
         </div>
       </div>
+
+      {/* Modal de confirmação da forma de pagamento */}
+      <Dialog open={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen}>
+        <DialogContent className="bg-background">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Confirmar forma de pagamento</DialogTitle>
+            <DialogDescription className="text-base pt-2">
+              Você confirma a forma de pagamento selecionada: <strong>{paymentType ? getPaymentLabel(paymentType) : ''}</strong>?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 justify-end pt-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsConfirmModalOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleConfirmarPedido}
+              disabled={isLoading}
+            >
+              Confirmar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
         <DialogContent className="bg-background">

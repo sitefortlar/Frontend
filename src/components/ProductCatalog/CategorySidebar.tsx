@@ -2,34 +2,10 @@ import { useState, useEffect, useCallback, memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { 
-  ChevronDown, 
-  ChevronRight, 
-  Menu, 
-  X, 
-  Cloud,
-  CookingPot,
-  ChefHat,
-  Coffee,
-  Flame,
-  CakeSlice,
-  UtensilsCrossed,
-  Soup,
-  Package,
-  Container,
-  Filter,
-  ShoppingBag,
-  Archive,
-  Milk,
-  Wheat,
-  Droplets,
-  GlassWater,
-  Refrigerator,
-  Beer,
-  Sparkles
-} from 'lucide-react';
+import { ChevronDown, ChevronRight, Menu, X } from 'lucide-react';
 import { Category } from '@/types/Product';
 import { cn } from '@/lib/utils';
+import { getCategoryIcon } from '@/utils/categoryIcons';
 import { LogoutButton } from '@/components/LogoutButton';
 
 interface CategorySidebarProps {
@@ -105,61 +81,6 @@ export const CategorySidebar = ({
    */
   const isExpanded = (categoryId: number): boolean => {
     return expandedCategories.has(categoryId);
-  };
-
-  /**
-   * Retorna o ícone apropriado para cada categoria baseado no nome.
-   * Mantém a lógica existente de mapeamento de ícones.
-   */
-  const getCategoryIcon = (categoryName: string) => {
-    const name = categoryName.toLowerCase();
-    
-    // Mapeamento específico baseado no nome da categoria
-    if (name.includes('pressão') || name.includes('pressao')) {
-      return Cloud; // Fumaça/vapor para panela de pressão
-    } else if (name.includes('caldeirão') || name.includes('caldeirao') || name.includes('caldeiroes')) {
-      return Soup;
-    } else if (name.includes('jarra')) {
-      return Coffee;
-    } else if (name.includes('marmita')) {
-      return Container;
-    } else if (name.includes('concha')) {
-      return Soup;
-    } else if (name.includes('filtra') || name.includes('óleo') || name.includes('oleo')) {
-      return Filter;
-    } else if (name.includes('feirinha') || name.includes('kit')) {
-      return ShoppingBag;
-    } else if (name.includes('bacia') || name.includes('balde')) {
-      return Container;
-    } else if (name.includes('depósito') || name.includes('deposito') || name.includes('alimento')) {
-      return Archive;
-    } else if (name.includes('pipoqueira')) {
-      return Sparkles; // Pipoca estourando/faiscando
-    } else if (name.includes('latão') || name.includes('latao') || name.includes('leite')) {
-      return Milk;
-    } else if (name.includes('espagueteira') || name.includes('macarrão') || name.includes('macarrao')) {
-      return Wheat;
-    } else if (name.includes('moringa')) {
-      return Droplets;
-    } else if (name.includes('wok')) {
-      return UtensilsCrossed;
-    } else if (name.includes('cuscuzeira')) {
-      return ChefHat;
-    } else if (name.includes('blue')) {
-      return Refrigerator;
-    } else if (name.includes('copo')) {
-      return GlassWater;
-    } else if (name.includes('panela') || name.includes('caçarola') || name.includes('cacarola')) {
-      return CookingPot;
-    } else if (name.includes('frigideira')) {
-      return UtensilsCrossed;
-    } else if (name.includes('forma') || name.includes('assadeira')) {
-      return CakeSlice;
-    } else if (name.includes('canecão') || name.includes('canecao') || name.includes('fervedor')) {
-      return Coffee;
-    }
-    
-    return CookingPot; // Ícone padrão
   };
 
   /**
