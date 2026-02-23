@@ -116,7 +116,7 @@ export const CategoryCardWrapper = styled.div`
   overflow: hidden;
   cursor: pointer;
   height: 100%;
-  min-height: 220px;
+  min-height: 260px;
   display: flex;
   flex-direction: column;
   background: rgba(255, 255, 255, 0.06);
@@ -139,19 +139,34 @@ export const CategoryCardWrapper = styled.div`
 export const CategoryCardImageArea = styled.div`
   position: relative;
   width: 100%;
-  aspect-ratio: 4/3;
+  height: 11rem;
+  min-height: 11rem;
+  max-height: 14rem;
   overflow: hidden;
   background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+
+  @media (min-width: 640px) {
+    height: 12rem;
+    min-height: 12rem;
+    max-height: 15rem;
+  }
+
+  @media (min-width: 1024px) {
+    height: 13rem;
+    min-height: 13rem;
+    max-height: 16rem;
+  }
 `;
 
 export const CategoryCardImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   transition: transform 0.4s ease;
 
   ${CategoryCardWrapper}:hover & {
