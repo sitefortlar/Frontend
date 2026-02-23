@@ -1,5 +1,4 @@
 import { useLoaderData, useSearchParams, useNavigate } from 'react-router-dom';
-import { useMemo } from 'react';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 import ProductCatalog from '@/components/ProductCatalog/ProductCatalog';
 import { CategoryGrid } from '@/components/ProductCatalog/CategoryGrid';
@@ -28,14 +27,12 @@ import {
 
 interface CategoryHomeViewProps {
   loaderData: CatalogLoaderData;
-  productCountByCategoryId: Record<number, number>;
   onSelectCategory: (id: number) => void;
   onCategorySidebarSelect: (id: number | null) => void;
 }
 
 const CategoryHomeView = ({
   loaderData,
-  productCountByCategoryId,
   onSelectCategory,
   onCategorySidebarSelect,
 }: CategoryHomeViewProps) => {
@@ -67,7 +64,6 @@ const CategoryHomeView = ({
         </ProductCatalogHeader>
         <CategoryGrid
           categories={loaderData.categories}
-          productCountByCategoryId={productCountByCategoryId}
           onSelectCategory={onSelectCategory}
         />
       </ProductCatalogContent>
@@ -99,18 +95,6 @@ const CatalogPage = () => {
   const categoryIdParam = searchParams.get('category');
   const selectedCategoryId = categoryIdParam ? parseInt(categoryIdParam, 10) : null;
   const isCategoryView = selectedCategoryId !== null && !isNaN(selectedCategoryId);
-
-  const productCountByCategoryId = useMemo(() => {
-    if (!loaderData?.products?.length) return {};
-    const map: Record<number, number> = {};
-    for (const p of loaderData.products) {
-      if (p && p.id_categoria != null) {
-        const id = Number(p.id_categoria);
-        map[id] = (map[id] ?? 0) + 1;
-      }
-    }
-    return map;
-  }, [loaderData?.products]);
 
   // Show loading state
   if (isLoading || !loaderData) {
@@ -172,7 +156,6 @@ const CatalogPage = () => {
           ) : (
             <CategoryHomeView
               loaderData={loaderData}
-              productCountByCategoryId={productCountByCategoryId}
               onSelectCategory={(id) => navigate(`/catalog?category=${id}`)}
               onCategorySidebarSelect={(id) => navigate(id !== null ? `/catalog?category=${id}` : '/catalog')}
             />
