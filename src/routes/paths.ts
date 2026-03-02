@@ -10,6 +10,7 @@ export const paths = {
   
   // Protected routes
   catalog: '/catalog',
+  catalogAll: '/catalog/all',
   importProdutos: '/import-produtos',
   couponManagement: '/coupon-management',
   adminCategorias: '/admin/categorias',

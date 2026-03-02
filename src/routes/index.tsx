@@ -36,6 +36,11 @@ const router = createBrowserRouter([
         lazy: () => import('@/pages/catalog').then(module => ({ Component: module.default })),
       },
       {
+        path: paths.catalogAll,
+        loader: () => import('@/pages/catalog/loader').then(module => module.catalogLoader()),
+        lazy: () => import('@/pages/catalog').then(module => ({ Component: module.default })),
+      },
+      {
         path: paths.importProdutos,
         lazy: () => import('@/pages/import-produtos').then(module => ({ Component: module.default })),
       },

@@ -26,6 +26,8 @@ interface ProductCatalogProps {
   initialCategoryId?: number;
   /** Chamado quando o usuário escolhe "Todos os Produtos" na sidebar; usado para voltar à tela de categorias. */
   onBackToCategories?: () => void;
+  /** Chamado quando o usuário escolhe "Todos os Produtos" na sidebar; usado para navegar para /catalog/all. */
+  onGoToAllProducts?: () => void;
 }
 
 export const ProductCatalog = ({
@@ -34,6 +36,7 @@ export const ProductCatalog = ({
   companyId,
   initialCategoryId,
   onBackToCategories,
+  onGoToAllProducts,
 }: ProductCatalogProps) => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(
     initialCategoryId != null ? initialCategoryId : null
@@ -49,9 +52,8 @@ export const ProductCatalog = ({
     skip,
     limit,
     setPage,
-    setPageSize,
     resetPagination,
-  } = usePagination(1, 24);
+  } = usePagination(1, 20);
   
   // Hook do carrinho com todas as funções necessárias
   const {
@@ -275,9 +277,13 @@ export const ProductCatalog = ({
    * Handler para seleção de categoria.
    */
   const handleCategorySelect = useCallback((categoryId: number | null) => {
+    if (categoryId === null && onGoToAllProducts) {
+      onGoToAllProducts();
+      return;
+    }
     setSelectedCategory(categoryId);
     setSelectedSubcategory(null);
-  }, []);
+  }, [onGoToAllProducts]);
 
   /**
    * Handler para seleção de subcategoria.
@@ -348,7 +354,6 @@ export const ProductCatalog = ({
                   totalPages={totalPages}
                   pageSize={pageSize}
                   onPageChange={setPage}
-                  onPageSizeChange={setPageSize}
                   totalItems={totalItems}
                 />
               </div>

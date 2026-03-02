@@ -1,4 +1,4 @@
-import { useLoaderData, useSearchParams, useNavigate } from 'react-router-dom';
+import { useLoaderData, useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 import ProductCatalog from '@/components/ProductCatalog/ProductCatalog';
 import { CategoryGrid } from '@/components/ProductCatalog/CategoryGrid';
@@ -8,6 +8,7 @@ import CartSheet from '@/components/Cart/CartSheet';
 import { CartButton } from '@/components/Cart/CartButton';
 import { AdminSettingsButton } from '@/components/ProductCatalog/AdminSettingsButton';
 import { useCart } from '@/hooks/useCart';
+import { paths } from '@/routes/paths';
 import type { CatalogLoaderData } from './loader';
 import {
   CatalogContainer,
@@ -60,7 +61,7 @@ const CategoryHomeView = ({
       />
       <ProductCatalogContent>
         <ProductCatalogHeader>
-          <h2 className="text-2xl font-bold text-foreground">Explorar categorias</h2>
+          <h2 className="text-2xl font-bold text-white">Nossos produtos</h2>
         </ProductCatalogHeader>
         <CategoryGrid
           categories={loaderData.categories}
@@ -92,10 +93,11 @@ const CatalogPage = () => {
   const loaderData = useLoaderData() as CatalogLoaderData | undefined;
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const categoryIdParam = searchParams.get('category');
   const selectedCategoryId = categoryIdParam ? parseInt(categoryIdParam, 10) : null;
   const isCategoryView = selectedCategoryId !== null && !isNaN(selectedCategoryId);
-  const isProductsView = searchParams.get('view') === 'products';
+  const isAllProductsView = location.pathname === paths.catalogAll;
 
   // Show loading state
   if (isLoading || !loaderData) {
@@ -146,19 +148,20 @@ const CatalogPage = () => {
 
       <CatalogContent>
         {loaderData && (
-          (isProductsView || isCategoryView) ? (
+          (isAllProductsView || isCategoryView) ? (
             <ProductCatalog
               products={loaderData.products}
               categories={loaderData.categories}
               companyId={loaderData.user?.company?.id_empresa}
               initialCategoryId={isCategoryView ? (selectedCategoryId ?? undefined) : undefined}
-              onBackToCategories={() => navigate('/catalog')}
+              onBackToCategories={() => navigate(paths.catalog)}
+              onGoToAllProducts={() => navigate(paths.catalogAll)}
             />
           ) : (
             <CategoryHomeView
               loaderData={loaderData}
               onSelectCategory={(id) => navigate(`/catalog?category=${id}`)}
-              onCategorySidebarSelect={(id) => navigate(id !== null ? `/catalog?category=${id}` : '/catalog?view=products')}
+              onCategorySidebarSelect={(id) => navigate(id !== null ? `/catalog?category=${id}` : paths.catalogAll)}
             />
           )
         )}

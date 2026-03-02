@@ -24,6 +24,7 @@ import coposCanecasUrl from '@/assets/categories/copos-canecas.png';
 import espagueteirasUrl from '@/assets/categories/espagueteiras.png';
 import moringaUrl from '@/assets/categories/moringa.png';
 import cuscuzeirosUrl from '@/assets/categories/cuscuzeiros.png';
+import pipoqueirasUrl from '@/assets/categories/pipoqueiras.png';
 
 /**
  * Chaves mais específicas primeiro para que o primeiro match ganhe.
@@ -37,6 +38,9 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
   /* Cuscuzeiros */
   cuscuzeiro: cuscuzeirosUrl,
   cuscuzeiros: cuscuzeirosUrl,
+  /* Pipoqueiras */
+  pipoqueira: pipoqueirasUrl,
+  pipoqueiras: pipoqueirasUrl,
   /* Espagueteiras */
   espagueteira: espagueteirasUrl,
   espagueteiras: espagueteirasUrl,
