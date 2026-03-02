@@ -19,11 +19,25 @@ import depositoManutencaoUrl from '@/assets/categories/deposito-mantimentoss.png
 import lataoLeiteUrl from '@/assets/categories/latao-leite.png';
 import lavarrozEscorredoresUrl from '@/assets/categories/lavarroz-escorredores.png';
 import panelaBanhoMariaUrl from '@/assets/categories/panela-banho-maria.png';
+import baciasBaldesUrl from '@/assets/categories/bacias-baldes.png';
+import coposCanecasUrl from '@/assets/categories/copos e canecass.png';
+import espagueteirasUrl from '@/assets/categories/espagueteiras.png';
+import moringaUrl from '@/assets/categories/moringa.png';
 
 /**
  * Chaves mais específicas primeiro para que o primeiro match ganhe.
  */
 const CATEGORY_IMAGE_MAP: Record<string, string> = {
+  /* Bacias e Baldes */
+  bacia: baciasBaldesUrl,
+  bacias: baciasBaldesUrl,
+  balde: baciasBaldesUrl,
+  baldes: baciasBaldesUrl,
+  /* Espagueteiras */
+  espagueteira: espagueteirasUrl,
+  espagueteiras: espagueteirasUrl,
+  /* Moringa */
+  moringa: moringaUrl,
   /* Linha Panela de Pressão */
   pressão: panelaPressaoUrl,
   pressao: panelaPressaoUrl,
@@ -36,11 +50,16 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
   caldeirão: caldeiroesUrl,
   caldeirao: caldeiroesUrl,
   caldeiroes: caldeiroesUrl,
-  /* Canecões e Fervedores */
+  /* Canecões e Fervedores (antes de copos/canecas para match correto) */
   canecão: canecoesFevedoresUrl,
   canecao: canecoesFevedoresUrl,
   fervedor: canecoesFevedoresUrl,
   canecoes: canecoesFevedoresUrl,
+  /* Copos e Canecas */
+  copo: coposCanecasUrl,
+  copos: coposCanecasUrl,
+  caneca: coposCanecasUrl,
+  canecas: coposCanecasUrl,
   /* Frigideiras */
   frigideira: frigideirasUrl,
   frigideiras: frigideirasUrl,
