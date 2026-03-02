@@ -12,6 +12,8 @@ import { CartButton } from '@/components/Cart/CartButton';
 import { productService } from '@/services/products';
 import { authService } from '@/services/auth/auth';
 import { Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { paths } from '@/routes/paths';
 import {
   ProductCatalogContainer,
   ProductCatalogContent,
@@ -38,6 +40,7 @@ export const ProductCatalog = ({
   onBackToCategories,
   onGoToAllProducts,
 }: ProductCatalogProps) => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(
     initialCategoryId != null ? initialCategoryId : null
   );
@@ -75,6 +78,10 @@ export const ProductCatalog = ({
   useEffect(() => {
     if (initialCategoryId != null) {
       setSelectedCategory(initialCategoryId);
+      setSelectedSubcategory(null);
+    } else if (onGoToAllProducts) {
+      // /catalog/all: limpar filtros
+      setSelectedCategory(null);
       setSelectedSubcategory(null);
     }
   }, [initialCategoryId]);
@@ -276,14 +283,18 @@ export const ProductCatalog = ({
   /**
    * Handler para seleção de categoria.
    */
-  const handleCategorySelect = useCallback((categoryId: number | null) => {
-    if (categoryId === null && onGoToAllProducts) {
-      onGoToAllProducts();
-      return;
-    }
+  const handleCategorySelect = useCallback((categoryId: number) => {
+    navigate(`${paths.catalog}?category=${categoryId}`);
     setSelectedCategory(categoryId);
     setSelectedSubcategory(null);
-  }, [onGoToAllProducts]);
+  }, [navigate]);
+
+  const handleAllProductsSelect = useCallback(() => {
+    onGoToAllProducts?.();
+    setSelectedCategory(null);
+    setSelectedSubcategory(null);
+    resetPagination();
+  }, [onGoToAllProducts, resetPagination]);
 
   /**
    * Handler para seleção de subcategoria.
@@ -323,6 +334,7 @@ export const ProductCatalog = ({
         categories={categories}
         selectedCategory={selectedCategory}
         selectedSubcategory={selectedSubcategory}
+        onAllProductsSelect={handleAllProductsSelect}
         onCategorySelect={handleCategorySelect}
         onSubcategorySelect={handleSubcategorySelect}
       />

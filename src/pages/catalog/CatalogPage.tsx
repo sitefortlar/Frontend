@@ -29,13 +29,13 @@ import {
 interface CategoryHomeViewProps {
   loaderData: CatalogLoaderData;
   onSelectCategory: (id: number) => void;
-  onCategorySidebarSelect: (id: number | null) => void;
+  onAllProductsSelect: () => void;
 }
 
 const CategoryHomeView = ({
   loaderData,
   onSelectCategory,
-  onCategorySidebarSelect,
+  onAllProductsSelect,
 }: CategoryHomeViewProps) => {
   const {
     items,
@@ -56,7 +56,8 @@ const CategoryHomeView = ({
         categories={loaderData.categories}
         selectedCategory={null}
         selectedSubcategory={null}
-        onCategorySelect={onCategorySidebarSelect}
+        onAllProductsSelect={onAllProductsSelect}
+        onCategorySelect={onSelectCategory}
         onSubcategorySelect={() => {}}
       />
       <ProductCatalogContent>
@@ -161,7 +162,7 @@ const CatalogPage = () => {
             <CategoryHomeView
               loaderData={loaderData}
               onSelectCategory={(id) => navigate(`/catalog?category=${id}`)}
-              onCategorySidebarSelect={(id) => navigate(id !== null ? `/catalog?category=${id}` : paths.catalogAll)}
+              onAllProductsSelect={() => navigate(paths.catalogAll)}
             />
           )
         )}

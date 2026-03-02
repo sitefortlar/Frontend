@@ -12,7 +12,8 @@ interface CategorySidebarProps {
   categories: Category[];
   selectedCategory: number | null;
   selectedSubcategory: number | null;
-  onCategorySelect: (categoryId: number | null) => void;
+  onAllProductsSelect: () => void;
+  onCategorySelect: (categoryId: number) => void;
   onSubcategorySelect: (subcategoryId: number | null) => void;
 }
 
@@ -31,6 +32,7 @@ export const CategorySidebar = ({
   categories,
   selectedCategory,
   selectedSubcategory,
+  onAllProductsSelect,
   onCategorySelect,
   onSubcategorySelect,
 }: CategorySidebarProps) => {
@@ -162,7 +164,7 @@ export const CategorySidebar = ({
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-primary focus-visible:ring-offset-2"
             )}
             onClick={() => {
-              onCategorySelect(null);
+              onAllProductsSelect();
               onSubcategorySelect(null);
               setIsMobileOpen(false);
             }}
