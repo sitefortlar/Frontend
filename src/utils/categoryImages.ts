@@ -20,9 +20,10 @@ import lataoLeiteUrl from '@/assets/categories/latao-leite.png';
 import lavarrozEscorredoresUrl from '@/assets/categories/lavarroz-escorredores.png';
 import panelaBanhoMariaUrl from '@/assets/categories/panela-banho-maria.png';
 import baciasBaldesUrl from '@/assets/categories/bacias-baldes.png';
-import coposCanecasUrl from '@/assets/categories/copos e canecass.png';
+import coposCanecasUrl from '@/assets/categories/copos-canecas.png';
 import espagueteirasUrl from '@/assets/categories/espagueteiras.png';
 import moringaUrl from '@/assets/categories/moringa.png';
+import cuscuzeirosUrl from '@/assets/categories/cuscuzeiros.png';
 
 /**
  * Chaves mais específicas primeiro para que o primeiro match ganhe.
@@ -33,6 +34,9 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
   bacias: baciasBaldesUrl,
   balde: baciasBaldesUrl,
   baldes: baciasBaldesUrl,
+  /* Cuscuzeiros */
+  cuscuzeiro: cuscuzeirosUrl,
+  cuscuzeiros: cuscuzeirosUrl,
   /* Espagueteiras */
   espagueteira: espagueteirasUrl,
   espagueteiras: espagueteirasUrl,

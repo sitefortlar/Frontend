@@ -93,5 +93,9 @@ export interface CategoryListParams {
   search_name?: string;
 }
 
-export type SortOption = 'price-high' | 'price-low';
+export type SortOption =
+  | 'name-asc'
+  | 'name-desc'
+  | 'price-low'
+  | 'price-high';
 export type PriceType = 'avista' | 'dias30' | 'dias90';

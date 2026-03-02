@@ -95,6 +95,7 @@ const CatalogPage = () => {
   const categoryIdParam = searchParams.get('category');
   const selectedCategoryId = categoryIdParam ? parseInt(categoryIdParam, 10) : null;
   const isCategoryView = selectedCategoryId !== null && !isNaN(selectedCategoryId);
+  const isProductsView = searchParams.get('view') === 'products';
 
   // Show loading state
   if (isLoading || !loaderData) {
@@ -145,19 +146,19 @@ const CatalogPage = () => {
 
       <CatalogContent>
         {loaderData && (
-          isCategoryView ? (
+          (isProductsView || isCategoryView) ? (
             <ProductCatalog
               products={loaderData.products}
               categories={loaderData.categories}
               companyId={loaderData.user?.company?.id_empresa}
-              initialCategoryId={selectedCategoryId ?? undefined}
+              initialCategoryId={isCategoryView ? (selectedCategoryId ?? undefined) : undefined}
               onBackToCategories={() => navigate('/catalog')}
             />
           ) : (
             <CategoryHomeView
               loaderData={loaderData}
               onSelectCategory={(id) => navigate(`/catalog?category=${id}`)}
-              onCategorySidebarSelect={(id) => navigate(id !== null ? `/catalog?category=${id}` : '/catalog')}
+              onCategorySidebarSelect={(id) => navigate(id !== null ? `/catalog?category=${id}` : '/catalog?view=products')}
             />
           )
         )}

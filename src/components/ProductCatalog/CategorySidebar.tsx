@@ -144,6 +144,32 @@ export const CategorySidebar = ({
       <div className="flex-1 overflow-hidden">
         <ScrollArea className="h-full p-4">
         <div className="space-y-2">
+          {/* "Todos os Produtos" - opção para limpar filtros (primeiro item) */}
+          <Button
+            variant={selectedCategory === null ? "default" : "ghost"}
+            className={cn(
+              // Estilos base
+              "w-full justify-start text-left h-auto p-3",
+              "text-sidebar-foreground transition-all duration-200",
+              // Hover state
+              "hover:bg-sidebar-accent/30 hover:text-sidebar-foreground",
+              // Estado ativo
+              selectedCategory === null && [
+                "bg-sidebar-primary hover:bg-sidebar-primary/90",
+                "text-sidebar-primary-foreground font-semibold"
+              ],
+              // Melhoria de acessibilidade
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-primary focus-visible:ring-offset-2"
+            )}
+            onClick={() => {
+              onCategorySelect(null);
+              onSubcategorySelect(null);
+              setIsMobileOpen(false);
+            }}
+          >
+            Todos os Produtos
+          </Button>
+
           {categories.map((category) => {
             const hasSubcats = hasSubcategories(category);
             // Usar conversão para Number para garantir comparação correta
@@ -242,32 +268,6 @@ export const CategorySidebar = ({
               </div>
             );
           })}
-
-          {/* "Todos os Produtos" - opção para limpar filtros */}
-          <Button
-            variant={selectedCategory === null ? "default" : "ghost"}
-            className={cn(
-              // Estilos base
-              "w-full justify-start text-left h-auto p-3",
-              "text-sidebar-foreground transition-all duration-200",
-              // Hover state
-              "hover:bg-sidebar-accent/30 hover:text-sidebar-foreground",
-              // Estado ativo
-              selectedCategory === null && [
-                "bg-sidebar-primary hover:bg-sidebar-primary/90",
-                "text-sidebar-primary-foreground font-semibold"
-              ],
-              // Melhoria de acessibilidade
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-primary focus-visible:ring-offset-2"
-            )}
-            onClick={() => {
-              onCategorySelect(null);
-              onSubcategorySelect(null);
-              setIsMobileOpen(false);
-            }}
-          >
-            Todos os Produtos
-          </Button>
         </div>
         </ScrollArea>
       </div>

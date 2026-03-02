@@ -4,6 +4,8 @@ import { CategorySidebar } from './CategorySidebar';
 import { FilterBar } from './FilterBar';
 import { ProductGrid } from './ProductGrid';
 import { AdminSettingsButton } from './AdminSettingsButton';
+import { Pagination } from '@/components/Pagination';
+import { usePagination } from '@/hooks/usePagination';
 import { useCart } from '@/hooks/useCart';
 import CartSheet from '@/components/Cart/CartSheet';
 import { CartButton } from '@/components/Cart/CartButton';
@@ -40,6 +42,16 @@ export const ProductCatalog = ({
   const [sortBy, setSortBy] = useState<SortOption>('price-low');
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [loading, setLoading] = useState(false);
+
+  const {
+    page,
+    pageSize,
+    skip,
+    limit,
+    setPage,
+    setPageSize,
+    resetPagination,
+  } = usePagination(1, 24);
   
   // Hook do carrinho com todas as funções necessárias
   const {
@@ -154,6 +166,11 @@ export const ProductCatalog = ({
     }
   }, [selectedSubcategory, selectedCategory, categories]);
 
+  // Resetar paginação quando filtros/ordenação mudarem
+  useEffect(() => {
+    resetPagination();
+  }, [selectedCategory, selectedSubcategory, sortBy, resetPagination]);
+
   /**
    * Filtra produtos por categoria e subcategoria.
    * IMPORTANTE: Filtrar por categoria primeiro, depois por subcategoria.
@@ -199,21 +216,25 @@ export const ProductCatalog = ({
         );
       }
 
-      // Ordenar produtos por preço
+      const getProductPrice = (p: Product): number => {
+        if (priceType === 'avista') return (p?.avista ?? p?.valor_base ?? 0) as number;
+        if (priceType === 'dias30') return (p?.['30_dias'] ?? p?.valor_base ?? 0) as number;
+        return (p?.['60_dias'] ?? p?.valor_base ?? 0) as number;
+      };
+
+      // Ordenar produtos
       const sorted = [...filtered];
       sorted.sort((a, b) => {
         try {
-          const priceA = priceType === 'avista' 
-            ? (a?.avista ?? a?.valor_base ?? 0)
-            : priceType === 'dias30'
-            ? (a?.['30_dias'] ?? a?.valor_base ?? 0)
-            : (a?.['60_dias'] ?? a?.valor_base ?? 0);
-          
-          const priceB = priceType === 'avista'
-            ? (b?.avista ?? b?.valor_base ?? 0)
-            : priceType === 'dias30'
-            ? (b?.['30_dias'] ?? b?.valor_base ?? 0)
-            : (b?.['60_dias'] ?? b?.valor_base ?? 0);
+          if (sortBy === 'name-asc' || sortBy === 'name-desc') {
+            const nameA = (a?.nome ?? '').toString();
+            const nameB = (b?.nome ?? '').toString();
+            const cmp = nameA.localeCompare(nameB, 'pt-BR', { sensitivity: 'base' });
+            return sortBy === 'name-asc' ? cmp : -cmp;
+          }
+
+          const priceA = getProductPrice(a);
+          const priceB = getProductPrice(b);
 
           return sortBy === 'price-low' ? priceA - priceB : priceB - priceA;
         } catch (error) {
@@ -252,16 +273,11 @@ export const ProductCatalog = ({
 
   /**
    * Handler para seleção de categoria.
-   * Se deselecionar (null) e existir onBackToCategories, navega de volta à tela de categorias.
    */
   const handleCategorySelect = useCallback((categoryId: number | null) => {
-    if (categoryId === null && onBackToCategories) {
-      onBackToCategories();
-      return;
-    }
     setSelectedCategory(categoryId);
     setSelectedSubcategory(null);
-  }, [onBackToCategories]);
+  }, []);
 
   /**
    * Handler para seleção de subcategoria.
@@ -288,6 +304,13 @@ export const ProductCatalog = ({
     setIsDrawerOpen(false);
   }, [setIsDrawerOpen]);
 
+  const shouldPaginate = selectedCategory === null && selectedSubcategory === null;
+  const totalItems = filteredProducts.length;
+  const totalPages = shouldPaginate ? Math.max(1, Math.ceil(totalItems / pageSize)) : undefined;
+  const paginatedProducts = shouldPaginate
+    ? filteredProducts.slice(skip, skip + limit)
+    : filteredProducts;
+
   return (
     <ProductCatalogContainer>
       <CategorySidebar
@@ -312,11 +335,25 @@ export const ProductCatalog = ({
             <span className="text-muted-foreground">Carregando produtos...</span>
           </div>
         ) : (
-          <ProductGrid
-            products={filteredProducts}
-            priceType={priceType}
-            onAddToCart={handleAddToCart}
-          />
+          <>
+            <ProductGrid
+              products={paginatedProducts}
+              priceType={priceType}
+              onAddToCart={handleAddToCart}
+            />
+            {shouldPaginate && totalItems > pageSize && (
+              <div className="px-4 sm:px-6 pb-6">
+                <Pagination
+                  currentPage={page}
+                  totalPages={totalPages}
+                  pageSize={pageSize}
+                  onPageChange={setPage}
+                  onPageSizeChange={setPageSize}
+                  totalItems={totalItems}
+                />
+              </div>
+            )}
+          </>
         )}
       </ProductCatalogContent>
       

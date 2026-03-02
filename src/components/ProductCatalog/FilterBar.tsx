@@ -36,7 +36,7 @@ export const FilterBar = ({
           )}
           {onBackToCategories && <span className="text-border">|</span>}
           <ArrowUpDown className="h-5 w-5 text-primary" />
-          <span className="font-medium">Ordenar por Preço</span>
+          <span className="font-medium">Ordenar</span>
           {productCount > 0 && (
             <Badge variant="secondary" className="ml-2">
               {productCount} produto{productCount !== 1 ? 's' : ''}
@@ -50,8 +50,10 @@ export const FilterBar = ({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="price-high">Maior preço</SelectItem>
-              <SelectItem value="price-low">Menor preço</SelectItem>
+              <SelectItem value="name-asc">Nome (A-Z)</SelectItem>
+              <SelectItem value="name-desc">Nome (Z-A)</SelectItem>
+              <SelectItem value="price-low">Mais barato</SelectItem>
+              <SelectItem value="price-high">Mais caro</SelectItem>
             </SelectContent>
           </Select>
         </div>
