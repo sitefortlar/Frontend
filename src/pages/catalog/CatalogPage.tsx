@@ -29,12 +29,14 @@ import {
 interface CategoryHomeViewProps {
   loaderData: CatalogLoaderData;
   onSelectCategory: (id: number) => void;
+  onAllCategoriesSelect: () => void;
   onAllProductsSelect: () => void;
 }
 
 const CategoryHomeView = ({
   loaderData,
   onSelectCategory,
+  onAllCategoriesSelect,
   onAllProductsSelect,
 }: CategoryHomeViewProps) => {
   const {
@@ -56,6 +58,8 @@ const CategoryHomeView = ({
         categories={loaderData.categories}
         selectedCategory={null}
         selectedSubcategory={null}
+        isCategoryHome={true}
+        onAllCategoriesSelect={onAllCategoriesSelect}
         onAllProductsSelect={onAllProductsSelect}
         onCategorySelect={onSelectCategory}
         onSubcategorySelect={() => {}}
@@ -162,6 +166,7 @@ const CatalogPage = () => {
             <CategoryHomeView
               loaderData={loaderData}
               onSelectCategory={(id) => navigate(`/catalog?category=${id}`)}
+              onAllCategoriesSelect={() => navigate(paths.catalog)}
               onAllProductsSelect={() => navigate(paths.catalogAll)}
             />
           )

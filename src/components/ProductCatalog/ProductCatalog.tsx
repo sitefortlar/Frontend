@@ -26,7 +26,7 @@ interface ProductCatalogProps {
   companyId?: number;
   /** Quando definido, a listagem abre já com esta categoria selecionada (página de categoria). */
   initialCategoryId?: number;
-  /** Chamado quando o usuário escolhe "Todos os Produtos" na sidebar; usado para voltar à tela de categorias. */
+  /** Chamado quando o usuário clica em "Todas Categorias" na sidebar; usado para ir para /catalog. */
   onBackToCategories?: () => void;
   /** Chamado quando o usuário escolhe "Todos os Produtos" na sidebar; usado para navegar para /catalog/all. */
   onGoToAllProducts?: () => void;
@@ -334,6 +334,8 @@ export const ProductCatalog = ({
         categories={categories}
         selectedCategory={selectedCategory}
         selectedSubcategory={selectedSubcategory}
+        isCategoryHome={false}
+        onAllCategoriesSelect={onBackToCategories ?? (() => navigate(paths.catalog))}
         onAllProductsSelect={handleAllProductsSelect}
         onCategorySelect={handleCategorySelect}
         onSubcategorySelect={handleSubcategorySelect}
