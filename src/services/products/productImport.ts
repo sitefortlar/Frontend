@@ -1,6 +1,12 @@
 import { api } from '../api';
 
-/** Resposta do POST /api/product (upload da planilha) – processamento assíncrono */
+/** Endpoints de importação (base da API vem de VITE_API_URL em api.ts) */
+const ENDPOINTS = {
+  upload: '/product',
+  jobStatus: (jobId: string) => `/product/job/${jobId}`,
+} as const;
+
+/** Resposta do POST (upload da planilha) – processamento assíncrono */
 export interface ProductUploadJobResponse {
   job_id: string;
   message?: string;
@@ -29,14 +35,14 @@ const MAX_POLL_ATTEMPTS = 120; // ~4 min
 
 export class ProductImportService {
   /**
-   * Envia a planilha para POST /api/product (multipart/form-data).
+   * Envia a planilha para POST (multipart/form-data).
    * O backend processa de forma assíncrona e retorna job_id.
    */
   static async uploadSpreadsheet(file: File): Promise<ProductUploadJobResponse> {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await api.post<ProductUploadJobResponse>('/product', formData, {
+    const response = await api.post<ProductUploadJobResponse>(ENDPOINTS.upload, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -46,10 +52,10 @@ export class ProductImportService {
   }
 
   /**
-   * Consulta o status do job: GET /api/product/job/{job_id}.
+   * Consulta o status do job.
    */
   static async getJobStatus(jobId: string): Promise<ProductImportJobStatusResponse> {
-    const response = await api.get<ProductImportJobStatusResponse>(`/product/job/${jobId}`);
+    const response = await api.get<ProductImportJobStatusResponse>(ENDPOINTS.jobStatus(jobId));
     return response.data;
   }
 
