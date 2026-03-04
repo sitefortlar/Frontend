@@ -6,7 +6,22 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { productService } from '@/services/product';
+import { ProductImportService } from '@/services/products/productImport';
+import type { AxiosError } from 'axios';
+
+function getErrorMessage(error: unknown): string {
+  if (!error || typeof error !== 'object') return 'Erro ao fazer upload do arquivo. Tente novamente.';
+  const ax = error as AxiosError<{ message?: string; detail?: string }>;
+  const data = ax.response?.data;
+  const msg = data?.message ?? data?.detail;
+  if (typeof msg === 'string') return msg;
+  if (ax.response?.status) {
+    if (ax.response.status >= 500) return 'Erro no servidor. Tente novamente mais tarde.';
+    if (ax.response.status === 404) return 'Endpoint não encontrado. Verifique a configuração da API.';
+    if (ax.response.status === 413) return 'Arquivo muito grande.';
+  }
+  return 'Erro ao fazer upload do arquivo. Tente novamente.';
+}
 
 export const ProductUploadForm = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -79,26 +94,43 @@ export const ProductUploadForm = () => {
     setErrorMessage('');
 
     try {
-      await productService.upload(selectedFile);
-      
-      setUploadStatus('success');
-      toast({
-        title: 'Sucesso!',
-        description: 'Produtos importados com sucesso.',
+      const result = await ProductImportService.uploadSpreadsheetAndWait(selectedFile, status => {
+        if (status.status === 'processing' || status.status === 'pending') {
+          toast({
+            title: 'Processamento em andamento',
+            description: 'Aguarde enquanto a planilha é processada...',
+          });
+        }
       });
 
-      // Resetar formulário após sucesso
-      setTimeout(() => {
-        setSelectedFile(null);
-        setIsConfirmed(false);
-        setUploadStatus('idle');
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
-      }, 3000);
-    } catch (error: any) {
+      if (result.status === 'failed') {
+        setUploadStatus('error');
+        setErrorMessage(result.message ?? 'Falha no processamento da planilha.');
+        toast({
+          title: 'Erro no processamento',
+          description: result.message ?? 'Falha ao importar produtos.',
+          variant: 'destructive',
+        });
+      } else {
+        setUploadStatus('success');
+        toast({
+          title: 'Sucesso!',
+          description: `Produtos importados com sucesso.${result.total_imported != null ? ` Total: ${result.total_imported}.` : ''}`,
+        });
+
+        // Resetar formulário após sucesso
+        setTimeout(() => {
+          setSelectedFile(null);
+          setIsConfirmed(false);
+          setUploadStatus('idle');
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+        }, 3000);
+      }
+    } catch (error) {
       setUploadStatus('error');
-      const message = error.message || 'Erro ao fazer upload do arquivo. Tente novamente.';
+      const message = getErrorMessage(error);
       setErrorMessage(message);
       toast({
         title: 'Erro no upload',
@@ -226,7 +258,7 @@ export const ProductUploadForm = () => {
           {isUploading ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Enviando...
+              Enviando e processando...
             </>
           ) : (
             <>

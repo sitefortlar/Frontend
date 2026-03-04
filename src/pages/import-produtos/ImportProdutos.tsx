@@ -6,6 +6,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ProductImportService } from '@/services/products/productImport';
 import { useToast } from '@/hooks/use-toast';
+import type { AxiosError } from 'axios';
+
+function getErrorMessage(error: unknown): string {
+  if (!error || typeof error !== 'object') return 'Erro ao fazer upload da planilha';
+  const ax = error as AxiosError<{ message?: string; detail?: string }>;
+  const data = ax.response?.data;
+  const msg = data?.message ?? data?.detail;
+  if (typeof msg === 'string') return msg;
+  if (ax.response?.status) {
+    if (ax.response.status >= 500) return 'Erro no servidor. Tente novamente mais tarde.';
+    if (ax.response.status === 404) return 'Endpoint não encontrado. Verifique a configuração da API.';
+    if (ax.response.status === 413) return 'Arquivo muito grande.';
+  }
+  return 'Erro ao fazer upload da planilha';
+}
 
 export default function ImportProdutos() {
   const [file, setFile] = useState<File | null>(null);
@@ -23,11 +38,13 @@ export default function ImportProdutos() {
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
-      const isExcel = selectedFile.name.endsWith('.xlsx') || selectedFile.name.endsWith('.xls');
-      if (!isExcel) {
+      const ext = selectedFile.name.toLowerCase();
+      const isExcel = ext.endsWith('.xlsx') || ext.endsWith('.xls');
+      const isCsv = ext.endsWith('.csv');
+      if (!isExcel && !isCsv) {
         toast({
           title: 'Arquivo inválido',
-          description: 'Por favor, selecione um arquivo Excel (.xlsx ou .xls)',
+          description: 'Use planilha Excel (.xlsx, .xls) ou CSV',
           variant: 'destructive',
         });
         return;
@@ -44,19 +61,40 @@ export default function ImportProdutos() {
     setUploadResult(null);
 
     try {
-      const response = await ProductImportService.uploadSpreadsheet(file);
-      setUploadResult({
-        success: true,
-        message: response.message,
-        total: response.total_imported,
-        errors: response.errors,
+      const result = await ProductImportService.uploadSpreadsheetAndWait(file, status => {
+        if (status.status === 'processing' || status.status === 'pending') {
+          toast({
+            title: 'Processamento em andamento',
+            description: 'Aguarde enquanto a planilha é processada...',
+          });
+        }
       });
-      toast({
-        title: 'Upload realizado com sucesso',
-        description: `${response.total_imported || 0} produtos importados`,
-      });
-    } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || 'Erro ao fazer upload da planilha';
+
+      if (result.status === 'failed') {
+        setUploadResult({
+          success: false,
+          message: result.message ?? 'Falha no processamento da planilha.',
+          errors: result.errors,
+        });
+        toast({
+          title: 'Erro no processamento',
+          description: result.message ?? 'Falha ao importar produtos.',
+          variant: 'destructive',
+        });
+      } else {
+        setUploadResult({
+          success: true,
+          message: result.message ?? 'Produtos importados com sucesso.',
+          total: result.total_imported,
+          errors: result.errors,
+        });
+        toast({
+          title: 'Upload realizado com sucesso',
+          description: `${result.total_imported ?? 0} produtos importados`,
+        });
+      }
+    } catch (error) {
+      const errorMessage = getErrorMessage(error);
       setUploadResult({
         success: false,
         message: errorMessage,
@@ -98,7 +136,7 @@ export default function ImportProdutos() {
               Importar Produtos
             </CardTitle>
             <CardDescription>
-              Faça upload de uma planilha Excel para cadastrar múltiplos produtos
+              Faça upload de uma planilha Excel ou CSV para cadastrar múltiplos produtos
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -106,7 +144,7 @@ export default function ImportProdutos() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".xlsx,.xls"
+                accept=".xlsx,.xls,.csv"
                 onChange={handleFileSelect}
                 className="hidden"
                 id="file-upload"
@@ -121,7 +159,7 @@ export default function ImportProdutos() {
                     {file ? file.name : 'Clique para selecionar arquivo'}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Arquivos Excel (.xlsx, .xls)
+                    Arquivos Excel (.xlsx, .xls) ou CSV
                   </p>
                 </div>
               </label>
@@ -137,7 +175,7 @@ export default function ImportProdutos() {
                   {isUploading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Enviando...
+                      Enviando e processando...
                     </>
                   ) : (
                     'Enviar Planilha'
