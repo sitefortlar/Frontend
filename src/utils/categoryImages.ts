@@ -25,6 +25,8 @@ import espagueteirasUrl from '@/assets/categories/espagueteiras.png';
 import moringaUrl from '@/assets/categories/moringa.png';
 import cuscuzeirosUrl from '@/assets/categories/cuscuzeiros.png';
 import pipoqueirasUrl from '@/assets/categories/pipoqueiras.png';
+import buleChaleiraCafeteiraUrl from '@/assets/categories/bule-chaleira-cafeteira.png';
+import woksPaelleirasUrl from '@/assets/categories/woks-paelleiras.png';
 
 /**
  * Chaves mais específicas primeiro para que o primeiro match ganhe.
@@ -41,6 +43,16 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
   /* Pipoqueiras */
   pipoqueira: pipoqueirasUrl,
   pipoqueiras: pipoqueirasUrl,
+  /* Bule, Chaleira e Cafeteira */
+  bule: buleChaleiraCafeteiraUrl,
+  chaleira: buleChaleiraCafeteiraUrl,
+  cafeteira: buleChaleiraCafeteiraUrl,
+  /* Woks e Paelleiras */
+  wok: woksPaelleirasUrl,
+  woks: woksPaelleirasUrl,
+  paelleira: woksPaelleirasUrl,
+  paeleira: woksPaelleirasUrl,
+  paella: woksPaelleirasUrl,
   /* Espagueteiras */
   espagueteira: espagueteirasUrl,
   espagueteiras: espagueteirasUrl,
