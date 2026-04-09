@@ -18,6 +18,8 @@ import {
   LayoutDashboard,
   Shield,
   LogOut,
+  ShoppingBag,
+  ClipboardList,
 } from 'lucide-react';
 import { paths } from '@/routes/paths';
 import { LogoutButton } from './LogoutButton';
@@ -49,6 +51,17 @@ export const MainSidebar = () => {
                   <Link to={paths.catalog}>
                     <LayoutDashboard className="h-4 w-4" />
                     <span>Catálogo</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive(paths.orders)}
+                >
+                  <Link to={paths.orders}>
+                    <ShoppingBag className="h-4 w-4" />
+                    <span>Meus pedidos</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -102,6 +115,18 @@ export const MainSidebar = () => {
                       <Link to={paths.admin.cupons}>
                         <Ticket className="h-4 w-4" />
                         <span>Cupons</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive(paths.admin.orders)}
+                    >
+                      <Link to={paths.admin.orders}>
+                        <ClipboardList className="h-4 w-4" />
+                        <span>Todos os pedidos</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

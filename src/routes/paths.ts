@@ -11,6 +11,7 @@ export const paths = {
   // Protected routes
   catalog: '/catalog',
   catalogAll: '/catalog/all',
+  orders: '/pedidos',
   importProdutos: '/import-produtos',
   couponManagement: '/coupon-management',
   adminCategorias: '/admin/categorias',
@@ -21,6 +22,7 @@ export const paths = {
     produtoEdit: (id: number) => `/admin/produtos/${id}`,
     descontos: '/admin/descontos',
     cupons: '/admin/cupons',
+    orders: '/admin/pedidos',
   },
   
   // Error routes

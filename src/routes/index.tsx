@@ -41,6 +41,10 @@ const router = createBrowserRouter([
         lazy: () => import('@/pages/catalog').then(module => ({ Component: module.default })),
       },
       {
+        path: paths.orders,
+        lazy: () => import('@/pages/orders').then(module => ({ Component: module.default })),
+      },
+      {
         path: paths.importProdutos,
         lazy: () => import('@/pages/import-produtos').then(module => ({ Component: module.default })),
       },
@@ -67,6 +71,10 @@ const router = createBrowserRouter([
       {
         path: paths.admin.cupons,
         lazy: () => import('@/pages/admin/cupons').then(module => ({ Component: module.default })),
+      },
+      {
+        path: paths.admin.orders,
+        lazy: () => import('@/pages/admin/orders').then(module => ({ Component: module.default })),
       },
     ],
   },

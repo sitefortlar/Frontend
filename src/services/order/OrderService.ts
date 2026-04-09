@@ -42,6 +42,8 @@ export interface SendOrderEmailResponse {
 export interface OrderItemResponse {
   id: number;
   id_produto: number;
+  nome?: string;
+  codigo?: string;
   quantidade: number;
   preco_unitario: number;
   subtotal: number;
@@ -60,6 +62,15 @@ export interface OrderResponse {
   created_at: string;
   updated_at: string;
   itens?: OrderItemResponse[];
+  /** Quando a API envia contagem sem incluir os itens na listagem */
+  quantidade_itens?: number;
+}
+
+export interface ReorderOrderResponse {
+  message?: string;
+  id?: number;
+  novo_pedido_id?: number;
+  [key: string]: unknown;
 }
 
 /**
@@ -129,6 +140,13 @@ export class OrderService extends BaseService {
    */
   async sendOrderEmail(request: SendOrderEmailRequest): Promise<SendOrderEmailResponse> {
     return this.post<SendOrderEmailResponse>('/send-email', request);
+  }
+
+  /**
+   * Duplica itens do pedido (comprar novamente)
+   */
+  async reorderOrder(orderId: number): Promise<ReorderOrderResponse> {
+    return this.post<ReorderOrderResponse>(`/${orderId}/reorder`, {});
   }
 }
 

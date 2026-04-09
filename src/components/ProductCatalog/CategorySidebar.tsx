@@ -1,12 +1,15 @@
 import { useState, useEffect, useCallback, memo } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { ChevronDown, ChevronRight, Menu, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, Menu, X, ShoppingBag, ClipboardList } from 'lucide-react';
 import { Category } from '@/types/Product';
 import { cn } from '@/lib/utils';
 import { getCategoryIcon } from '@/utils/categoryIcons';
 import { LogoutButton } from '@/components/LogoutButton';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { paths } from '@/routes/paths';
 
 interface CategorySidebarProps {
   categories: Category[];
@@ -41,6 +44,8 @@ export const CategorySidebar = ({
   onCategorySelect,
   onSubcategorySelect,
 }: CategorySidebarProps) => {
+  const location = useLocation();
+  const { isAdmin } = useAuthContext();
   // Estado de expansão: controla quais categorias têm submenu aberto
   // Usa Set para performance e facilidade de manipulação
   const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
@@ -297,9 +302,37 @@ export const CategorySidebar = ({
         </ScrollArea>
       </div>
 
-      {/* Rodapé com botão de logout */}
-      <div className="p-4 border-t border-sidebar-border flex-shrink-0">
+      {/* Rodapé: pedidos + logout */}
+      <div className="p-4 border-t border-sidebar-border flex-shrink-0 space-y-2">
         <Separator className="mb-4" />
+        <Button
+          variant="ghost"
+          className={cn(
+            'w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent/30',
+            location.pathname === paths.orders && 'bg-sidebar-accent/40'
+          )}
+          asChild
+        >
+          <Link to={paths.orders} onClick={() => setIsMobileOpen(false)}>
+            <ShoppingBag className="h-4 w-4 mr-2 shrink-0" />
+            Meus pedidos
+          </Link>
+        </Button>
+        {isAdmin && (
+          <Button
+            variant="ghost"
+            className={cn(
+              'w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent/30',
+              location.pathname === paths.admin.orders && 'bg-sidebar-accent/40'
+            )}
+            asChild
+          >
+            <Link to={paths.admin.orders} onClick={() => setIsMobileOpen(false)}>
+              <ClipboardList className="h-4 w-4 mr-2 shrink-0" />
+              Todos os pedidos
+            </Link>
+          </Button>
+        )}
         <LogoutButton />
       </div>
     </div>
