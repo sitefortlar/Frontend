@@ -49,6 +49,9 @@ export const productService = {
       if (filters?.search_name) {
         params.search_name = filters.search_name;
       }
+      if (filters?.search_codigo) {
+        params.search_codigo = filters.search_codigo;
+      }
       if (filters?.min_price !== undefined) {
         params.min_price = filters.min_price;
       }

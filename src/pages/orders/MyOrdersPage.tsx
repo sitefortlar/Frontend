@@ -12,6 +12,17 @@ import { OrderCard } from '@/components/orders/OrderCard';
 import { OrderDetails } from '@/components/orders/OrderDetails';
 import { paths } from '@/routes/paths';
 
+/** Aceita id numérico ou string numérica vinda da API (ex.: id_empresa como string). */
+function parseClienteId(value: unknown): number | null {
+  if (value == null || value === '') return null;
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string') {
+    const n = Number(value.trim());
+    return Number.isFinite(n) ? n : null;
+  }
+  return null;
+}
+
 function ListSkeleton() {
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -36,7 +47,7 @@ export default function MyOrdersPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAuthenticated, isLoading: guardLoading } = useAuthGuard();
-  const { user, isLoading: authLoading } = useAuthContext();
+  const { user, isLoading: authLoading, refreshUser } = useAuthContext();
 
   const {
     orders,
@@ -56,20 +67,27 @@ export default function MyOrdersPage() {
 
   const clienteId = useMemo(() => {
     const fromCompany = user?.company?.id_empresa;
-    if (typeof fromCompany === 'number' && !Number.isNaN(fromCompany)) {
-      return fromCompany;
-    }
-    if (user?.id != null && user.id !== '') {
-      const n = Number(user.id);
-      return Number.isNaN(n) ? null : n;
-    }
-    return null;
+    const fromCompanyParsed = parseClienteId(fromCompany);
+    if (fromCompanyParsed != null) return fromCompanyParsed;
+    return parseClienteId(user?.id);
   }, [user]);
 
+  // Se o token existe mas a empresa ainda não veio, tenta recarregar uma vez (corrige 1º acesso).
+  const [companyRefetchDone, setCompanyRefetchDone] = useState(false);
   useEffect(() => {
-    if (!isAuthenticated || authLoading || guardLoading || clienteId == null) return;
+    if (authLoading || guardLoading || !user) return;
+    if (user.company != null) return;
+    if (companyRefetchDone) return;
+    setCompanyRefetchDone(true);
+    void refreshUser();
+  }, [authLoading, guardLoading, user, companyRefetchDone, refreshUser]);
+
+  useEffect(() => {
+    if (!isAuthenticated || authLoading || guardLoading) return;
+    if (!user) return;
+    if (clienteId == null) return;
     fetchMyOrders(clienteId);
-  }, [isAuthenticated, authLoading, guardLoading, clienteId, fetchMyOrders]);
+  }, [isAuthenticated, authLoading, guardLoading, user, clienteId, fetchMyOrders]);
 
   const handleOpenDetails = async (orderId: number) => {
     setDetailOpen(true);

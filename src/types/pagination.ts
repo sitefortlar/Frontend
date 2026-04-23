@@ -31,6 +31,7 @@ export interface ListProductsParams extends PaginationParams {
   active_only?: boolean;
   include_kits?: boolean;
   search_name?: string;
+  search_codigo?: string;
   min_price?: number;
   max_price?: number;
 }

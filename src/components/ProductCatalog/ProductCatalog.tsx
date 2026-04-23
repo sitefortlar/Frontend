@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { Product, Category, PriceType, SortOption } from '@/types/Product';
 import { CategorySidebar } from './CategorySidebar';
 import { FilterBar } from './FilterBar';
@@ -6,10 +6,11 @@ import { ProductGrid } from './ProductGrid';
 import { AdminSettingsButton } from './AdminSettingsButton';
 import { Pagination } from '@/components/Pagination';
 import { usePagination } from '@/hooks/usePagination';
+import { useDebounce } from '@/hooks/useDebounce';
 import { useCart } from '@/hooks/useCart';
 import CartSheet from '@/components/Cart/CartSheet';
 import { CartButton } from '@/components/Cart/CartButton';
-import { productService } from '@/services/products';
+import { productService, type ProductFilters } from '@/services/products';
 import { authService } from '@/services/auth/auth';
 import { Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -46,8 +47,14 @@ export const ProductCatalog = ({
   );
   const [selectedSubcategory, setSelectedSubcategory] = useState<number | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('price-low');
+  const [searchCode, setSearchCode] = useState('');
+  const [searchName, setSearchName] = useState('');
+  const debouncedSearchCode = useDebounce(searchCode, 400);
+  const debouncedSearchName = useDebounce(searchName, 400);
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [loading, setLoading] = useState(false);
+  const latestInitialProducts = useRef(initialProducts);
+  latestInitialProducts.current = initialProducts;
 
   const {
     page,
@@ -86,14 +93,6 @@ export const ProductCatalog = ({
     }
   }, [initialCategoryId]);
 
-  // Atualizar produtos quando produtos iniciais mudarem (primeiro carregamento)
-  useEffect(() => {
-    // Só atualizar se não houver filtros selecionados
-    if (selectedCategory === null && selectedSubcategory === null) {
-      setProducts(initialProducts);
-    }
-  }, [initialProducts, selectedCategory, selectedSubcategory]);
-
   // Reconstruir prices quando produtos estiverem disponíveis
   useEffect(() => {
     if (products && products.length > 0) {
@@ -101,58 +100,44 @@ export const ProductCatalog = ({
     }
   }, [products, rebuildAllItemsPrices]);
 
-  // Fazer chamada à API quando categoria ou subcategoria for selecionada
+  // API: categoria, subcategoria e/ou busca por código/nome
   useEffect(() => {
-    const fetchFilteredProducts = async () => {
-      // Se nenhum filtro está selecionado, usar produtos iniciais
-      if (selectedCategory === null && selectedSubcategory === null) {
-        setProducts(initialProducts);
-        return;
-      }
+    const hasSearch =
+      debouncedSearchCode.trim().length > 0 || debouncedSearchName.trim().length > 0;
+    const hasCategory = selectedCategory !== null || selectedSubcategory !== null;
 
+    if (!hasSearch && !hasCategory) {
+      setLoading(false);
+      setProducts(latestInitialProducts.current);
+      return;
+    }
+
+    const run = async () => {
       setLoading(true);
       try {
-        // Obter user_estate do authService
         const userEstate = authService.getUserEstate();
-        
-        // Preparar filtros para a API
-        const filters: {
-          user_estate?: string | null;
-          id_category?: number;
-          id_subcategory?: number;
-        } = {
-          user_estate: userEstate,
-        };
-
-        // Adicionar filtro de categoria se selecionada
+        const filters: ProductFilters = { user_estate: userEstate };
         if (selectedCategory !== null) {
           filters.id_category = Number(selectedCategory);
         }
-
-        // Adicionar filtro de subcategoria se selecionada
         if (selectedSubcategory !== null) {
           filters.id_subcategory = Number(selectedSubcategory);
         }
-
-        console.log('🔍 Buscando produtos com filtros:', filters);
-        
-        // Fazer chamada à API
-        const filteredProducts = await productService.getProducts(filters);
-        
-        console.log('✅ Produtos recebidos:', filteredProducts.length);
-        setProducts(filteredProducts);
-      } catch (error) {
-        console.error('❌ Erro ao buscar produtos filtrados:', error);
-        // Em caso de erro, manter produtos iniciais ou array vazio
+        const n = debouncedSearchName.trim();
+        const c = debouncedSearchCode.trim();
+        if (n) filters.search_name = n;
+        if (c) filters.search_codigo = c;
+        const data = await productService.getProducts(filters);
+        setProducts(data);
+      } catch {
         setProducts([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFilteredProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategory, selectedSubcategory]);
+    void run();
+  }, [selectedCategory, selectedSubcategory, debouncedSearchCode, debouncedSearchName]);
 
   // Sincronizar categoria pai quando subcategoria é selecionada
   // IMPORTANTE: Garantir que a categoria pai esteja selecionada quando uma subcategoria é selecionada
@@ -175,10 +160,10 @@ export const ProductCatalog = ({
     }
   }, [selectedSubcategory, selectedCategory, categories]);
 
-  // Resetar paginação quando filtros/ordenação mudarem
+  // Resetar paginação quando filtros/ordenação ou busca mudarem
   useEffect(() => {
     resetPagination();
-  }, [selectedCategory, selectedSubcategory, sortBy, resetPagination]);
+  }, [selectedCategory, selectedSubcategory, sortBy, debouncedSearchCode, debouncedSearchName, resetPagination]);
 
   /**
    * Filtra produtos por categoria e subcategoria.
@@ -347,6 +332,10 @@ export const ProductCatalog = ({
             onSortChange={setSortBy}
             productCount={filteredProducts.length}
             onBackToCategories={onBackToCategories}
+            searchCode={searchCode}
+            searchName={searchName}
+            onSearchCodeChange={setSearchCode}
+            onSearchNameChange={setSearchName}
           />
         </ProductCatalogHeader>
         {loading ? (
