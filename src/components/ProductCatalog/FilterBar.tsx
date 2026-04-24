@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowDown, Search, Package, Filter } from 'lucide-react';
 import { SortOption } from '@/types/Product';
 
 type SortMode = 'name' | 'price';
+type SortDirection = 'asc' | 'desc';
 
 interface FilterBarProps {
   sortBy: SortOption;
@@ -38,34 +39,29 @@ export const FilterBar = ({
   const isPriceLow = sortBy === 'price-low';
   const isPriceHigh = sortBy === 'price-high';
 
-  const SortIconButton = ({
-    active,
-    label,
-    onClick,
-    children,
-  }: {
-    active: boolean;
-    label: string;
-    onClick: () => void;
-    children: React.ReactNode;
-  }) => (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          type="button"
-          variant={active ? 'secondary' : 'ghost'}
-          size="icon"
-          className="h-10 w-10 rounded-none"
-          onClick={onClick}
-          aria-label={label}
-          aria-pressed={active}
-        >
-          {children}
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent side="bottom">{label}</TooltipContent>
-    </Tooltip>
-  );
+  const isNameActive = sortMode === 'name';
+  const isPriceActive = sortMode === 'price';
+
+  const nameDirection: SortDirection = isNameDesc ? 'desc' : 'asc';
+  const priceDirection: SortDirection = isPriceHigh ? 'desc' : 'asc';
+
+  const handleDirectionClick = (mode: SortMode) => {
+    if (mode === 'name') {
+      if (!isNameActive) {
+        onSortChange('name-asc'); // troca critério -> padrão ASC
+        return;
+      }
+      onSortChange(nameDirection === 'asc' ? 'name-desc' : 'name-asc'); // toggle
+      return;
+    }
+
+    // price
+    if (!isPriceActive) {
+      onSortChange('price-low'); // troca critério -> padrão ASC
+      return;
+    }
+    onSortChange(priceDirection === 'asc' ? 'price-high' : 'price-low'); // toggle
+  };
 
   return (
     <div className="bg-card border border-border rounded-2xl p-5 shadow-soft space-y-4">
@@ -138,41 +134,81 @@ export const FilterBar = ({
         <div className="flex items-center gap-3 justify-end">
           {/* Nome (A–Z / Z–A) */}
           <div className="flex items-center rounded-xl border border-border overflow-hidden bg-background">
-            <SortIconButton
-              active={sortMode === 'name' && isNameAsc}
-              label="Nome: A–Z"
-              onClick={() => onSortChange('name-asc')}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  className={[
+                    'h-10 w-10 grid place-items-center select-none',
+                    isNameActive ? 'text-primary bg-primary/5' : 'text-muted-foreground',
+                  ].join(' ')}
+                  aria-label="Ordenar por nome"
+                >
+                  <span className="text-xs font-semibold leading-none">
+                    A
+                    <span className="ml-0.5 text-[10px] align-top">Z</span>
+                  </span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">Ordenar por nome</TooltipContent>
+            </Tooltip>
+
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className={[
+                'h-10 w-10 rounded-none',
+                isNameActive ? 'bg-primary/10 text-primary hover:bg-primary/15' : 'text-muted-foreground hover:text-foreground',
+              ].join(' ')}
+              onClick={() => handleDirectionClick('name')}
+              aria-label={isNameActive ? 'Alternar direção (nome)' : 'Ativar ordenação por nome'}
+              aria-pressed={isNameActive}
             >
-              <span className="text-xs font-semibold leading-none">
-                A
-                <span className="ml-0.5 text-[10px] align-top">Z</span>
-              </span>
-            </SortIconButton>
-            <SortIconButton
-              active={sortMode === 'name' && isNameDesc}
-              label="Nome: Z–A"
-              onClick={() => onSortChange('name-desc')}
-            >
-              <ArrowDown className="h-4 w-4" />
-            </SortIconButton>
+              <ArrowDown
+                className={[
+                  'h-4 w-4 transition-transform duration-200 ease-in-out',
+                  isNameActive && nameDirection === 'asc' ? 'rotate-180' : 'rotate-0',
+                ].join(' ')}
+              />
+            </Button>
           </div>
 
           {/* Preço (menor/maior) */}
           <div className="flex items-center rounded-xl border border-border overflow-hidden bg-background">
-            <SortIconButton
-              active={sortMode === 'price' && isPriceLow}
-              label="Preço: menor primeiro"
-              onClick={() => onSortChange('price-low')}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  className={[
+                    'h-10 w-10 grid place-items-center select-none font-semibold',
+                    isPriceActive ? 'text-primary bg-primary/5' : 'text-muted-foreground',
+                  ].join(' ')}
+                  aria-label="Ordenar por preço"
+                >
+                  $
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">Ordenar por preço</TooltipContent>
+            </Tooltip>
+
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className={[
+                'h-10 w-10 rounded-none',
+                isPriceActive ? 'bg-primary/10 text-primary hover:bg-primary/15' : 'text-muted-foreground hover:text-foreground',
+              ].join(' ')}
+              onClick={() => handleDirectionClick('price')}
+              aria-label={isPriceActive ? 'Alternar direção (preço)' : 'Ativar ordenação por preço'}
+              aria-pressed={isPriceActive}
             >
-              <span className="font-semibold">$</span>
-            </SortIconButton>
-            <SortIconButton
-              active={sortMode === 'price' && isPriceHigh}
-              label="Preço: maior primeiro"
-              onClick={() => onSortChange('price-high')}
-            >
-              <ArrowDown className="h-4 w-4" />
-            </SortIconButton>
+              <ArrowDown
+                className={[
+                  'h-4 w-4 transition-transform duration-200 ease-in-out',
+                  isPriceActive && priceDirection === 'asc' ? 'rotate-180' : 'rotate-0',
+                ].join(' ')}
+              />
+            </Button>
           </div>
         </div>
       </div>
