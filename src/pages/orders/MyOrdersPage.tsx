@@ -46,7 +46,7 @@ function ListSkeleton() {
 export default function MyOrdersPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { isAuthenticated, isLoading: guardLoading } = useAuthGuard();
+  const { isAuthenticated, isLoading: guardLoading, user: guardUser } = useAuthGuard();
   const { user, isLoading: authLoading, refreshUser } = useAuthContext();
 
   const {
@@ -65,29 +65,31 @@ export default function MyOrdersPage() {
 
   const [detailOpen, setDetailOpen] = useState(false);
 
+  const effectiveUser = user ?? guardUser;
+
   const clienteId = useMemo(() => {
-    const fromCompany = user?.company?.id_empresa;
+    const fromCompany = effectiveUser?.company?.id_empresa;
     const fromCompanyParsed = parseClienteId(fromCompany);
     if (fromCompanyParsed != null) return fromCompanyParsed;
-    return parseClienteId(user?.id);
-  }, [user]);
+    return parseClienteId(effectiveUser?.id);
+  }, [effectiveUser]);
 
   // Se o token existe mas a empresa ainda não veio, tenta recarregar uma vez (corrige 1º acesso).
   const [companyRefetchDone, setCompanyRefetchDone] = useState(false);
   useEffect(() => {
-    if (authLoading || guardLoading || !user) return;
-    if (user.company != null) return;
+    if (authLoading || guardLoading || !effectiveUser) return;
+    if (effectiveUser.company != null) return;
     if (companyRefetchDone) return;
     setCompanyRefetchDone(true);
     void refreshUser();
-  }, [authLoading, guardLoading, user, companyRefetchDone, refreshUser]);
+  }, [authLoading, guardLoading, effectiveUser, companyRefetchDone, refreshUser]);
 
   useEffect(() => {
     if (!isAuthenticated || authLoading || guardLoading) return;
-    if (!user) return;
+    if (!effectiveUser) return;
     if (clienteId == null) return;
     fetchMyOrders(clienteId);
-  }, [isAuthenticated, authLoading, guardLoading, user, clienteId, fetchMyOrders]);
+  }, [isAuthenticated, authLoading, guardLoading, effectiveUser, clienteId, fetchMyOrders]);
 
   const handleOpenDetails = async (orderId: number) => {
     setDetailOpen(true);

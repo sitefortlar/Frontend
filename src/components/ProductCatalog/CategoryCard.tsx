@@ -1,6 +1,6 @@
 import { Category } from '@/types/Product';
 import { getCategoryIcon } from '@/utils/categoryIcons';
-import { getCategoryImageUrl } from '@/utils/categoryImages';
+import { getCategoryImageUrlById, getCategoryImageUrl } from '@/utils/categoryImages';
 import {
   CategoryCardWrapper,
   CategoryCardImageArea,
@@ -16,7 +16,8 @@ interface CategoryCardProps {
 
 export const CategoryCard = ({ category, onClick }: CategoryCardProps) => {
   const IconComponent = getCategoryIcon(category.nome);
-  const imageUrl = getCategoryImageUrl(category.nome);
+  const categoryId = Number(category.id_categoria);
+  const imageUrl = getCategoryImageUrlById(categoryId) ?? getCategoryImageUrl(category.nome);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {

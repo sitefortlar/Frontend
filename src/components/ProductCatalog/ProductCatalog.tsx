@@ -56,6 +56,27 @@ export const ProductCatalog = ({
   const latestInitialProducts = useRef(initialProducts);
   latestInitialProducts.current = initialProducts;
 
+  const headerTitle = useMemo(() => {
+    if (selectedCategory === null) return 'Todos os produtos';
+    const found = categories.find((c) => Number(c.id_categoria) === Number(selectedCategory));
+    return found?.nome || 'Todos os produtos';
+  }, [categories, selectedCategory]);
+
+  const handleClearFilters = useCallback(() => {
+    setSelectedCategory(null);
+    setSelectedSubcategory(null);
+    setSearchCode('');
+    setSearchName('');
+    resetPagination();
+
+    // Ao limpar, voltar para a visão "todos os produtos" quando existir navegação externa.
+    if (onGoToAllProducts) {
+      onGoToAllProducts();
+    } else {
+      navigate(paths.catalogAll);
+    }
+  }, [navigate, onGoToAllProducts, resetPagination]);
+
   const {
     page,
     pageSize,
@@ -332,6 +353,8 @@ export const ProductCatalog = ({
             onSortChange={setSortBy}
             productCount={filteredProducts.length}
             onBackToCategories={onBackToCategories}
+            title={headerTitle}
+            onClearFilters={handleClearFilters}
             searchCode={searchCode}
             searchName={searchName}
             onSearchCodeChange={setSearchCode}

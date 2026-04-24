@@ -1,141 +1,50 @@
 /**
  * Imagens dos cards de categorias (em src/assets/categories).
- * Mapeia nome da categoria para a URL da imagem; fallback: ícone no componente.
+ * Preferência: buscar por id_categoria usando assets no formato `<id>--<slug>.png`.
+ * Fallback: heurística por nome (legado) e/ou ícone no componente.
  */
-import panelaPressaoUrl from '@/assets/categories/panela-pressao.png';
-import panelasCacarolasUrl from '@/assets/categories/panelas-cacarolas.png';
-import caldeiroesUrl from '@/assets/categories/caldeiroes.png';
-import canecoesFevedoresUrl from '@/assets/categories/canecoes-fevedores.png';
-import frigideirasUrl from '@/assets/categories/frigideiras.png';
-import formasAssadeirasUrl from '@/assets/categories/formas-assadeiras.png';
-import jarrasUrl from '@/assets/categories/jarras.png';
-import marmitasJogosMarmitaUrl from '@/assets/categories/marmitas-jogos-marmita.png';
-import conchaEspumadeiraUrl from '@/assets/categories/concha-espumadeira.png';
-import tampasAvulsasUrl from '@/assets/categories/tampas-avulsas.png';
-import jogosPanelasUrl from '@/assets/categories/jogos-panelas.png';
-import kitFeirinhaUrl from '@/assets/categories/kit-feirinha.png';
-import filtraOleoUrl from '@/assets/categories/filtra-oleo.png';
-import depositoManutencaoUrl from '@/assets/categories/deposito-mantimentoss.png';
-import lataoLeiteUrl from '@/assets/categories/latao-leite.png';
-import lavarrozEscorredoresUrl from '@/assets/categories/lavarroz-escorredores.png';
-import panelaBanhoMariaUrl from '@/assets/categories/panela-banho-maria.png';
-import baciasBaldesUrl from '@/assets/categories/bacias-baldes.png';
-import coposCanecasUrl from '@/assets/categories/copos-canecas.png';
-import espagueteirasUrl from '@/assets/categories/espagueteiras.png';
-import moringaUrl from '@/assets/categories/moringa.png';
-import cuscuzeirosUrl from '@/assets/categories/cuscuzeiros.png';
-import pipoqueirasUrl from '@/assets/categories/pipoqueiras.png';
-import buleChaleiraCafeteiraUrl from '@/assets/categories/bule-chaleira-cafeteira.png';
-import woksPaelleirasUrl from '@/assets/categories/woks-paelleiras.png';
+type ImageUrl = string;
+
+const CATEGORY_IMAGE_BY_ID: Record<number, ImageUrl> = (() => {
+  // Importa todos os assets `src/assets/categories/<id>--<slug>.png` e monta um mapa id -> url.
+  const modules = import.meta.glob('@/assets/categories/*--*.png', {
+    eager: true,
+    import: 'default',
+  }) as Record<string, ImageUrl>;
+
+  const map: Record<number, ImageUrl> = {};
+  for (const [path, url] of Object.entries(modules)) {
+    const m = path.match(/\/(\d+)--[^/]+\.png$/);
+    if (!m) continue;
+    const id = Number(m[1]);
+    if (Number.isFinite(id)) map[id] = url;
+  }
+  return map;
+})();
 
 /**
  * Chaves mais específicas primeiro para que o primeiro match ganhe.
  */
-const CATEGORY_IMAGE_MAP: Record<string, string> = {
+const CATEGORY_IMAGE_MAP_BY_NAME: Record<string, string> = {
   /* Bacias e Baldes */
-  bacia: baciasBaldesUrl,
-  bacias: baciasBaldesUrl,
-  balde: baciasBaldesUrl,
-  baldes: baciasBaldesUrl,
-  /* Cuscuzeiros */
-  cuscuzeiro: cuscuzeirosUrl,
-  cuscuzeiros: cuscuzeirosUrl,
-  /* Pipoqueiras */
-  pipoqueira: pipoqueirasUrl,
-  pipoqueiras: pipoqueirasUrl,
-  /* Bule, Chaleira e Cafeteira */
-  bule: buleChaleiraCafeteiraUrl,
-  chaleira: buleChaleiraCafeteiraUrl,
-  cafeteira: buleChaleiraCafeteiraUrl,
-  /* Woks e Paelleiras */
-  wok: woksPaelleirasUrl,
-  woks: woksPaelleirasUrl,
-  paelleira: woksPaelleirasUrl,
-  paeleira: woksPaelleirasUrl,
-  paella: woksPaelleirasUrl,
-  /* Espagueteiras */
-  espagueteira: espagueteirasUrl,
-  espagueteiras: espagueteirasUrl,
-  /* Moringa */
-  moringa: moringaUrl,
-  /* Linha Panela de Pressão */
-  pressão: panelaPressaoUrl,
-  pressao: panelaPressaoUrl,
-  /* Panelas e Caçarolas */
-  caçarola: panelasCacarolasUrl,
-  cacarola: panelasCacarolasUrl,
-  panela: panelasCacarolasUrl,
-  panelas: panelasCacarolasUrl,
-  /* Caldeirões */
-  caldeirão: caldeiroesUrl,
-  caldeirao: caldeiroesUrl,
-  caldeiroes: caldeiroesUrl,
-  /* Canecões e Fervedores (antes de copos/canecas para match correto) */
-  canecão: canecoesFevedoresUrl,
-  canecao: canecoesFevedoresUrl,
-  fervedor: canecoesFevedoresUrl,
-  canecoes: canecoesFevedoresUrl,
-  /* Copos e Canecas */
-  copo: coposCanecasUrl,
-  copos: coposCanecasUrl,
-  caneca: coposCanecasUrl,
-  canecas: coposCanecasUrl,
-  /* Frigideiras */
-  frigideira: frigideirasUrl,
-  frigideiras: frigideirasUrl,
-  /* Formas e Assadeiras */
-  forma: formasAssadeirasUrl,
-  formas: formasAssadeirasUrl,
-  assadeira: formasAssadeirasUrl,
-  assadeiras: formasAssadeirasUrl,
-  /* Jarras */
-  jarra: jarrasUrl,
-  jarras: jarrasUrl,
-  /* Marmitas e Jogos de Marmita */
-  marmita: marmitasJogosMarmitaUrl,
-  marmitas: marmitasJogosMarmitaUrl,
-  /* Concha - Espumadeira */
-  concha: conchaEspumadeiraUrl,
-  espumadeira: conchaEspumadeiraUrl,
-  /* Tampas Avulsas */
-  tampa: tampasAvulsasUrl,
-  tampas: tampasAvulsasUrl,
-  avulsas: tampasAvulsasUrl,
-  /* Jogos de Panelas */
-  jogo: jogosPanelasUrl,
-  jogos: jogosPanelasUrl,
-  /* Kit Feirinha */
-  feirinha: kitFeirinhaUrl,
-  kit: kitFeirinhaUrl,
-  /* Filtro de Óleo */
-  filtra: filtraOleoUrl,
-  filtro: filtraOleoUrl,
-  óleo: filtraOleoUrl,
-  oleo: filtraOleoUrl,
-  /* Depósito de Manutenção */
-  depósito: depositoManutencaoUrl,
-  deposito: depositoManutencaoUrl,
-  manutenção: depositoManutencaoUrl,
-  manutencao: depositoManutencaoUrl,
-  /* Latão Leite */
-  latão: lataoLeiteUrl,
-  latao: lataoLeiteUrl,
-  leite: lataoLeiteUrl,
-  /* Lavarroz e Escorredores */
-  lavarroz: lavarrozEscorredoresUrl,
-  escorredor: lavarrozEscorredoresUrl,
-  escorredores: lavarrozEscorredoresUrl,
-  /* Panela Banho Maria */
-  banho: panelaBanhoMariaUrl,
-  maria: panelaBanhoMariaUrl,
+  // Mantido por compatibilidade: mapeamento por nome agora é opcional e deve ser substituído por id.
 };
 
 /**
- * Retorna a URL da imagem da categoria, ou null se não houver imagem mapeada.
+ * Preferencial: retorna a URL da imagem da categoria por id_categoria.
+ * Retorna null se não houver asset para o id.
+ */
+export function getCategoryImageUrlById(categoryId: number): string | null {
+  if (!Number.isFinite(categoryId)) return null;
+  return CATEGORY_IMAGE_BY_ID[categoryId] ?? null;
+}
+
+/**
+ * Legado: tenta resolver imagem por nome (heurística). Use apenas como fallback.
  */
 export function getCategoryImageUrl(categoryName: string): string | null {
   const name = categoryName.toLowerCase();
-  for (const [key, path] of Object.entries(CATEGORY_IMAGE_MAP)) {
+  for (const [key, path] of Object.entries(CATEGORY_IMAGE_MAP_BY_NAME)) {
     if (name.includes(key)) return path;
   }
   return null;
