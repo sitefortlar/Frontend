@@ -56,6 +56,15 @@ export const ProductCatalog = ({
   const latestInitialProducts = useRef(initialProducts);
   latestInitialProducts.current = initialProducts;
 
+  const {
+    page,
+    pageSize,
+    skip,
+    limit,
+    setPage,
+    resetPagination,
+  } = usePagination(1, 20);
+
   const headerTitle = useMemo(() => {
     if (selectedCategory === null) return 'Todos os produtos';
     const found = categories.find((c) => Number(c.id_categoria) === Number(selectedCategory));
@@ -76,15 +85,6 @@ export const ProductCatalog = ({
       navigate(paths.catalogAll);
     }
   }, [navigate, onGoToAllProducts, resetPagination]);
-
-  const {
-    page,
-    pageSize,
-    skip,
-    limit,
-    setPage,
-    resetPagination,
-  } = usePagination(1, 20);
   
   // Hook do carrinho com todas as funções necessárias
   const {

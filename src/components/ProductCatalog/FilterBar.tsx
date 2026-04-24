@@ -2,8 +2,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { ArrowLeft, ArrowDown, ArrowUp, Search, Package, Trash2 } from 'lucide-react';
+import { ArrowLeft, ArrowDown, Search, Package, Filter } from 'lucide-react';
 import { SortOption } from '@/types/Product';
+
+type SortMode = 'name' | 'price';
 
 interface FilterBarProps {
   sortBy: SortOption;
@@ -30,25 +32,54 @@ export const FilterBar = ({
   onSearchCodeChange,
   onSearchNameChange,
 }: FilterBarProps) => {
-  const sortMode: 'name' | 'price' = sortBy.startsWith('name') ? 'name' : 'price';
+  const sortMode: SortMode = sortBy.startsWith('name') ? 'name' : 'price';
   const isNameAsc = sortBy === 'name-asc';
   const isNameDesc = sortBy === 'name-desc';
   const isPriceLow = sortBy === 'price-low';
   const isPriceHigh = sortBy === 'price-high';
 
+  const SortIconButton = ({
+    active,
+    label,
+    onClick,
+    children,
+  }: {
+    active: boolean;
+    label: string;
+    onClick: () => void;
+    children: React.ReactNode;
+  }) => (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          type="button"
+          variant={active ? 'secondary' : 'ghost'}
+          size="icon"
+          className="h-10 w-10 rounded-none"
+          onClick={onClick}
+          aria-label={label}
+          aria-pressed={active}
+        >
+          {children}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">{label}</TooltipContent>
+    </Tooltip>
+  );
+
   return (
-    <div className="bg-card border border-border rounded-lg p-4 shadow-soft space-y-4">
+    <div className="bg-card border border-border rounded-2xl p-5 shadow-soft space-y-4">
       {/* Linha 1: título + badge + limpar */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           {onBackToCategories && (
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               size="icon"
               onClick={onBackToCategories}
               aria-label="Voltar"
-              className="shrink-0"
+              className="shrink-0 rounded-xl"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
@@ -56,9 +87,11 @@ export const FilterBar = ({
           <div className="flex items-center gap-2 min-w-0">
             <h2 className="font-semibold text-base sm:text-lg truncate">{title}</h2>
             {productCount > 0 && (
-              <Badge variant="secondary" className="gap-1.5 shrink-0">
-                <Package className="h-3.5 w-3.5" aria-hidden />
-                {productCount} produto{productCount !== 1 ? 's' : ''}
+              <Badge variant="secondary" className="gap-2 shrink-0 px-3 py-1.5 rounded-full">
+                <Package className="h-4 w-4" aria-hidden />
+                <span className="tabular-nums">
+                  {productCount} produto{productCount !== 1 ? 's' : ''}
+                </span>
               </Badge>
             )}
           </div>
@@ -67,24 +100,24 @@ export const FilterBar = ({
         <Button
           type="button"
           variant="outline"
-          className="gap-2 shrink-0"
+          className="gap-2 shrink-0 rounded-xl"
           onClick={onClearFilters}
         >
-          <Trash2 className="h-4 w-4" aria-hidden />
+          <Filter className="h-4 w-4" aria-hidden />
           Limpar filtros
         </Button>
       </div>
 
       {/* Linha 2: inputs + ordenação */}
-      <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center">
-        <div className="flex flex-col sm:flex-row gap-3 flex-1">
+      <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center">
+        <div className="flex flex-col sm:flex-row gap-4 flex-1">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
             <Input
               value={searchCode}
               onChange={(e) => onSearchCodeChange(e.target.value)}
               placeholder="Ex.: 1234"
-              className="pl-9"
+              className="pl-10 rounded-xl"
               autoComplete="off"
               aria-label="Buscar por código"
             />
@@ -95,7 +128,7 @@ export const FilterBar = ({
               value={searchName}
               onChange={(e) => onSearchNameChange(e.target.value)}
               placeholder="Buscar por nome do produto"
-              className="pl-9"
+              className="pl-10 rounded-xl"
               autoComplete="off"
               aria-label="Buscar por nome"
             />
@@ -103,70 +136,43 @@ export const FilterBar = ({
         </div>
 
         <div className="flex items-center gap-3 justify-end">
-          <div className="flex items-center rounded-md border border-border overflow-hidden">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant={sortMode === 'name' && isNameAsc ? 'secondary' : 'ghost'}
-                  size="icon"
-                  className="h-10 w-10 rounded-none font-serif font-bold"
-                  onClick={() => onSortChange('name-asc')}
-                  aria-label="Nome: A–Z"
-                >
-                  A
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">Nome: A–Z</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant={sortMode === 'name' && isNameDesc ? 'secondary' : 'ghost'}
-                  size="icon"
-                  className="h-10 w-10 rounded-none"
-                  onClick={() => onSortChange('name-desc')}
-                  aria-label="Nome: Z–A"
-                >
-                  <ArrowDown className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">Nome: Z–A</TooltipContent>
-            </Tooltip>
+          {/* Nome (A–Z / Z–A) */}
+          <div className="flex items-center rounded-xl border border-border overflow-hidden bg-background">
+            <SortIconButton
+              active={sortMode === 'name' && isNameAsc}
+              label="Nome: A–Z"
+              onClick={() => onSortChange('name-asc')}
+            >
+              <span className="text-xs font-semibold leading-none">
+                A
+                <span className="ml-0.5 text-[10px] align-top">Z</span>
+              </span>
+            </SortIconButton>
+            <SortIconButton
+              active={sortMode === 'name' && isNameDesc}
+              label="Nome: Z–A"
+              onClick={() => onSortChange('name-desc')}
+            >
+              <ArrowDown className="h-4 w-4" />
+            </SortIconButton>
           </div>
 
-          <div className="flex items-center rounded-md border border-border overflow-hidden">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant={sortMode === 'price' && isPriceLow ? 'secondary' : 'ghost'}
-                  size="icon"
-                  className="h-10 w-10 rounded-none font-bold"
-                  onClick={() => onSortChange('price-low')}
-                  aria-label="Preço: menor primeiro"
-                >
-                  $
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">Preço: menor primeiro</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant={sortMode === 'price' && isPriceHigh ? 'secondary' : 'ghost'}
-                  size="icon"
-                  className="h-10 w-10 rounded-none"
-                  onClick={() => onSortChange('price-high')}
-                  aria-label="Preço: maior primeiro"
-                >
-                  <ArrowDown className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">Preço: maior primeiro</TooltipContent>
-            </Tooltip>
+          {/* Preço (menor/maior) */}
+          <div className="flex items-center rounded-xl border border-border overflow-hidden bg-background">
+            <SortIconButton
+              active={sortMode === 'price' && isPriceLow}
+              label="Preço: menor primeiro"
+              onClick={() => onSortChange('price-low')}
+            >
+              <span className="font-semibold">$</span>
+            </SortIconButton>
+            <SortIconButton
+              active={sortMode === 'price' && isPriceHigh}
+              label="Preço: maior primeiro"
+              onClick={() => onSortChange('price-high')}
+            >
+              <ArrowDown className="h-4 w-4" />
+            </SortIconButton>
           </div>
         </div>
       </div>
