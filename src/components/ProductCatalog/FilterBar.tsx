@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { ArrowLeft, ArrowDown, ArrowUp, Search, FilterX, Box } from 'lucide-react';
+import { ArrowLeft, ArrowDown, ArrowUp, Search, Package, Trash2 } from 'lucide-react';
 import { SortOption } from '@/types/Product';
 
 interface FilterBarProps {
@@ -57,7 +57,7 @@ export const FilterBar = ({
             <h2 className="font-semibold text-base sm:text-lg truncate">{title}</h2>
             {productCount > 0 && (
               <Badge variant="secondary" className="gap-1.5 shrink-0">
-                <Box className="h-3.5 w-3.5" aria-hidden />
+                <Package className="h-3.5 w-3.5" aria-hidden />
                 {productCount} produto{productCount !== 1 ? 's' : ''}
               </Badge>
             )}
@@ -70,7 +70,7 @@ export const FilterBar = ({
           className="gap-2 shrink-0"
           onClick={onClearFilters}
         >
-          <FilterX className="h-4 w-4" aria-hidden />
+          <Trash2 className="h-4 w-4" aria-hidden />
           Limpar filtros
         </Button>
       </div>
