@@ -39,11 +39,17 @@ export interface UpdateProductRequest {
   ativo?: boolean;
 }
 
-/** Resposta do POST de imagem ao produto */
+/** Item de resposta do POST de imagens ao produto (um por arquivo enviado com sucesso) */
 export interface AddImageResponse {
   id_imagem: number;
   url: string;
   id_produto: number;
+}
+
+/** Resposta do DELETE de imagens do produto */
+export interface RemoveImagesResponse {
+  removidas: number[];
+  nao_encontradas: number[];
 }
 
 // Kit structure from API

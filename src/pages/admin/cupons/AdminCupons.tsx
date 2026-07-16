@@ -1,8 +1,17 @@
 import { Ticket, Plus, List, Power } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AdminRoute } from '@/components/AdminRoute';
 
 const AdminCupons = () => {
+  return (
+    <AdminRoute>
+      <AdminCuponsContent />
+    </AdminRoute>
+  );
+};
+
+const AdminCuponsContent = () => {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">

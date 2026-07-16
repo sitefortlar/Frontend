@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ProductImportService } from '@/services/products/productImport';
 import { useToast } from '@/hooks/use-toast';
+import { AdminRoute } from '@/components/AdminRoute';
 import type { AxiosError } from 'axios';
 
 function getErrorMessage(error: unknown): string {
@@ -23,6 +24,14 @@ function getErrorMessage(error: unknown): string {
 }
 
 export default function ImportProdutos() {
+  return (
+    <AdminRoute>
+      <ImportProdutosContent />
+    </AdminRoute>
+  );
+}
+
+function ImportProdutosContent() {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<{

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+import React, { useMemo } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { paths } from '@/routes/paths';
 
@@ -9,6 +9,13 @@ interface AdminRouteProps {
 
 export const AdminRoute = ({ children }: AdminRouteProps) => {
   const { isAdmin, isLoading, isAuthenticated } = useAuthContext();
+  const location = useLocation();
+  // Estabiliza a referência do state: um objeto novo a cada render faz o efeito
+  // (sem deps) do <Navigate> disparar em loop.
+  const redirectState = useMemo(
+    () => ({ from: `${location.pathname}${location.search}` }),
+    [location.pathname, location.search]
+  );
 
   if (isLoading) {
     return (
@@ -22,7 +29,7 @@ export const AdminRoute = ({ children }: AdminRouteProps) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to={paths.login} replace />;
+    return <Navigate to={paths.login} state={redirectState} replace />;
   }
 
   if (!isAdmin) {

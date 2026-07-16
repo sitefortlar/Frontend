@@ -29,12 +29,20 @@ export function getHeaders() {
   };
 }
 
+// Endpoints públicos do catálogo: nunca devem forçar logout/redirect em caso de 401,
+// já que produtos e categorias são navegáveis sem autenticação.
+const PUBLIC_ENDPOINT_PREFIXES = ['/product', '/category'];
+
 export function apiHandleError(error: AxiosError): void {
   const status = error?.response?.status;
   const url = error?.config?.url;
 
-  // Don't redirect to login if the error is from the login endpoint itself
-  if (status === 401 && url && !url.includes('/auth/login')) {
+  if (!url) return;
+
+  const isPublicEndpoint = PUBLIC_ENDPOINT_PREFIXES.some((prefix) => url.includes(prefix));
+  const isLoginEndpoint = url.includes('/auth/login');
+
+  if (status === 401 && !isLoginEndpoint && !isPublicEndpoint) {
     localStorage.clear();
     window.location.href = (baseUrl + paths.login).replace('//', '/');
   }

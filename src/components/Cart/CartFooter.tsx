@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -10,7 +11,9 @@ import { CartItem } from '@/types/Cart';
 import { orderService } from '@/services/order/OrderService';
 import type { SendOrderEmailRequest } from '@/services/order/OrderService';
 import { useToast } from '@/hooks/use-toast';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { useCouponContext } from '@/contexts/CouponContext';
+import { paths } from '@/routes/paths';
 import { CouponSection } from './CouponSection';
 
 interface CartFooterProps {
@@ -33,6 +36,9 @@ export const CartFooter = ({
   priceType: cartPriceType, // REGRA: priceType global do carrinho
 }: CartFooterProps) => {
   const { toast } = useToast();
+  const { isAuthenticated } = useAuthContext();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { appliedCoupon, calculateDiscount, removeCoupon } = useCouponContext();
   // Forma de pagamento inicia vazia; obrigatória para finalizar
   const [paymentType, setPaymentType] = useState<PriceType | null>(null);
@@ -89,6 +95,14 @@ export const CartFooter = ({
         title: "Forma de pagamento obrigatória",
         description: "Selecione uma forma de pagamento para finalizar o pedido.",
         variant: "destructive",
+      });
+      return;
+    }
+    // Checkout exige login: carrinho já está salvo (localStorage), então basta
+    // redirecionar para o login e voltar para a mesma tela ao concluir.
+    if (!isAuthenticated) {
+      navigate(paths.login, {
+        state: { from: `${location.pathname}${location.search}` },
       });
       return;
     }

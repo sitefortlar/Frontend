@@ -15,8 +15,17 @@ import { Plus, Edit, Trash2, Search, Loader2, Tag, ArrowLeft } from 'lucide-reac
 import { couponService } from '@/services/coupon/CouponService';
 import { CouponResponse, CreateCouponRequest, UpdateCouponRequest, CouponType, ListCouponsFilters } from '@/types/Coupon';
 import { useToast } from '@/hooks/use-toast';
+import { AdminRoute } from '@/components/AdminRoute';
 
 export default function CouponManagement() {
+  return (
+    <AdminRoute>
+      <CouponManagementContent />
+    </AdminRoute>
+  );
+}
+
+function CouponManagementContent() {
   const navigate = useNavigate();
   const [coupons, setCoupons] = useState<CouponResponse[]>([]);
   const [loading, setLoading] = useState(false);

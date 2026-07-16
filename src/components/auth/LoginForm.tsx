@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useFormValidation } from "@/hooks/useFormValidation";
 import { authService } from "@/services/auth/auth";
 import { AUTH_MESSAGES } from "@/constants/auth";
+import { paths } from "@/routes/paths";
+import { useAuthContext } from "@/contexts/AuthContext";
 import {
   LoginForm as StyledLoginForm,
   LoginFormGroup,
@@ -28,6 +30,8 @@ export const LoginForm = ({}: LoginFormProps) => {
   
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { refreshUser } = useAuthContext();
   const { validateForm, errors, clearErrors } = useFormValidation();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,14 +51,19 @@ export const LoginForm = ({}: LoginFormProps) => {
 
     try {
       const response = await authService.login({ login, password });
-      
+
+      // Atualiza o AuthContext global (isAuthenticated/isAdmin) antes de navegar,
+      // já que ele não escuta o localStorage e ficaria com o estado de visitante.
+      await refreshUser();
+
       toast({
         title: "Login realizado",
         description: AUTH_MESSAGES.LOGIN_SUCCESS,
       });
 
-      // Redirect to catalog page
-      navigate('/catalog');
+      // Retorna para a tela de onde o usuário veio (ex.: checkout), ou o catálogo por padrão
+      const from = (location.state as { from?: string } | null)?.from;
+      navigate(from || paths.catalog, { replace: true });
     } catch (error: any) {
       console.log('error', error);
       if (error.status === 403) {

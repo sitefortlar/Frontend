@@ -1,9 +1,9 @@
 import { api } from './api';
 import type { ListProductsParams } from '@/types/pagination';
-import type { Product, UpdateProductRequest, AddImageResponse } from '@/types/Product';
+import type { Product, UpdateProductRequest, AddImageResponse, RemoveImagesResponse } from '@/types/Product';
 
 // Re-export types from the types directory
-export type { Product, Category, Subcategory, SortOption, PriceType, UpdateProductRequest, AddImageResponse } from '@/types/Product';
+export type { Product, Category, Subcategory, SortOption, PriceType, UpdateProductRequest, AddImageResponse, RemoveImagesResponse } from '@/types/Product';
 
 export interface ProductFilters extends Omit<Partial<ListProductsParams>, 'id_category' | 'id_subcategory'> {
   id_category?: string | number;
@@ -102,28 +102,32 @@ export const productService = {
     }
   },
 
-  /** Adiciona imagem ao produto (multipart/form-data, campo 'file'). Requer JWT admin. */
-  async addProductImage(productId: number, file: File): Promise<AddImageResponse> {
+  /** Envia uma ou mais imagens ao produto (multipart/form-data, campo repetido 'files'). Requer JWT admin.
+   *  Arquivos que falharem no upload para o storage são simplesmente omitidos da resposta. */
+  async addProductImage(productId: number, files: File[]): Promise<AddImageResponse[]> {
     const form = new FormData();
-    form.append('file', file);
+    files.forEach((file) => form.append('files', file));
     try {
-      const response = await api.post<AddImageResponse>(`/product/${productId}/images`, form, {
+      const response = await api.post<AddImageResponse[]>(`/product/${productId}/images`, form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
     } catch (error: any) {
       const msg = error.response?.data?.detail ?? error.response?.data?.message ?? error.message;
-      throw new Error(typeof msg === 'string' ? msg : 'Erro ao enviar imagem');
+      throw new Error(typeof msg === 'string' ? msg : 'Erro ao enviar imagens');
     }
   },
 
-  /** Remove imagem do produto. Requer JWT admin. Resposta 204. */
-  async removeProductImage(productId: number, imageId: number): Promise<void> {
+  /** Remove uma ou mais imagens do produto. Requer JWT admin. */
+  async removeProductImage(productId: number, imageIds: number[]): Promise<RemoveImagesResponse> {
     try {
-      await api.delete(`/product/${productId}/images/${imageId}`);
+      const response = await api.delete<RemoveImagesResponse>(`/product/${productId}/images`, {
+        data: { image_ids: imageIds },
+      });
+      return response.data;
     } catch (error: any) {
       const msg = error.response?.data?.detail ?? error.response?.data?.message ?? error.message;
-      throw new Error(typeof msg === 'string' ? msg : 'Erro ao remover imagem');
+      throw new Error(typeof msg === 'string' ? msg : 'Erro ao remover imagens');
     }
   },
 };
