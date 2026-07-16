@@ -5,7 +5,7 @@ export const APP_CONFIG = {
   
   // API Configuration
   api: {
-    baseUrl: import.meta.env.VITE_API_URL || 'https://backend-zuzf.onrender.com/api',
+    baseUrl: import.meta.env.VITE_API_URL || 'https://vendas.fortlar.com.br/api',
     timeout: 10000,
   },
   

@@ -49,7 +49,13 @@
       "Bash(node verify2.mjs)",
       "Bash(node verify3.mjs)",
       "Bash(node verify4.mjs)",
-      "Bash(pkill -f \"vite\")"
+      "Bash(pkill -f \"vite\")",
+      "Bash(curl -sS -o /dev/null -w \"HTTP_STATUS:%{http_code} TIME:%{time_total}\\\\n\" \"https://backend-zuzf.onrender.com/api/category?skip=0&limit=100\" --max-time 20)",
+      "Bash(curl -sS -i -X OPTIONS \"https://backend-zuzf.onrender.com/api/category?skip=0&limit=100\" -H \"Origin: https://vendas.fortlar.com.br\" -H \"Access-Control-Request-Method: GET\" --max-time 20)",
+      "Bash(curl -sS -o /dev/null -w \"root HTTP_STATUS:%{http_code} TIME:%{time_total}\\\\n\" \"https://backend-zuzf.onrender.com/\" --max-time 20)",
+      "Bash(curl -sS \"https://backend-zuzf.onrender.com/\" --max-time 20)",
+      "Bash(find / -maxdepth 4 -iname \"nginx*\" -type d)",
+      "Bash(find / -iname \"*.conf\" -path \"*nginx*\")"
     ],
     "additionalDirectories": [
       "/home/exacta/Documentos/fortlar/Frontend/src/pages/admin/descontos"

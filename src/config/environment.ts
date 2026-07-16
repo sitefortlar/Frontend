@@ -37,7 +37,7 @@ const getEnvVar = (key: string, defaultValue: string): string => {
  * Configuração do ambiente
  */
 export const config: EnvironmentConfig = {
-  API_BASE_URL: getEnvVar('VITE_API_URL', 'https://backend-zuzf.onrender.com/api').replace('/api', ''),
+  API_BASE_URL: getEnvVar('VITE_API_URL', 'https://vendas.fortlar.com.br/api').replace('/api', ''),
   NODE_ENV: getEnvVar('NODE_ENV', 'development'),
 };
 
