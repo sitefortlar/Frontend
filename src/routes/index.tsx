@@ -3,6 +3,11 @@ import { paths, baseUrl } from './paths';
 import Layout from '@/components/Layout';
 
 const router = createBrowserRouter([
+  // Home: catálogo é público, não deve exigir login para navegar
+  {
+    path: '/',
+    element: <Navigate to={paths.catalog} replace />,
+  },
   // Public routes
   {
     path: paths.login,
@@ -26,7 +31,7 @@ const router = createBrowserRouter([
     lazy: () => import('@/pages/confirmar-cadastro').then(module => ({ Component: module.default })),
   },
   
-  // Main layout with protected routes
+  // Main layout (catálogo é público; rotas de admin/pedidos se protegem internamente via AdminRoute/useAuthGuard)
   {
     element: <Layout />,
     children: [
@@ -85,10 +90,10 @@ const router = createBrowserRouter([
     lazy: () => import('@/pages/not-found').then(module => ({ Component: module.default })),
   },
   
-  // Catch all route - redirect to login
+  // Catch all route - rota desconhecida não deve exigir login, apenas 404
   {
     path: '*',
-    element: <Navigate to={paths.login} replace />,
+    element: <Navigate to={paths.notFound} replace />,
   },
 ], { 
   basename: baseUrl 

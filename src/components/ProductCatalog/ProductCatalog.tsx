@@ -13,8 +13,10 @@ import { CartButton } from '@/components/Cart/CartButton';
 import { productService, type ProductFilters } from '@/services/products';
 import { authService } from '@/services/auth/auth';
 import { Loader2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { paths } from '@/routes/paths';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import {
   ProductCatalogContainer,
   ProductCatalogContent,
@@ -42,6 +44,9 @@ export const ProductCatalog = ({
   onGoToAllProducts,
 }: ProductCatalogProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated } = useAuthContext();
+  const { toast } = useToast();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(
     initialCategoryId != null ? initialCategoryId : null
   );
@@ -280,11 +285,22 @@ export const ProductCatalog = ({
         console.error('Produto inválido para adicionar ao carrinho');
         return;
       }
+      // Navegar/visualizar produtos é público; login só é exigido ao adicionar ao carrinho.
+      if (!isAuthenticated) {
+        toast({
+          title: "Faça login para continuar",
+          description: "Você precisa estar logado para adicionar produtos ao carrinho.",
+        });
+        navigate(paths.login, {
+          state: { from: `${location.pathname}${location.search}` },
+        });
+        return;
+      }
       addToCart(product, size, productPriceType, quantity);
     } catch (error) {
       console.error('Erro ao adicionar produto ao carrinho:', error);
     }
-  }, [addToCart]);
+  }, [addToCart, isAuthenticated, navigate, location.pathname, location.search, toast]);
 
   /**
    * Handler para seleção de categoria.
