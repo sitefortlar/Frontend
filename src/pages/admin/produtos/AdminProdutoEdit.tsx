@@ -99,7 +99,11 @@ export default function AdminProdutoEdit() {
         setIdSubcategoria(p.id_subcategoria ?? '');
         setValorBase(p.valor_base ?? 0);
         setAtivo(p.ativo ?? true);
-        setExistingImages((p.imagens ?? []).map((url) => ({ url, id: null })));
+        setExistingImages(
+          p.imagens_detalhe && p.imagens_detalhe.length > 0
+            ? p.imagens_detalhe.map((img) => ({ url: img.url, id: img.id_imagem }))
+            : (p.imagens ?? []).map((url) => ({ url, id: null }))
+        );
         setNewImages([]);
         setPendingRemovalIds([]);
       })

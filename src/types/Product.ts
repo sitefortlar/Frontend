@@ -15,6 +15,8 @@ export interface Product {
   categoria: string | null;
   subcategoria: string | null;
   imagens: string[];
+  /** Imagens com o id necessário para exclusão (usado na tela de edição de produto) */
+  imagens_detalhe?: { id_imagem: number; url: string }[];
   avista?: number | null;
   dias_30?: number | null;
   dias_60?: number | null;
