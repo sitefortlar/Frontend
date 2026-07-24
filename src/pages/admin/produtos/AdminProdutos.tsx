@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,23 +20,44 @@ import { useToast } from '@/hooks/use-toast';
 import { AdminRoute } from '@/components/AdminRoute';
 import { formatCurrency } from '@/utils/format';
 import { paths } from '@/routes/paths';
+import { ADMIN_PRODUTOS_FILTERS_KEY } from '@/constants/adminFilters';
 
 const ESTADOS = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
+
+type StoredFilters = {
+  estado: string;
+  searchName: string;
+  idCategory: string;
+  idSubcategory: string;
+  orderPrice: 'ASC' | 'DESC';
+  activeOnly: boolean;
+  includeKits: boolean;
+};
+
+function loadStoredFilters(): Partial<StoredFilters> {
+  try {
+    const raw = sessionStorage.getItem(ADMIN_PRODUTOS_FILTERS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
 
 export default function AdminProdutos() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const initialFilters = useMemo(loadStoredFilters, []);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
-  const [estado, setEstado] = useState('SP');
-  const [searchName, setSearchName] = useState('');
-  const [idCategory, setIdCategory] = useState<string>('');
-  const [idSubcategory, setIdSubcategory] = useState<string>('');
-  const [orderPrice, setOrderPrice] = useState<'ASC' | 'DESC'>('ASC');
-  const [activeOnly, setActiveOnly] = useState(true);
-  const [includeKits, setIncludeKits] = useState(true);
+  const [estado, setEstado] = useState(initialFilters.estado ?? 'SP');
+  const [searchName, setSearchName] = useState(initialFilters.searchName ?? '');
+  const [idCategory, setIdCategory] = useState<string>(initialFilters.idCategory ?? '');
+  const [idSubcategory, setIdSubcategory] = useState<string>(initialFilters.idSubcategory ?? '');
+  const [orderPrice, setOrderPrice] = useState<'ASC' | 'DESC'>(initialFilters.orderPrice ?? 'ASC');
+  const [activeOnly, setActiveOnly] = useState(initialFilters.activeOnly ?? true);
+  const [includeKits, setIncludeKits] = useState(initialFilters.includeKits ?? true);
 
   const loadCategories = async () => {
     try {
@@ -107,6 +128,19 @@ export default function AdminProdutos() {
       });
     return () => { cancelled = true; };
   }, [estado, idCategory, idSubcategory, orderPrice, activeOnly, includeKits, toast]);
+
+  useEffect(() => {
+    const filters: StoredFilters = {
+      estado,
+      searchName,
+      idCategory,
+      idSubcategory,
+      orderPrice,
+      activeOnly,
+      includeKits,
+    };
+    sessionStorage.setItem(ADMIN_PRODUTOS_FILTERS_KEY, JSON.stringify(filters));
+  }, [estado, searchName, idCategory, idSubcategory, orderPrice, activeOnly, includeKits]);
 
   const handleSearch = () => {
     setInitialLoading(true);
