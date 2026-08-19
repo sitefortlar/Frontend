@@ -6,7 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { ProductImportService } from '@/services/products/productImport';
+import { getProductImportJobError, ProductImportService } from '@/services/products/productImport';
 import type { AxiosError } from 'axios';
 
 function getErrorMessage(error: unknown): string {
@@ -27,8 +27,10 @@ export const ProductUploadForm = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [processingStatus, setProcessingStatus] = useState<'pending' | 'processing' | null>(null);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [summary, setSummary] = useState<string | Record<string, unknown> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -72,6 +74,7 @@ export const ProductUploadForm = () => {
     setIsConfirmed(false); // Resetar confirmação quando novo arquivo é selecionado
     setUploadStatus('idle');
     setErrorMessage('');
+    setSummary(null);
   };
 
   const handleRemoveFile = () => {
@@ -79,6 +82,7 @@ export const ProductUploadForm = () => {
     setIsConfirmed(false);
     setUploadStatus('idle');
     setErrorMessage('');
+    setSummary(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -92,27 +96,28 @@ export const ProductUploadForm = () => {
     setIsUploading(true);
     setUploadStatus('idle');
     setErrorMessage('');
+    setSummary(null);
+    setProcessingStatus('pending');
 
     try {
       const result = await ProductImportService.uploadSpreadsheetAndWait(selectedFile, status => {
         if (status.status === 'processing' || status.status === 'pending') {
-          toast({
-            title: 'Processamento em andamento',
-            description: 'Aguarde enquanto a planilha é processada...',
-          });
+          setProcessingStatus(status.status);
         }
       });
 
       if (result.status === 'failed') {
+        const errorMessage = getProductImportJobError(result);
         setUploadStatus('error');
-        setErrorMessage(result.message ?? 'Falha no processamento da planilha.');
+        setErrorMessage(errorMessage);
         toast({
           title: 'Erro no processamento',
-          description: result.message ?? 'Falha ao importar produtos.',
+          description: errorMessage,
           variant: 'destructive',
         });
       } else {
         setUploadStatus('success');
+        setSummary(result.summary ?? null);
         toast({
           title: 'Sucesso!',
           description: `Produtos importados com sucesso.${result.total_imported != null ? ` Total: ${result.total_imported}.` : ''}`,
@@ -123,6 +128,7 @@ export const ProductUploadForm = () => {
           setSelectedFile(null);
           setIsConfirmed(false);
           setUploadStatus('idle');
+          setSummary(null);
           if (fileInputRef.current) {
             fileInputRef.current.value = '';
           }
@@ -139,6 +145,7 @@ export const ProductUploadForm = () => {
       });
     } finally {
       setIsUploading(false);
+      setProcessingStatus(null);
     }
   };
 
@@ -236,6 +243,11 @@ export const ProductUploadForm = () => {
             <AlertTitle>Sucesso!</AlertTitle>
             <AlertDescription>
               Produtos atualizados com sucesso.
+              {summary && (
+                <span className="block mt-1 whitespace-pre-wrap">
+                  {typeof summary === 'string' ? summary : JSON.stringify(summary, null, 2)}
+                </span>
+              )}
             </AlertDescription>
           </Alert>
         )}
@@ -245,6 +257,14 @@ export const ProductUploadForm = () => {
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Erro</AlertTitle>
             <AlertDescription>{errorMessage}</AlertDescription>
+          </Alert>
+        )}
+
+        {processingStatus && (
+          <Alert>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <AlertTitle>Processando…</AlertTitle>
+            <AlertDescription>Aguarde enquanto a planilha é processada.</AlertDescription>
           </Alert>
         )}
 
@@ -258,7 +278,7 @@ export const ProductUploadForm = () => {
           {isUploading ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Enviando e processando...
+              {processingStatus ? 'Processando…' : 'Enviando arquivo…'}
             </>
           ) : (
             <>

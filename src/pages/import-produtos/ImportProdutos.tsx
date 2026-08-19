@@ -4,7 +4,7 @@ import { Upload, FileSpreadsheet, CheckCircle, XCircle, ArrowLeft, Loader2 } fro
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ProductImportService } from '@/services/products/productImport';
+import { getProductImportJobError, ProductImportService } from '@/services/products/productImport';
 import { useToast } from '@/hooks/use-toast';
 import { AdminRoute } from '@/components/AdminRoute';
 import type { AxiosError } from 'axios';
@@ -34,9 +34,11 @@ export default function ImportProdutos() {
 function ImportProdutosContent() {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [processingStatus, setProcessingStatus] = useState<'pending' | 'processing' | null>(null);
   const [uploadResult, setUploadResult] = useState<{
     success: boolean;
     message: string;
+    summary?: string | Record<string, unknown>;
     total?: number;
     errors?: string[];
   } | null>(null);
@@ -68,32 +70,32 @@ function ImportProdutosContent() {
 
     setIsUploading(true);
     setUploadResult(null);
+    setProcessingStatus('pending');
 
     try {
       const result = await ProductImportService.uploadSpreadsheetAndWait(file, status => {
         if (status.status === 'processing' || status.status === 'pending') {
-          toast({
-            title: 'Processamento em andamento',
-            description: 'Aguarde enquanto a planilha é processada...',
-          });
+          setProcessingStatus(status.status);
         }
       });
 
       if (result.status === 'failed') {
+        const errorMessage = getProductImportJobError(result);
         setUploadResult({
           success: false,
-          message: result.message ?? 'Falha no processamento da planilha.',
+          message: errorMessage,
           errors: result.errors,
         });
         toast({
           title: 'Erro no processamento',
-          description: result.message ?? 'Falha ao importar produtos.',
+          description: errorMessage,
           variant: 'destructive',
         });
       } else {
         setUploadResult({
           success: true,
           message: result.message ?? 'Produtos atualizados com sucesso.',
+          summary: result.summary,
           total: result.total_imported,
           errors: result.errors,
         });
@@ -115,6 +117,7 @@ function ImportProdutosContent() {
       });
     } finally {
       setIsUploading(false);
+      setProcessingStatus(null);
     }
   };
 
@@ -184,7 +187,7 @@ function ImportProdutosContent() {
                   {isUploading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Enviando e processando...
+                      {processingStatus ? 'Processando…' : 'Enviando arquivo…'}
                     </>
                   ) : (
                     'Atualizar Produtos'
@@ -207,6 +210,15 @@ function ImportProdutosContent() {
               </AlertDescription>
             </Alert>
 
+            {processingStatus && (
+              <Alert>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <AlertDescription>
+                  Processando… Aguarde enquanto a planilha é processada.
+                </AlertDescription>
+              </Alert>
+            )}
+
             {uploadResult && (
               <Alert variant={uploadResult.success ? 'default' : 'destructive'}>
                 <div className="flex items-start gap-3">
@@ -218,6 +230,13 @@ function ImportProdutosContent() {
                   <div className="flex-1">
                     <AlertDescription>
                       <p className="font-medium">{uploadResult.message}</p>
+                      {uploadResult.summary && (
+                        <p className="text-sm mt-1 whitespace-pre-wrap">
+                          {typeof uploadResult.summary === 'string'
+                            ? uploadResult.summary
+                            : JSON.stringify(uploadResult.summary, null, 2)}
+                        </p>
+                      )}
                       {uploadResult.total !== undefined && (
                         <p className="text-sm mt-1">
                           Total de produtos atualizados: {uploadResult.total}

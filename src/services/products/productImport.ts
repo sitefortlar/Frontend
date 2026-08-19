@@ -19,6 +19,10 @@ export interface ProductImportJobStatusResponse {
   job_id: string;
   status: JobStatus;
   message?: string;
+  /** Resumo retornado pela API quando o processamento é concluído. */
+  summary?: string | Record<string, unknown>;
+  /** Motivo detalhado retornado pela API quando o processamento falha. */
+  error?: string;
   total_imported?: number;
   errors?: string[];
 }
@@ -28,6 +32,11 @@ export interface ProductImportResult {
   message: string;
   total_imported?: number;
   errors?: string[];
+}
+
+/** Mensagem priorizada para falhas assíncronas de importação. */
+export function getProductImportJobError(status: ProductImportJobStatusResponse): string {
+  return status.error?.trim() || status.message?.trim() || 'Falha no processamento da planilha.';
 }
 
 const POLL_INTERVAL_MS = 2000;
