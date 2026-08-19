@@ -81,6 +81,10 @@ const router = createBrowserRouter([
         path: paths.admin.orders,
         lazy: () => import('@/pages/admin/orders').then(module => ({ Component: module.default })),
       },
+      {
+        path: paths.admin.empresas,
+        lazy: () => import('@/pages/admin/empresas').then(module => ({ Component: module.default })),
+      },
     ],
   },
   

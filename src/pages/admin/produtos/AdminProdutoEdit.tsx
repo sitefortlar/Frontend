@@ -64,7 +64,8 @@ export default function AdminProdutoEdit() {
   const [codKit, setCodKit] = useState('');
   const [idCategoria, setIdCategoria] = useState<number | ''>('');
   const [idSubcategoria, setIdSubcategoria] = useState<number | ''>('');
-  const [valorBase, setValorBase] = useState(0);
+  // Mantido como texto para permitir edição decimal sem sobrescrever a digitação do usuário.
+  const [valorBase, setValorBase] = useState('0');
   const [ativo, setAtivo] = useState(true);
 
   // Photos: existing images (loaded from API) and new images (local only, pending upload)
@@ -97,7 +98,7 @@ export default function AdminProdutoEdit() {
         setCodKit(p.cod_kit ?? '');
         setIdCategoria(p.id_categoria ?? '');
         setIdSubcategoria(p.id_subcategoria ?? '');
-        setValorBase(p.valor_base ?? 0);
+        setValorBase(String(p.valor_base ?? 0));
         setAtivo(p.ativo ?? true);
         setExistingImages(
           p.imagens_detalhe && p.imagens_detalhe.length > 0
@@ -128,6 +129,16 @@ export default function AdminProdutoEdit() {
 
   const handleSaveData = async () => {
     if (!product) return;
+    const parsedValorBase = Number(valorBase.replace(',', '.'));
+    if (!Number.isFinite(parsedValorBase) || parsedValorBase < 0) {
+      toast({
+        title: 'Valor base inválido',
+        description: 'Informe um valor base maior ou igual a zero.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     const body: UpdateProductRequest = {};
     if (nome.trim() !== product.nome) body.nome = nome.trim();
     if (descricao !== (product.descricao ?? '')) body.descricao = descricao.trim() || null;
@@ -137,7 +148,7 @@ export default function AdminProdutoEdit() {
     if (Number(idSubcategoria) !== (product.id_subcategoria ?? null)) {
       body.id_subcategoria = idSubcategoria === '' ? null : Number(idSubcategoria);
     }
-    if (valorBase !== (product.valor_base ?? 0)) body.valor_base = valorBase;
+    if (parsedValorBase !== (product.valor_base ?? 0)) body.valor_base = parsedValorBase;
     if (ativo !== product.ativo) body.ativo = ativo;
 
     if (Object.keys(body).length === 0) {
@@ -149,6 +160,7 @@ export default function AdminProdutoEdit() {
     try {
       const updated = await productService.updateProduct(product.id_produto, body, ESTADO);
       setProduct(updated);
+      setValorBase(String(updated.valor_base ?? parsedValorBase));
       toast({ title: 'Salvo', description: 'Produto atualizado com sucesso.' });
     } catch (err: any) {
       toast({
@@ -402,8 +414,9 @@ export default function AdminProdutoEdit() {
                 type="number"
                 min={0}
                 step={0.01}
+                inputMode="decimal"
                 value={valorBase}
-                onChange={(e) => setValorBase(Number(e.target.value) || 0)}
+                onChange={(e) => setValorBase(e.target.value)}
               />
             </div>
             <div className="flex items-center justify-between">

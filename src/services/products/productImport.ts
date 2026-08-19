@@ -1,6 +1,6 @@
 import { api } from '../api';
 
-/** Endpoints de importação (base da API vem de VITE_API_URL em api.ts) */
+/** Endpoints de atualização em massa (base da API vem de VITE_API_URL em api.ts) */
 const ENDPOINTS = {
   upload: '/product',
   jobStatus: (jobId: string) => `/product/job/${jobId}`,
@@ -35,14 +35,15 @@ const MAX_POLL_ATTEMPTS = 120; // ~4 min
 
 export class ProductImportService {
   /**
-   * Envia a planilha para POST (multipart/form-data).
+   * Envia a planilha de atualização para PATCH (multipart/form-data).
+   * O arquivo deve conter, no mínimo, codigo, nome e valor_base.
    * O backend processa de forma assíncrona e retorna job_id.
    */
   static async uploadSpreadsheet(file: File): Promise<ProductUploadJobResponse> {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await api.post<ProductUploadJobResponse>(ENDPOINTS.upload, formData, {
+    const response = await api.patch<ProductUploadJobResponse>(ENDPOINTS.upload, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

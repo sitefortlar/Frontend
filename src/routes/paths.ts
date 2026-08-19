@@ -23,6 +23,7 @@ export const paths = {
     descontos: '/admin/descontos',
     cupons: '/admin/cupons',
     orders: '/admin/pedidos',
+    empresas: '/admin/empresas',
   },
   
   // Error routes

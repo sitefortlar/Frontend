@@ -29,8 +29,8 @@ export interface Company {
   ativo: boolean;
   created_at: string;
   updated_at: string;
-  enderecos: Address[];
-  contatos: Contact[];
+  enderecos?: Address[];
+  contatos?: Contact[];
 }
 
 // Request interfaces
@@ -110,6 +110,24 @@ export const companyService = {
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Erro ao listar empresas');
     }
+  },
+
+  /**
+   * A listagem pode não incluir contatos dependendo da configuração da API.
+   * Para a área administrativa, completa somente os itens necessários da página.
+   */
+  async listCompaniesWithContacts(params?: ListCompaniesParams): Promise<Company[]> {
+    const companies = await this.listCompanies(params);
+    return Promise.all(
+      companies.map(async (company) => {
+        if (company.contatos?.length) return company;
+        try {
+          return await this.getCompanyById(company.id_empresa);
+        } catch {
+          return company;
+        }
+      })
+    );
   },
 
   /**

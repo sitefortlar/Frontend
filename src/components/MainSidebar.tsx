@@ -20,6 +20,7 @@ import {
   LogOut,
   ShoppingBag,
   ClipboardList,
+  Building2,
 } from 'lucide-react';
 import { paths } from '@/routes/paths';
 import { LogoutButton } from './LogoutButton';
@@ -127,6 +128,18 @@ export const MainSidebar = () => {
                       <Link to={paths.admin.orders}>
                         <ClipboardList className="h-4 w-4" />
                         <span>Todos os pedidos</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive(paths.admin.empresas)}
+                    >
+                      <Link to={paths.admin.empresas}>
+                        <Building2 className="h-4 w-4" />
+                        <span>Empresas</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

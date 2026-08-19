@@ -155,16 +155,16 @@ export const ProductUploadForm = () => {
       <CardHeader>
         <CardTitle>Upload de Arquivo</CardTitle>
         <CardDescription>
-          Selecione um arquivo CSV ou Excel para importar produtos
+          Selecione um arquivo CSV ou Excel para atualizar produtos existentes
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Alerta de impacto */}
-        <Alert variant="destructive">
+        <Alert>
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Atenção</AlertTitle>
           <AlertDescription>
-            Este processo apagará <strong>todos os produtos cadastrados atualmente</strong> e os substituirá pelos dados do arquivo enviado.
+            A planilha deve conter <strong>codigo, nome e valor_base</strong>. Apenas os produtos presentes no arquivo serão atualizados.
           </AlertDescription>
         </Alert>
 
@@ -216,16 +216,16 @@ export const ProductUploadForm = () => {
         {/* Checkbox de confirmação */}
         <div className="flex items-start space-x-3 p-4 border rounded-lg bg-muted/50">
           <Checkbox
-            id="confirm-replace"
+            id="confirm-update"
             checked={isConfirmed}
             onCheckedChange={(checked) => setIsConfirmed(checked === true)}
             disabled={!selectedFile || isUploading}
           />
           <Label
-            htmlFor="confirm-replace"
+            htmlFor="confirm-update"
             className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
           >
-            Estou ciente de que os produtos atuais serão substituídos pelos dados do arquivo enviado.
+            Confirmo a atualização dos produtos informados no arquivo.
           </Label>
         </div>
 
@@ -235,7 +235,7 @@ export const ProductUploadForm = () => {
             <CheckCircle2 className="h-4 w-4" />
             <AlertTitle>Sucesso!</AlertTitle>
             <AlertDescription>
-              Produtos importados com sucesso.
+              Produtos atualizados com sucesso.
             </AlertDescription>
           </Alert>
         )}

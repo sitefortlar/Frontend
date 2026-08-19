@@ -93,13 +93,13 @@ function ImportProdutosContent() {
       } else {
         setUploadResult({
           success: true,
-          message: result.message ?? 'Produtos importados com sucesso.',
+          message: result.message ?? 'Produtos atualizados com sucesso.',
           total: result.total_imported,
           errors: result.errors,
         });
         toast({
-          title: 'Upload realizado com sucesso',
-          description: `${result.total_imported ?? 0} produtos importados`,
+          title: 'Atualização concluída',
+          description: `${result.total_imported ?? 0} produtos atualizados`,
         });
       }
     } catch (error) {
@@ -142,10 +142,10 @@ function ImportProdutosContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileSpreadsheet className="h-6 w-6" />
-              Importar Produtos
+              Atualizar Produtos por Planilha
             </CardTitle>
             <CardDescription>
-              Faça upload de uma planilha Excel ou CSV para cadastrar múltiplos produtos
+              Envie uma planilha Excel ou CSV para atualizar produtos existentes pelo código.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -187,7 +187,7 @@ function ImportProdutosContent() {
                       Enviando e processando...
                     </>
                   ) : (
-                    'Enviar Planilha'
+                    'Atualizar Produtos'
                   )}
                 </Button>
                 <Button
@@ -199,6 +199,13 @@ function ImportProdutosContent() {
                 </Button>
               </div>
             )}
+
+            <Alert>
+              <AlertDescription>
+                A planilha deve conter as colunas <code>codigo</code>, <code>nome</code> e <code>valor_base</code>.
+                Apenas os produtos informados serão atualizados.
+              </AlertDescription>
+            </Alert>
 
             {uploadResult && (
               <Alert variant={uploadResult.success ? 'default' : 'destructive'}>
@@ -213,7 +220,7 @@ function ImportProdutosContent() {
                       <p className="font-medium">{uploadResult.message}</p>
                       {uploadResult.total !== undefined && (
                         <p className="text-sm mt-1">
-                          Total de produtos importados: {uploadResult.total}
+                          Total de produtos atualizados: {uploadResult.total}
                         </p>
                       )}
                       {uploadResult.errors && uploadResult.errors.length > 0 && (
