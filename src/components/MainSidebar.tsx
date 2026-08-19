@@ -20,7 +20,7 @@ import {
   LogOut,
   ShoppingBag,
   ClipboardList,
-  Building2,
+  UsersRound,
 } from 'lucide-react';
 import { paths } from '@/routes/paths';
 import { LogoutButton } from './LogoutButton';
@@ -138,8 +138,8 @@ export const MainSidebar = () => {
                       isActive={isActive(paths.admin.empresas)}
                     >
                       <Link to={paths.admin.empresas}>
-                        <Building2 className="h-4 w-4" />
-                        <span>Empresas</span>
+                        <UsersRound className="h-4 w-4" />
+                        <span>Gerenciar usuários</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
