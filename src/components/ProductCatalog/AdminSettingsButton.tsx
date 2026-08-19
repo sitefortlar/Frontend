@@ -1,4 +1,4 @@
-import { Settings, Upload, Ticket, FolderTree, PackageSearch, ClipboardList, UsersRound } from 'lucide-react';
+import { Settings, Upload, Ticket, FolderTree, PackageSearch, ClipboardList, Building2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { paths } from '@/routes/paths';
@@ -52,8 +52,8 @@ export const AdminSettingsButton = () => {
       onClick: () => navigate(paths.admin.orders),
     },
     {
-      label: 'Gerenciar usuários',
-      icon: UsersRound,
+      label: 'Gerenciar Empresas',
+      icon: Building2,
       onClick: () => navigate(paths.admin.empresas),
     },
   ];

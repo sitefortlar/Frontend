@@ -94,7 +94,7 @@ export default function OrdersAdminPage() {
       <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-start gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="shrink-0 mt-0.5">
+            <Button variant="ghost" size="icon" onClick={() => navigate(paths.catalog)} className="shrink-0 mt-0.5">
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>

@@ -13,6 +13,7 @@ import { categoryService } from '@/services/categories';
 import { Category, Subcategory, CategoryRequest, SubcategoryRequest } from '@/types/Product';
 import { useToast } from '@/hooks/use-toast';
 import { AdminRoute } from '@/components/AdminRoute';
+import { paths } from '@/routes/paths';
 import {
   AdminCategoriasContainer,
   LoadingContainer,
@@ -416,7 +417,7 @@ export default function AdminCategorias() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate(paths.catalog)}
               className="h-10 w-10"
             >
               <ArrowLeft className="h-5 w-5" />

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ArrowLeft, Building2, Loader2, RefreshCw, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { paths } from '@/routes/paths';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -76,7 +77,7 @@ export default function EmpresasAdminPage() {
       <main className="max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Voltar">
+            <Button variant="ghost" size="icon" onClick={() => navigate(paths.catalog)} aria-label="Voltar">
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
